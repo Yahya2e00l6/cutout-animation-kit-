@@ -1,0 +1,5 @@
+{
+  "description": "Synthetic mechanics fixture, not a second approved character design.",
+  "left": {"hip": [43, 10], "upper": 165, "lower": 127, "shoe_scale": [1.7, 1.4]},
+  "right": {"hip": [-43, -5], "upper": 143, "lower": 159, "shoe_scale": [2, 2]}
+}

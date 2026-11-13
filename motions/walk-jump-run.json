@@ -1,0 +1,19 @@
+{
+  "fps": 30,
+  "width": 1280,
+  "height": 720,
+  "scale": 0.56,
+  "floor": 650,
+  "segments": [
+    {"action": "idle", "duration": 0.5},
+    {"action": "walk", "duration": 2.8},
+    {"action": "idle", "duration": 0.4},
+    {"action": "jump", "duration": 1.8},
+    {"action": "idle", "duration": 0.4},
+    {"action": "run", "duration": 3.0},
+    {"action": "idle", "duration": 0.7}
+  ],
+  "walk": {"cycle": 0.95, "stance": 0.64, "stride": 0.28, "lift": 0.10, "arm_swing": 15, "sway": 0.045},
+  "run": {"cycle": 0.57, "stance": 0.32, "stride": 0.48, "lift": 0.28, "arm_swing": 32, "flight": 0.025, "sway": 0.055},
+  "jump": {"height": 0.37, "crouch": 0.16, "tuck": 0.13}
+}

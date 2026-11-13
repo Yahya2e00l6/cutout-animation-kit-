@@ -1,0 +1,19 @@
+{
+  "fps": 30,
+  "width": 1280,
+  "height": 720,
+  "scale": 0.56,
+  "floor": 650,
+  "segments": [{"action": "run", "duration": 4.0}],
+  "run": {
+    "profile": "reference-run",
+    "loop": true,
+    "cycle": 0.6666666666666666,
+    "stance": 0.29,
+    "stride": 0.40,
+    "lift": 0.40,
+    "arm_swing": 32,
+    "flight": 0.035,
+    "sway": 0.025
+  }
+}

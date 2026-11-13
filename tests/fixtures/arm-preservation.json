@@ -1,0 +1,5 @@
+{
+  "description": "v05 baseline, all 288 frames with authored sole markers. Update only for an intentional gait/jump change, not an arm-only pass.",
+  "leg_root_sha256": "707f5652b22d6b19b6c449abe6bc1bbfcad3e1a6b06aa04064a2ca4a594134dd",
+  "idle_jump_sha256": "a0eada5f13613c9bd1bec6285f50b55225f1278fe6722aea8be502e2943767dd"
+}

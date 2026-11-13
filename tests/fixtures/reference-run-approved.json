@@ -1,0 +1,7 @@
+{
+  "description": "User-approved renders/reference-run/v02/reference-run.mp4: 120 states at 30 fps with the measured soles below. Do not update for an unapproved motion change.",
+  "measured_soles": {"left": [42.625, 70.375], "right": [-47.375, 79.375]},
+  "states_sha256": "a006427e4c1ccf3a0708609c156597a29d7caaec445ce05937b914996c1f334b",
+  "raster_description": "SHA256 of concatenated decoded RGB bytes of approved v02 PNG frames 0000 through 0119, each 1280x720. Derived from the approved PNGs, not a fresh render. Requires the reference Cairo/librsvg/font environment; never refresh to silence a mismatch.",
+  "rgb_frames_sha256": "33e9112480fb5664ff4cdfd680e8ce598b8705a9cbacfe8ced8d95e35a93dca1"
+}
