@@ -1,0 +1,20 @@
+{
+  "pelvis-tilt": {"expression": "neutral", "angles": {"pelvis": 12}},
+  "chest-behind": {"expression": "neutral", "angles": {"shoulder-left": -15, "elbow-left": 110, "wrist-left": -12}},
+  "chest-front": {
+    "expression": "neutral",
+    "angles": {"shoulder-left": -15, "elbow-left": 110, "wrist-left": -12},
+    "layers": {"front_forearms": ["elbow-left"]}
+  },
+  "head-left": {"expression": "neutral", "angles": {"head": -20}},
+  "head-right": {"expression": "neutral", "angles": {"head": 20}},
+  "mouth-only": {"expression": "talk", "angles": {}},
+  "cross-left-front": {
+    "expression": "neutral", "angles": {"hip-left": 18, "knee-left": -12, "ankle-left": -6},
+    "layers": {"front_leg": "hip-left"}
+  },
+  "cross-right-front": {
+    "expression": "neutral", "angles": {"hip-left": 18, "knee-left": -12, "ankle-left": -6},
+    "layers": {"front_leg": "hip-right"}
+  }
+}

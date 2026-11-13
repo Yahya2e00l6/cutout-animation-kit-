@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1000" viewBox="0 0 640 1000" id="hoodie-character" role="img" aria-labelledby="title desc">
+  <title id="title">Hoodie character — editable cutout prototype v3</title>
+  <desc id="desc">Vector reconstruction of lastpic.jpeg. Nested groups rotate around local origins. Left and right refer to the character's own sides. Hidden facial states are editable vector groups.</desc>
+  <defs>
+    <!-- Outline inward so existing hand, cuff and shoe strokes are not expanded. -->
+    <filter id="limb-outline" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="erode" radius="3" result="interior"/>
+      <feComposite in="SourceAlpha" in2="interior" operator="out" result="edge"/>
+      <feFlood flood-color="#252722" result="ink"/>
+      <feComposite in="ink" in2="edge" operator="in" result="border"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="border"/></feMerge>
+    </filter>
+    <g id="neutral-features">
+      <path fill="#fffdf6" class="outline" stroke-width="2" d="M-44-10Q-29-20-13-9 Q-20 8-35 4 Q-43 1-44-10Z M17-9Q33-19 48-7 Q44 6 30 5 Q20 4 17-9Z"/>
+      <ellipse cx="-28" cy="-8" rx="6.5" ry="8" fill="#292c2a"/>
+      <ellipse cx="33" cy="-7" rx="6.5" ry="8" fill="#292c2a"/>
+      <path class="hair outline" stroke-width="2" d="M-49-27Q-30-42-12-31 L-10-24Q-29-28-49-23Z M16-29Q34-37 48-26 L49-20Q33-25 16-22Z"/>
+      <path class="line" d="M7-14 L9 12Q18 20 5 24"/>
+    </g>
+    <style>
+      .outline {stroke:#252722;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+      .cloth {fill:#85886a}
+      .rib {fill:#74795c}
+      .skin {fill:#dfbd94}
+      .pants {fill:#596666}
+      .sole {fill:#aec5c8}
+      .hair {fill:#403e33}
+      .line {fill:none;stroke:#252722;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <g id="root" transform="translate(320 600)">
+    <g id="pelvis" transform="translate(0 0)">
+    <g id="hip-right" transform="translate(-43 0)" filter="url(#limb-outline)">
+      <path id="leg-upper-right-art" class="pants" d="M-35-28 Q-42 3-38 35 L-34 151 A34 34 0 0 0 34 151 L36 9 Q35-27 19-29Z"/>
+      <g id="knee-right" transform="translate(0 151)">
+        <path id="leg-lower-right-art" class="pants" d="M-34 0 A34 34 0 0 1 34 0 L32 73 Q30 88 34 105 Q38 118 33 131 Q35 141 30 148 Q0 157-32 147 Q-34 138-37 124 Q-40 109-35 84 L-34 26Z"/>
+        <g id="ankle-right" transform="translate(0 140)">
+          <path fill="#465352" class="outline" d="M-30 0 Q-47 8-58 27 L-73 45 Q-82 61-68 68 Q-29 80 27 48 L31 15 Q5-1-30 0Z"/>
+          <path class="sole outline" d="M-72 43 Q-43 39-30 64 Q-54 75-72 65 Q-83 57-72 43Z"/>
+          <path class="sole outline" d="M-77 58 Q-48 84 29 41 L29 51 Q-39 91-73 72 Q-80 68-77 58Z"/>
+          <path class="line" d="M-33 14L-5 23 M-40 23L-13 32 M-47 32L-22 40" stroke="#b8cccd"/>
+        </g>
+      </g>
+    </g>
+    <g id="hip-left" transform="translate(43 0)" filter="url(#limb-outline)">
+      <path id="leg-upper-left-art" class="pants" d="M-35-28 Q-41 3-35 35 L-34 151 A34 34 0 0 0 34 151 L38 9 Q38-27 20-29Z"/>
+      <g id="knee-left" transform="translate(0 151)">
+        <path id="leg-lower-left-art" class="pants" d="M-34 0 A34 34 0 0 1 34 0 L33 76 Q31 99 36 112 Q38 120 34 129 Q37 141 31 148 Q0 156-29 148 Q-29 141-32 131 Q-36 121-34 112 Q-31 100-30 83 L-33 26Z"/>
+        <g id="ankle-left" transform="translate(0 140)">
+          <path fill="#465352" class="outline" d="M-29 14 Q-2-2 29 0 Q47 6 59 23 L73 36 Q82 47 76 58 Q46 74-29 48Z"/>
+          <path class="sole outline" d="M47 22 Q69 22 76 37 Q84 48 76 57 L28 56 Q29 35 47 22Z"/>
+          <path class="sole outline" d="M-29 42 Q35 69 78 51 L77 62 Q39 80-29 52Z"/>
+          <path class="line" d="M-6 19L17 9 M3 27L27 16 M13 35L36 23" stroke="#b8cccd"/>
+        </g>
+      </g>
+    </g>
+    <g id="pelvis-art">
+      <path class="pants" d="M-78-34 L78-34 78 39 Q48 43 29 31 L8 39-2 26-11 39 Q-49 42-78 38Z"/>
+      <path class="line" d="M-78-20L-78 35 M78-20L78 35 M8 39L32 30"/>
+    </g>
+    </g>
+    <g id="torso" transform="translate(0 0)">
+      <g id="shoulder-right" transform="translate(-74 -251) rotate(12)" filter="url(#limb-outline)">
+        <path id="arm-upper-right-art" class="cloth" d="M-32 10 Q-33-27 0-29 Q32-29 33 9 L32 126 Q28 147 0 148 Q-29 145-32 126Z"/>
+        <g id="elbow-right" transform="translate(0 126)">
+          <path id="arm-lower-right-art" class="cloth" d="M-32-13 Q-22-24 0-24 Q25-24 32-12 L33 84 Q32 109 0 114 Q-32 110-33 87Z"/>
+          <g id="wrist-right" transform="translate(0 105)">
+            <path id="hand-outline-right" class="skin outline" d="M-19-4 L18-4 Q19 13 25 27 Q31 39 30 47 Q29 53 24 51 Q20 48 16 40 Q17 60 13 75 Q11 82 6 80 Q2 78 4 70 Q4 84-2 85 Q-8 86-10 77 Q-11 86-17 82 Q-22 78-23 69 Q-29 67-31 55 Q-34 42-29 30Z"/>
+            <path id="hand-lines-right" class="line" d="M4 70 Q6 57 3 44 M-10 77 Q-14 61-13 46 M-23 69 Q-25 57-23 45"/>
+          </g>
+          <path id="arm-cuff-right-art" class="rib outline" d="M-29 91 Q0 100 29 90 L27 111 Q0 122-27 112Z"/>
+        </g>
+      </g>
+      <g id="shoulder-left" transform="translate(74 -251) rotate(-12)" filter="url(#limb-outline)">
+        <path id="arm-upper-left-art" class="cloth" d="M-33 9 Q-32-29 0-29 Q33-27 32 10 L32 126 Q29 145 0 148 Q-28 147-32 126Z"/>
+        <g id="elbow-left" transform="translate(0 126)">
+          <path id="arm-lower-left-art" class="cloth" d="M-32-12 Q-25-24 0-24 Q22-24 32-13 L33 87 Q32 110 0 114 Q-32 109-33 84Z"/>
+          <g id="wrist-left" transform="translate(0 105)">
+            <g transform="scale(-1 1)">
+              <path id="hand-outline-left" class="skin outline" d="M-19-4 L18-4 Q19 13 25 27 Q31 39 30 47 Q29 53 24 51 Q20 48 16 40 Q17 60 13 75 Q11 82 6 80 Q2 78 4 70 Q4 84-2 85 Q-8 86-10 77 Q-11 86-17 82 Q-22 78-23 69 Q-29 67-31 55 Q-34 42-29 30Z"/>
+              <path id="hand-lines-left" class="line" d="M4 70 Q6 57 3 44 M-10 77 Q-14 61-13 46 M-23 69 Q-25 57-23 45"/>
+            </g>
+          </g>
+          <path id="arm-cuff-left-art" class="rib outline" d="M-29 90 Q0 100 29 91 L27 112 Q0 122-27 111Z"/>
+        </g>
+      </g>
+      <path class="cloth outline" d="M-64-275 Q-82-263-85-229 L-78-160-85-62 Q-93-28-76-9 L-75 11 Q0 31 75 11 L76-9 Q93-28 85-62 L78-160 85-229 Q82-263 64-275Z"/>
+      <path class="rib outline" d="M-77-16 Q0 3 77-16 L76 10 Q0 30-76 10Z"/>
+      <path class="line" d="M-39-100 Q-41-75-57-56 L-55-35 M39-100 Q48-78 54-57 L52-35 M-28-100Q0-96 31-101"/>
+      <path class="rib outline" d="M-66-264 Q-98-283-72-306 Q-82-330-46-343 Q-7-355 37-341 Q77-337 77-307 Q87-278 48-259Z"/>
+      <path fill="#555d48" class="outline" d="M-55-316 Q-18-337 33-322 L47-280 0-256Z"/>
+      <g id="neck" transform="translate(0 -307)">
+        <path class="skin outline" d="M-23-49 L-25 8 Q-6 32 24 10 L21-48Z"/>
+        <path fill="#fffdf4" class="outline" d="M-27 10 Q0 35 28 11 L0 42Z"/>
+        <g id="head" transform="translate(0 -1)">
+        <g id="head-art" transform="translate(0 -78)">
+          <g id="hair-back">
+            <path class="hair outline" d="M-64 9 Q-91-39-72-65 L-84-65-65-88-76-92-45-103-41-123-27-106 Q0-136 25-117 L51-120 43-105 75-112 65-91 86-87 68-70 Q88-45 67-4 L59 36-58 36Z"/>
+          </g>
+          <g id="ears" class="skin outline">
+            <path d="M-56-5 Q-83-19-80 8 Q-77 31-57 28Z"/>
+            <path d="M57-6 Q79-15 76 10 Q75 29 57 27Z"/>
+            <path class="line" d="M-69 4Q-78-3-73 13 M66 4Q74-2 68 15"/>
+          </g>
+          <path id="head-shape" class="skin outline" d="M-58-56 Q-17-87 38-63 Q64-51 61-12 L57 36 Q51 66 19 82 Q4 89-12 81 Q-47 69-57 36 L-64-4Z"/>
+          <g id="face-neutral">
+            <use href="#neutral-features"/>
+            <path class="line" d="M-14 46Q2 51 23 47"/>
+          </g>
+          <g id="face-happy" style="display:none">
+            <path class="line" d="M-45-5 Q-30-23-15-5 M18-5 Q34-22 48-4 M-47-29Q-31-39-15-29 M18-29Q33-37 47-27 M7-14L9 12Q18 20 5 24"/>
+            <path fill="#6e3932" class="outline" d="M-20 37 Q3 45 29 36 Q22 65 5 66 Q-13 63-20 37Z"/>
+            <path fill="#fffdf6" d="M-16 40 Q5 47 25 40 L20 48Q1 54-13 47Z"/>
+          </g>
+          <g id="face-talk" style="display:none">
+            <use href="#neutral-features"/>
+            <ellipse cx="5" cy="48" rx="12" ry="16" fill="#6e3932" class="outline"/>
+          </g>
+          <g id="hair-front">
+            <path class="hair outline" d="M-62 13 Q-74-3-70-31 L-80-18 Q-86-42-67-66 L-84-58 Q-85-79-57-92 L-74-96-47-103-42-124-29-107 Q-7-130 14-131 L4-115 Q31-125 55-119 L49-105 Q73-106 84-116 Q84-99 68-88 L86-84 68-70 Q83-54 85-42 L64-54 68-27 55-43 Q34-48 21-67 L32-39 Q10-46-5-67 L9-39 Q-20-48-30-67 Q-30-47-46-34 L-46-51 Q-59-29-56-2Z"/>
+          </g>
+        </g>
+        </g>
+      </g>
+      <path class="cloth outline" d="M-67-292 Q-35-290-4-269 L11-252 29-271 Q62-283 72-307 Q83-279 50-259 L17-238-2-256Q-36-274-75-276"/>
+      <path class="rib outline" d="M-12-257 Q-8-260-5-254 L0-178-4-171-3-162-9-162-10-172Z M27-258 Q32-262 34-256 L42-185 39-177 39-167 33-166 32-178Z"/>
+    </g>
+  </g>
+</svg>

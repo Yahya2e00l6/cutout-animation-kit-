@@ -1,0 +1,35 @@
+{
+  "version": 3,
+  "type": "humanoid-cutout-front",
+  "source": "character.svg",
+  "sides": "Character's own left/right; left appears on the viewer's right.",
+  "joints": ["root", "pelvis", "torso", "hip-right", "knee-right", "ankle-right", "hip-left", "knee-left", "ankle-left", "shoulder-right", "elbow-right", "wrist-right", "shoulder-left", "elbow-left", "wrist-left", "neck", "head"],
+  "chains": {
+    "arm-right": ["shoulder-right", "elbow-right", "wrist-right"],
+    "arm-left": ["shoulder-left", "elbow-left", "wrist-left"],
+    "leg-right": ["hip-right", "knee-right", "ankle-right"],
+    "leg-left": ["hip-left", "knee-left", "ankle-left"]
+  },
+  "expressions": ["neutral", "happy", "talk"],
+  "hand_morph": {
+    "outline": "M-19-4 L18-4 Q19 8 23 13 Q29 19 28 26 Q27 32 22 31 Q18 30 15 24 Q17 31 13 37 Q10 43 6 41 Q2 40 3 35 Q3 43-2 43 Q-7 43-10 38 Q-11 43-16 40 Q-21 37-22 31 Q-28 29-30 22 Q-32 13-25 6Z",
+    "lines": "M4 35 Q6 29 3 24 M-10 38 Q-14 31-13 25 M-22 31 Q-25 25-23 19"
+  },
+  "motion_geometry": {
+    "upper-left": "leg-upper-left-art", "lower-left": "leg-lower-left-art",
+    "upper-right": "leg-upper-right-art", "lower-right": "leg-lower-right-art",
+    "arm-upper-left": "arm-upper-left-art", "arm-lower-left": "arm-lower-left-art", "arm-cuff-left": "arm-cuff-left-art",
+    "arm-upper-right": "arm-upper-right-art", "arm-lower-right": "arm-lower-right-art", "arm-cuff-right": "arm-cuff-right-art"
+  },
+  "layering": {
+    "forearms": {"elbow-left": "torso", "elbow-right": "torso"},
+    "legs": {"parent": "pelvis", "members": ["hip-right", "hip-left"], "cover": "pelvis-art"}
+  },
+  "attachments": {
+    "grip-right": {"joint": "wrist-right", "point": [0, 45]},
+    "grip-left": {"joint": "wrist-left", "point": [0, 45]},
+    "sole-right": {"joint": "ankle-right", "point": [-15, 70]},
+    "sole-left": {"joint": "ankle-left", "point": [15, 65]}
+  },
+  "limitations": ["Grip/sole points are initial authoring markers, not validated contact targets.", "Only one view and relaxed hands; no full turn or object transfer yet.", "Action retargeting to another character has not been tested.", "Foreground forearms are baked into generated poses; edit the original hierarchy for further posing.", "Silhouette filters may be rasterized by some SVG importers; test before changing animation software."]
+}

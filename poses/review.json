@@ -1,0 +1,15 @@
+{
+  "neutral": {"expression": "neutral", "angles": {}},
+  "arm-bend": {
+    "expression": "happy",
+    "angles": {"shoulder-left": -25, "elbow-left": -95, "wrist-left": 12, "head": -5}
+  },
+  "knee-bend": {
+    "expression": "neutral",
+    "angles": {"hip-left": -28, "knee-left": 75, "ankle-left": -47, "shoulder-right": 12, "elbow-right": 20}
+  },
+  "talk": {
+    "expression": "talk",
+    "angles": {"shoulder-left": -10, "elbow-left": -45, "wrist-left": -12, "head": 4}
+  }
+}
