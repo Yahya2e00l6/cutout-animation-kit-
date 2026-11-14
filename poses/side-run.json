@@ -1,0 +1,37 @@
+{
+  "description": "Eight construction poses, not a sampled or timed animation. The second half exchanges anatomical legs and arms; depth order does not switch.",
+  "poses": [
+    {
+      "name": "01-near-contact", "phase": "contact", "support": "right", "anchor": "standing_sole",
+      "angles": {"torso": 0, "head": 0, "hip-right": -16, "knee-right": 33, "ankle-right": -17, "hip-left": 5, "knee-left": 115, "ankle-left": -15, "shoulder-right": 59.50753362, "elbow-right": -90.47520628, "shoulder-left": -19.50753362, "elbow-left": -79.52479372}
+    },
+    {
+      "name": "02-near-compression", "phase": "compression", "support": "right", "anchor": "standing_sole",
+      "angles": {"torso": 5, "head": -5, "hip-right": -24, "knee-right": 55, "ankle-right": -31, "hip-left": 10, "knee-left": 120, "ankle-left": -25, "shoulder-right": 48.28427125, "elbow-right": -109.74873734, "shoulder-left": -8.28427125, "elbow-left": -60.25126266}
+    },
+    {
+      "name": "03-near-push-off", "phase": "push-off", "support": "right", "anchor": "toe",
+      "angles": {"torso": 1, "head": -1, "hip-right": 30, "knee-right": 8, "ankle-right": -8, "hip-left": -64, "knee-left": 113, "ankle-left": -5, "shoulder-right": 11.27427034, "elbow-right": -119.15708667, "shoulder-left": 28.72572966, "elbow-left": -50.84291333}
+    },
+    {
+      "name": "04-flight", "phase": "flight", "root_y": 555,
+      "angles": {"torso": 0, "head": 0, "hip-right": 30, "knee-right": 40, "ankle-right": 20, "hip-left": -80, "knee-left": 100, "ankle-left": -5, "shoulder-right": -10.00444279, "elbow-right": -108.14591529, "shoulder-left": 50.00444279, "elbow-left": -61.85408471}
+    },
+    {
+      "name": "05-far-contact", "phase": "contact", "support": "left", "anchor": "standing_sole",
+      "angles": {"torso": 0, "head": 0, "hip-left": -16, "knee-left": 33, "ankle-left": -17, "hip-right": 5, "knee-right": 115, "ankle-right": -15, "shoulder-left": 59.50753362, "elbow-left": -90.47520628, "shoulder-right": -19.50753362, "elbow-right": -79.52479372}
+    },
+    {
+      "name": "06-far-compression", "phase": "compression", "support": "left", "anchor": "standing_sole",
+      "angles": {"torso": 5, "head": -5, "hip-left": -24, "knee-left": 55, "ankle-left": -31, "hip-right": 10, "knee-right": 120, "ankle-right": -25, "shoulder-left": 48.28427125, "elbow-left": -109.74873734, "shoulder-right": -8.28427125, "elbow-right": -60.25126266}
+    },
+    {
+      "name": "07-far-push-off", "phase": "push-off", "support": "left", "anchor": "toe",
+      "angles": {"torso": 1, "head": -1, "hip-left": 30, "knee-left": 8, "ankle-left": -8, "hip-right": -64, "knee-right": 113, "ankle-right": -5, "shoulder-left": 11.27427034, "elbow-left": -119.15708667, "shoulder-right": 28.72572966, "elbow-right": -50.84291333}
+    },
+    {
+      "name": "08-flight", "phase": "flight", "root_y": 555,
+      "angles": {"torso": 0, "head": 0, "hip-left": 30, "knee-left": 40, "ankle-left": 20, "hip-right": -80, "knee-right": 100, "ankle-right": -5, "shoulder-left": -10.00444279, "elbow-left": -108.14591529, "shoulder-right": 50.00444279, "elbow-right": -61.85408471}
+    }
+  ]
+}

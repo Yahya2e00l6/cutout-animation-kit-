@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "type": "humanoid-cutout-side",
+  "source": "character.svg",
+  "facing": "right",
+  "sides": "Right limbs are near the camera; left limbs are far. Keep this depth order throughout the stride.",
+  "joints": ["root", "pelvis", "torso", "hip-right", "knee-right", "ankle-right", "hip-left", "knee-left", "ankle-left", "shoulder-right", "elbow-right", "wrist-right", "shoulder-left", "elbow-left", "wrist-left", "neck", "head"],
+  "chains": {
+    "leg-right": ["hip-right", "knee-right", "ankle-right"],
+    "leg-left": ["hip-left", "knee-left", "ankle-left"],
+    "arm-right": ["shoulder-right", "elbow-right", "wrist-right"],
+    "arm-left": ["shoulder-left", "elbow-left", "wrist-left"]
+  },
+  "expressions": ["neutral"],
+  "review": {
+    "floor": 925,
+    "standing_sole": [25, 55],
+    "toe": [75, 49],
+    "status": "Rebuilt curved side artwork. Use side_review.py for seam-free vector limb outlines; side_run.py provides an unapproved motion-review prototype."
+  }
+}

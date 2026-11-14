@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1000" viewBox="0 0 640 1000" id="hoodie-side-character" role="img" aria-labelledby="title desc">
+  <title id="title">Hoodie character — curved side-view artwork revision</title>
+  <desc id="desc">Right-facing editable profile, rebuilt against the approved side reference. Separate near and far limb chains; rounded clothing, swept hair, profile face and curled hands.</desc>
+  <defs>
+    <filter id="side-limb-outline" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="1.8" result="edge"/>
+      <feFlood flood-color="#292b25" result="ink"/>
+      <feComposite in="ink" in2="edge" operator="in" result="border"/>
+      <feMerge><feMergeNode in="border"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .outline {stroke:#292b25;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round}
+      .line {fill:none;stroke:#292b25;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+      .cloth {fill:#7d8065}
+      .far-cloth {fill:#74785e}
+      .rib {fill:#70765a}
+      .skin {fill:#edc99b}
+      .pants {fill:#505a5c}
+      .far-pants {fill:#485254}
+      .hair {fill:#403c32}
+      .sole {fill:#b6cdd0}
+      .lace {fill:none;stroke:#c5d8d9;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+      .ref-outline {stroke:#292b25;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+      .ref-line {fill:none;stroke:#292b25;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <g id="root" transform="translate(300 600)">
+    <g id="pelvis" transform="translate(0 0)">
+      <g id="hip-left" transform="translate(0 0)" filter="url(#side-limb-outline)">
+        <path id="leg-upper-left-art" class="far-pants" d="M-36-22 C-48 1-43 31-39 61 C-36 92-35 123-31 144 C-27 164-9 176 10 170 C32 166 36 151 35 135 C34 105 37 69 39 34 C42 2 35-23 15-29 Q-15-38-36-22Z"/>
+        <g id="knee-left" transform="translate(0 145)">
+          <path id="leg-lower-left-art" class="far-pants" d="M-32 0 C-32-43 32-43 32 0 C34 26 30 61 28 90 C27 113 29 133 26 151 Q24 161 14 163 Q-5 166-28 161 C-37 158-33 143-32 128 C-30 95-33 59-32 0Z"/>
+          <g id="ankle-left" transform="translate(0 158)">
+            <path class="outline" fill="#46504e" d="M-29-6 Q-7-1 20-7 Q23 6 43 13 C59 17 73 24 76 38 Q77 45 71 47 Q22 55-36 46 C-39 33-34 7-29-6Z"/>
+            <path class="sole outline" d="M45 16 Q70 20 75 37 Q57 42 36 39 Q34 27 45 16Z"/>
+            <path class="sole outline" d="M-37 39 Q17 48 76 38 L75 49 Q24 60-37 50Z"/>
+            <path class="lace" d="M17 5Q9 8 6 13 M27 9Q19 12 16 18 M37 13Q29 17 26 23"/>
+          </g>
+        </g>
+      </g>
+      <g id="hip-right" transform="translate(0 0)" filter="url(#side-limb-outline)">
+        <path id="leg-upper-right-art" class="pants" d="M-40-22 C-50 2-44 36-40 68 C-36 98-35 127-32 146 C-27 168-8 178 12 171 C33 166 39 150 37 133 C35 102 40 66 42 32 C44 0 35-23 16-29 Q-15-38-40-22Z"/>
+        <g id="knee-right" transform="translate(0 145)">
+          <path id="leg-lower-right-art" class="pants" d="M-33 0 C-33-44 33-44 33 0 C35 28 31 62 29 94 C28 117 31 136 27 152 Q24 163 14 164 Q-9 168-31 161 C-39 158-34 141-33 126 C-31 94-34 57-33 0Z"/>
+          <g id="ankle-right" transform="translate(0 158)">
+            <path class="outline" fill="#4b5553" d="M-29-6 Q-7-1 20-7 Q23 6 43 13 C59 17 73 24 76 38 Q77 45 71 47 Q22 55-36 46 C-39 33-34 7-29-6Z"/>
+            <path class="sole outline" d="M45 16 Q70 20 75 37 Q57 42 36 39 Q34 27 45 16Z"/>
+            <path class="sole outline" d="M-37 39 Q17 48 76 38 L75 49 Q24 60-37 50Z"/>
+            <path class="lace" d="M17 5Q9 8 6 13 M27 9Q19 12 16 18 M37 13Q29 17 26 23"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g id="torso" transform="translate(0 0)">
+      <g id="shoulder-left" transform="translate(42 -198)" filter="url(#side-limb-outline)">
+        <path class="far-cloth" d="M-30-13 C-42 8-34 42-32 68 Q-30 111-8 118 Q26 130 33 101 C35 80 38 48 36 20 Q34-18 12-27 Q-14-35-30-13Z"/>
+        <g id="elbow-left" transform="translate(0 96)">
+          <path class="far-cloth" d="M-31 0 C-31-42 31-42 31 0 C35 24 31 52 26 82 Q3 97-25 82 C-29 58-33 29-31 0Z"/>
+          <g id="wrist-left" transform="translate(0 87)">
+            <path class="skin outline" d="M-18-4 C-24 7-26 20-21 31 Q-17 39-10 35 Q-5 43 2 37 Q8 43 14 36 Q22 39 26 29 L27 13 Q32 7 27 0 Q22-5 17 2 Q8-10-3-9Z"/>
+            <path class="line" d="M17 2 Q10 8 14 19 Q18 24 23 18 M-10 24L-10 34 M2 26L2 36 M14 27L14 35"/>
+          </g>
+          <path class="rib outline" d="M-26 72 Q0 79 28 72 L25 89 Q2 97-24 88Z"/>
+        </g>
+      </g>
+      <g id="body-art" transform="translate(-388.5 -530.95) scale(1.85)">
+        <path class="cloth ref-outline" d="M211 151 C195 157 186 176 183 197 C180 222 172 243 176 260 Q174 273 185 277 Q207 285 232 280 C240 277 240 261 243 250 C247 227 254 203 253 184 Q253 164 239 155 Q224 148 211 151Z"/>
+        <path class="rib ref-outline" d="M178 267 Q202 280 235 275 L233 290 Q202 286 180 279Z"/>
+        <path class="ref-line" d="M231 231 Q227 247 213 250 L212 265 M210 261 Q202 260 196 257"/>
+        <path class="cloth ref-outline" d="M194 173 C183 174 181 163 187 155 Q190 151 190 147 C189 136 202 131 215 132 Q237 130 248 149 L252 166 Q236 151 222 152 Q208 152 194 173Z"/>
+      </g>
+      <g id="neck" transform="translate(66.6 -255.3)">
+        <path class="skin outline" d="M-20-49 Q-19-26-28-16 L9 14 L25-21 33-47Z"/>
+        <g id="head" transform="translate(7.4 -53.65)">
+          <g transform="scale(1.85) translate(-250 -120)">
+            <path id="head-shape" class="skin ref-outline" d="M232 76 C246 65 265 68 276 79 Q286 90 283 106 Q282 113 291 116 Q297 119 289 123 L286 125 Q284 136 280 142 C271 145 253 139 246 133 Q239 130 235 120 C223 119 220 108 223 99Z"/>
+            <g id="face-neutral">
+              <path fill="#fffdf5" class="ref-outline" d="M267 100 Q274 96 281 100 L280 110 Q273 114 268 108Z"/>
+              <path fill="#282d27" d="M276 99 Q280 99 280 103 L279 110 Q274 110 274 105 Q274 101 276 99Z"/>
+              <path fill="#403c32" d="M265 93 Q273 87 281 94 L281 97 Q272 94 265 96Z"/>
+              <path class="ref-line" d="M275 128 Q280 131 285 130"/>
+            </g>
+            <path class="hair ref-outline" d="M235 127 C220 122 208 113 204 102 Q199 92 203 83 L195 90 Q193 78 203 68 L190 73 Q193 59 208 52 L197 52 Q205 42 219 48 C214 38 219 29 228 28 Q225 38 226 43 C237 31 247 29 259 30 L248 38 Q267 33 277 37 Q290 41 299 34 Q300 45 290 50 Q300 54 309 52 Q306 62 296 64 Q307 72 305 83 Q296 76 290 72 Q298 86 294 94 Q290 83 282 80 Q280 72 272 67 Q276 77 284 81 Q271 80 264 72 Q265 87 254 93 L252 111 Q247 108 245 101 C239 93 230 97 230 106 Q230 116 239 118Z"/>
+            <path class="skin ref-outline" d="M245 103 C239 94 231 98 230 105 Q229 115 240 119 L245 117"/>
+            <path class="ref-line" d="M241 105 Q235 100 234 106 Q234 110 239 111"/>
+          </g>
+        </g>
+      </g>
+      <g transform="translate(-388.5 -530.95) scale(1.85)">
+        <path class="cloth ref-outline" d="M199 168 Q215 151 229 156 Q245 162 250 176 L255 171 Q252 156 241 151"/>
+        <path class="rib ref-outline" d="M249 175 Q249 194 245 207 Q244 212 247 213 Q251 212 252 207 L255 177Z M256 176 L261 208 Q263 214 259 215 Q256 215 255 210 L252 178Z"/>
+      </g>
+      <g id="shoulder-right" transform="translate(25.9 -209.05)" filter="url(#side-limb-outline)">
+        <path class="cloth" d="M-32-16 C-44 2-40 37-34 69 Q-34 107-16 119 Q13 136 32 112 C40 99 38 68 38 41 Q41 9 25-18 Q-1-36-32-16Z"/>
+        <g id="elbow-right" transform="translate(0 108)">
+          <path class="cloth" d="M-33 0 C-33-44 33-44 33 0 C37 21 34 53 28 86 Q4 100-27 86 C-31 66-35 28-33 0Z"/>
+          <g id="wrist-right" transform="translate(0 92)">
+            <path class="skin outline" d="M-19-4 C-25 7-27 21-22 33 Q-18 41-11 37 Q-6 45 2 39 Q9 45 15 38 Q23 41 27 31 L28 14 Q33 8 28 1 Q23-5 18 2 Q8-11-3-10Z"/>
+            <path class="line" d="M18 2 Q11 8 15 20 Q19 25 24 19 M-11 25L-11 36 M2 28L2 38 M15 29L15 37"/>
+          </g>
+          <path class="rib outline" d="M-28 77 Q0 85 29 77 L27 95 Q1 103-26 94Z"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
