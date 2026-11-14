@@ -1,0 +1,21 @@
+{
+  "description": "Decoded RGB hashes of saved right v04 / left v01 preview PNGs, not freshly generated expectations. Requires the reference Cairo/librsvg/font environment. Intentional appearance changes require review before updating these hashes.",
+  "right": {
+    "0": "49272aa647cb558988a67b8cc48542f7a867b01b1f7db0168475c556f3d75d9f",
+    "3": "745e1fa90f461904a00839e9ef0d29900639460547ccf240f9cbfcdb1d7fca80",
+    "5": "57f92d740759abeb1c22500516559727ee6166e138e75cd13fc8dab5a457e7f7",
+    "7": "61b9de9a573092fb42d1c2acafe65d31bf4f699d62e454938ef40faf39beffe7",
+    "9": "baa81a29c4c1d0b37be8e7ef918665c17e6e364bce240aa3277f81b618acf272",
+    "14": "a253f2e57df77d9f7c7288a4da7b97d5dded41ab4a628392a7fd1c7680a62676",
+    "18": "f265175c16b3608460e730bb0463c29793bce108fdd3918458f3e93e7306b63e"
+  },
+  "left": {
+    "0": "dc50b8211a27bab537d9de44926119ab53e1fb72a857ed553c332edee7a4c01e",
+    "3": "6a1d9e197644cd56a8d704b3d0c36f2940bbffbed4f6b7c545f1c489ff342c4c",
+    "5": "ab343e5f8d3137a46c72847e83c9ec20dbbf03f53a0d7a88dded848fcfdb8c39",
+    "7": "0d0bf3d9197cbff5d34a24138b9726b1db4b4e6443a36eb728547bccebd3bc05",
+    "9": "7f36dacc5d38e7f96aa2d74b25285809c5140046e6b3cb560db595b37c99494d",
+    "14": "5e94b09f579a951c54db0613c06e7e19a710b51f810785650b216747e9a42839",
+    "18": "2b098b0a3b5e76cfbceb4072fe33ae7a939aaf966ad077458df29faab698f392"
+  }
+}

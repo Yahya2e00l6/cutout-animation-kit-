@@ -1,0 +1,5 @@
+{
+  "description": "v01 side-run samples before the sole-measurement and arm-timing correction. Root curve, legs, torso and head must stay unchanged; rendered root height may change to fix ground clearance.",
+  "non_arm_sample_sha256": "c0df5f886932f30cfaaf283ac27fca4c829890966b8b6520f488db16a8b893bb",
+  "artwork_sha256": "ba0f87dd9879523275873f723d099696a3e597ed821ee4d6baf6b92123fe48f6"
+}

@@ -45,6 +45,112 @@ checked pixel-for-pixel against the approved v02 PNGs when packaged. A test
 locks the 120 motion states without depending on ignored render files.
 The existing walk/jump/run demo and source artwork are unchanged.
 
+## Side-view run construction
+
+`characters/hoodie-side/` is separate, right-facing profile artwork inspired by
+the approved side-view reference appearance. It reuses the pose loader, not the
+front-view leg projection or motion adapter. Near/right limbs always stay in
+front of far/left limbs; the limbs exchange their poses halfway through the
+stride, not their depth order.
+
+Review the eight editable construction poses:
+
+```sh
+python3 tools/side_review.py --png --out renders/side-run/rig/v01
+```
+
+Open `review-sheet.png` or `review-sheet.svg` in that output directory. Choose
+a new directory for another review. The source SVG has a transparent background;
+the review adds a ground guide. `poses/side-run.json` contains contact,
+compression, push-off, and flight poses for each leg. Support poses align an
+authored shoe marker with the guide; those markers are not raster-calibrated
+shoe-contact guarantees.
+
+These are **construction poses for visual review**, not an approved reusable
+action. The front `reference-run` action is unchanged. The side-rig tests check
+nesting, limb exchange, arm opposition,
+depth order, support markers, flight clearance, and unclipped raster previews.
+
+### Five-second side-run motion preview
+
+```sh
+python3 tools/side_run.py --out renders/side-run/motion/v02
+TMPDIR=/tmp/opencode python3 tools/encode_sequence.py --dir renders/side-run/motion/v02/frames --pattern 'frame_%04d.png' --fps 30 -o renders/side-run/motion/v02/side-run.mp4 --json
+```
+
+`motions/side-run-preview.json` sets 5 seconds, 30 fps, 1280 × 720, and eight
+full stride cycles. `tools/side_run.py` interpolates the revised construction
+angles with periodic shape-preserving cubics and retains the side review's
+vector limb outlines. The v02 correction keeps the artwork, leg angles, head,
+torso, and authored root curve unchanged. Push-off/flight arms now oppose the
+legs, rather than continuing to swing on the same side.
+
+Opaque pixels from each rotated shoe are measured at 4× resolution to correct
+vertical penetration. Ink bounds only size the calibration crop: their empty
+corners are not sole contacts. Independent full-canvas raster tests compare
+predicted clearances with actual shoe pixels throughout the five-second clip,
+and check the previously floating stance frames. Other tests cover arm–leg
+opposition at the keys and between them, plus untouched motion channels. This
+does **not** lock horizontal foot contact or prove natural motion; foot slip,
+arm timing, bounce, and stance transitions need playback review. No travel or
+standing transitions are implemented. The output remains an unapproved motion
+prototype, separate from the front action. Existing output folders are refused.
+
+### Left-facing side run
+
+Use the same corrected motion facing the other direction:
+
+```sh
+python3 tools/side_run.py --facing left --out renders/side-run-left/motion/v01
+TMPDIR=/tmp/opencode python3 tools/encode_sequence.py --dir renders/side-run-left/motion/v01/frames --pattern 'frame_%04d.png' --fps 30 -o renders/side-run-left/motion/v01/side-run-left.mp4 --json
+```
+
+`--facing left` (or `"facing": "left"` in the config) reflects only the
+character around the canvas centre. Ground, labels and time order are not
+mirrored. It shares the right-facing artwork, arm timing and sole correction;
+there is no second rig or motion sequence to maintain. Joint names remain in
+the source rig's convention. `sample()` and `pose()` stay in source coordinates;
+the facing transform is applied by `frame()`. Asymmetric character details are
+mirrored too; this is not separately drawn artwork of the other anatomical side.
+
+### Saved side-run actions for scenes
+
+The named actions **`side-run-right`** and **`side-run-left`** use the saved
+settings in [motions/side-run.json](motions/side-run.json), the side rig, and
+`poses/side-run.json`. They do not read videos, render caches, or the experimental
+`side-run-preview.json`. `tools/side_actions.py` is the Python entry point.
+
+Export transparent PNG frames for a scene, from the repository directory:
+
+```sh
+python3 tools/side_run.py --action side-run-right --duration 10 --speed 1 --clean --out renders/my-scene/run-right
+python3 tools/side_run.py --action side-run-left --duration 10 --speed 1 --clean --out renders/my-scene/run-left
+```
+
+`--clean` removes the background, ground guide, and review labels while keeping
+the actor's pose and placement. Composite these alpha PNGs over the scene;
+ordinary H.264 MP4 exports do not preserve transparency. Omit `--clean` for a
+review video sequence. Choose a new output folder each time. Durations must
+contain whole frames at 30 fps; `--speed` changes cadence, not body proportions.
+
+Scene code can keep one action instance and render any point in its loop:
+
+```python
+from tools.side_actions import load_side_action
+from tools.animate import raster
+
+run = load_side_action("side-run-left", duration=10, speed=1)
+svg, contacts = run.frame(0.5, 15, clean=True)
+raster(svg, run.config["width"], run.config["height"]).write_to_png("runner.png")
+```
+
+The SVG is standalone; composite rasterized alpha frames rather than inlining
+multiple rig SVGs with colliding IDs or style selectors. Position/scale the
+result in the scene compositor. The movement remains an in-place loop, without
+standing transitions or automatic scene travel. Another character needs a
+compatible side rig and visual review. Tests pin representative saved frame
+pixels in both directions and cover clean export, cadence, and duration.
+
 ## Review the puppet
 
 Open [character.svg](characters/hoodie/character.svg) in a browser or Inkscape.
