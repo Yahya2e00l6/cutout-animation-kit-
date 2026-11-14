@@ -1,0 +1,12 @@
+{
+  "duration": 5,
+  "fps": 30,
+  "width": 1280,
+  "height": 720,
+  "scale": 0.62,
+  "floor": 650,
+  "cycle": 0.625,
+  "arm_cycle": {"phase": 0.025, "shoulder_center": 20, "shoulder_amplitude": 40, "elbow_center": -85, "elbow_amplitude": -35},
+  "key_phases": [0, 0.10, 0.26, 0.36, 0.5, 0.60, 0.76, 0.86],
+  "status": "Saved reusable side run. In-place loop; no standing transitions or horizontal foot locking."
+}
