@@ -21,6 +21,16 @@ TMPDIR=/tmp/opencode npm run scene -- export ../scenes/examples/side-run-across.
 See the engine guide for dependencies and installation. Screen travel currently
 has no horizontal foot locking; successful export is not natural-motion approval.
 
+### Author scenes with an AI agent
+
+The project-local [cutout-scene skill](.opencode/skills/cutout-scene/SKILL.md)
+teaches an agent to create scene JSON, validate, export, and inspect it without
+writing custom animation scripts. Work inside `cutout-animation-kit/` and invoke
+`@cutout-scene` in OpenCode, or have another agent read that file directly.
+The [two-runner example](scenes/examples/two-runners.json) uses the existing
+right/left actions, scaling, cadence, and draw order. It is a composition test,
+not two newly drawn characters or a physical collision simulation.
+
 ## Reuse the approved run
 
 `reference-run` preserves the user-approved

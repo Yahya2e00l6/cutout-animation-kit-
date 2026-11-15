@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "output": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "duration": 4
+  },
+  "stage": {
+    "background": "#edf2ef",
+    "groundY": 620
+  },
+  "actors": [
+    {
+      "id": "runner-right",
+      "character": "hoodie",
+      "view": "side-right",
+      "scale": 0.7
+    },
+    {
+      "id": "runner-left",
+      "character": "hoodie",
+      "view": "side-left",
+      "scale": 0.65
+    }
+  ],
+  "clips": [
+    {
+      "actor": "runner-right",
+      "action": "side-run-right",
+      "start": 0,
+      "duration": 4,
+      "speed": 1,
+      "travel": {
+        "from": [140, 620],
+        "to": [1140, 620]
+      }
+    },
+    {
+      "actor": "runner-left",
+      "action": "side-run-left",
+      "start": 0,
+      "duration": 4,
+      "speed": 1.2,
+      "travel": {
+        "from": [1140, 620],
+        "to": [140, 620]
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { readFileSync, readdirSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -20,6 +20,20 @@ test('schema itself compiles; example validates with travel warning and 150 fram
   assert.equal(result.valid, true);
   assert.equal(result.frameCount, 150);
   assert.deepEqual(result.diagnostics.map(d => [d.code, d.path]), [['UNLOCKED_TRAVEL', '/clips/0/travel']]);
+});
+
+test('all checked-in example scenes validate and sample repeatably', () => {
+  const directory = new URL('../../scenes/examples/', import.meta.url);
+  for (const file of readdirSync(directory).filter(name => name.endsWith('.json'))) {
+    const result = loadScene(readFileSync(new URL(file, directory), 'utf8'));
+    assert.equal(result.valid, true, `${file}: ${JSON.stringify(result.diagnostics)}`);
+    for (const frame of [0, Math.floor(result.frameCount! / 2), result.frameCount! - 1]) {
+      const first = sampleFrame(result.scene!, frame);
+      sampleFrame(result.scene!, (frame + 1) % result.frameCount!);
+      assert.deepEqual(sampleFrame(result.scene!, frame), first);
+    }
+    assert.throws(() => sampleFrame(result.scene!, result.frameCount!), RangeError);
+  }
 });
 
 test('strict parsing rejects duplicate keys including escaped names and nested objects', () => {

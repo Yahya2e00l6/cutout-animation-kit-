@@ -127,8 +127,10 @@ Only the registered hoodie side-left and side-right actions are supported.
 Front actions are unchanged but not bound to this scene format yet. Travel is
 linear without horizontal foot locking; gaps hide actors and clip starts reset
 phase. Multiple actors are composited in actor-array order, last on top.
-There is no camera animation, audio, transitions, contact solver, or AI skill.
+There is no camera animation, audio, transitions, or contact solver.
 
-The next layer can be an agent skill describing these real commands. Passing
-these tests establishes validation, sampling, composition and encoding—not
-natural animation, horizontal contact locking, or likeness approval.
+The project-local [cutout-scene skill](../.opencode/skills/cutout-scene/SKILL.md)
+guides JSON authoring, validation, export, and inspection without scene-specific
+scripts. Work inside this toolkit for OpenCode to discover it; invoke it with
+`@cutout-scene`. Other agents can read the same file directly. Passing technical
+checks is not natural-motion, horizontal-contact, or likeness approval.

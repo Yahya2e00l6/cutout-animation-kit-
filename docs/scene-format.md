@@ -34,7 +34,7 @@ the output canvas, not automatically shrunk or repositioned.
 are not the current midpoint of the animated feet or the SVG's top-left.
 For the saved side action's default canvas, the anchor is `(640, 650)`:
 canvas center X and configured floor Y. This preserves authored root bob and
-vertical contact correction. The planned adapter maps source point `p` to:
+vertical contact correction. The adapter maps source point `p` to:
 
 ```text
 scenePoint = travelPosition + actor.scale * (p - sourceAnchor)
@@ -139,5 +139,6 @@ adapters are separate layers.
 
 The action bridge, isolated SVG composition, and exact-frame video export are
 implemented in `tools/render_scene.py` and `engine/src/render.ts`. The engine
-guide documents commands, resource limits, and report status. An agent skill
-can now describe this workflow. Passing technical checks is not visual acceptance.
+guide documents commands, resource limits, and report status. The project-local
+[cutout-scene skill](../.opencode/skills/cutout-scene/SKILL.md) guides JSON
+authoring and inspection. Passing technical checks is not visual acceptance.
