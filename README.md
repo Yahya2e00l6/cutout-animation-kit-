@@ -4,6 +4,23 @@ An editable 2D hoodie character reconstructed from
 [the clean reference](lastpic.jpeg) and [the parts sheet](cutoutpic.jpeg).
 This is an approximate vector reconstruction, not an automatic trace.
 
+## Draft scene format
+
+The [scene v1 contract](docs/scene-format.md) defines JSON input for a TypeScript
+scene engine, with a schema and a saved side-run example. The
+[engine package](engine/README.md) validates scenes, samples scheduling and
+placement, and exports standalone SVG/PNG frames and silent MP4s using the saved
+side actions. Existing action APIs below remain unchanged.
+
+From `engine/`, export the example to a new version directory:
+
+```sh
+TMPDIR=/tmp/opencode npm run scene -- export ../scenes/examples/side-run-across.json ../renders/scenes/side-run-across/v02
+```
+
+See the engine guide for dependencies and installation. Screen travel currently
+has no horizontal foot locking; successful export is not natural-motion approval.
+
 ## Reuse the approved run
 
 `reference-run` preserves the user-approved

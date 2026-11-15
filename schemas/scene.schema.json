@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cutout Animation Kit scene v1",
+  "description": "Draft scene contract. Structural validation alone does not establish render support or visual approval.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "output", "stage", "actors", "clips"],
+  "properties": {
+    "version": {"const": 1},
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "fps", "duration"],
+      "properties": {
+        "width": {"type": "integer", "minimum": 2, "multipleOf": 2},
+        "height": {"type": "integer", "minimum": 2, "multipleOf": 2},
+        "fps": {"const": 30},
+        "duration": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["background", "groundY"],
+      "properties": {
+        "background": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"},
+        "groundY": {"type": "number", "minimum": 0}
+      }
+    },
+    "actors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/definitions/actor"}
+    },
+    "clips": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/definitions/clip"}
+    }
+  },
+  "definitions": {
+    "point": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"type": "number"}
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "character", "view", "scale"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+        "character": {"const": "hoodie"},
+        "view": {"enum": ["side-right", "side-left"]},
+        "scale": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "clip": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor", "action", "start", "duration", "speed", "travel"],
+      "properties": {
+        "actor": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+        "action": {"enum": ["side-run-right", "side-run-left"]},
+        "start": {"type": "number", "minimum": 0},
+        "duration": {"type": "number", "exclusiveMinimum": 0},
+        "speed": {"type": "number", "exclusiveMinimum": 0},
+        "travel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["from", "to"],
+          "properties": {
+            "from": {"$ref": "#/definitions/point"},
+            "to": {"$ref": "#/definitions/point"}
+          }
+        }
+      }
+    }
+  }
+}
