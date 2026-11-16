@@ -1,7 +1,8 @@
 """Opt-in leg IK: transfer the old root-X correction into both leg chains.
 
-Feet retain planted contacts, horizontal paths and shoe rotations; an earlier
-heel-recovery arc removes the released leg's extension hold. The middle run
+Feet retain planted contacts and shoe rotations. Airborne legs release the
+stance correction before swinging forward; an earlier heel-recovery arc
+removes the released leg's extension hold. The middle run
 travels on the baseline. Short boundary ramps retain the old
 transition tangents. A small, smooth hip drop keeps both ankles
 within reach. This changes leg poses, not source artwork or saved run settings.
@@ -21,6 +22,32 @@ def smooth_positive(value, width=0.1):
     if value >= width:
         return value
     return (value + width)**2 / (4*width)
+
+
+def leg_transfer(local_phase, stance_end):
+    """C1 release/reacquisition of toe anchoring over this leg's swing."""
+    if local_phase <= stance_end:
+        return 1.0
+    if local_phase < 0.5:
+        u = (local_phase-stance_end)/(0.5-stance_end)
+        return 1-u*u*(3-2*u)
+    if local_phase <= 0.5+stance_end:
+        return 0.0
+    u = (local_phase-0.5-stance_end)/(0.5-stance_end)
+    return u*u*(3-2*u)
+
+
+def support_knee_floor(local_phase, compression, toe_off, flight):
+    """A soft support knee that extends once, then releases into recovery."""
+    def ease(u):
+        return u*u*(3-2*u)
+    if local_phase < compression:
+        return 30*ease(local_phase/compression)
+    if local_phase <= toe_off:
+        return 30-18*ease((local_phase-compression)/(toe_off-compression))
+    if local_phase < flight:
+        return 12*(1-ease((local_phase-toe_off)/(flight-toe_off)))
+    return 0.0
 
 
 class SupportRun(SideRun):
@@ -72,12 +99,15 @@ class SupportRun(SideRun):
             shift = sign * old_offset * weight / (self.actor_scale*self.config['scale'])
             targets = {}
             recovery = {}
+            leg_shifts = {}
             drop = 0.0
             for side, (upper, lower) in self.lengths.items():
                 hx, hy = world_point(posed, f'hip-{side}', (0, 0))
                 ax, ay = world_point(posed, f'ankle-{side}', (0, 0))
-                dx, dy = ax-hx+shift, ay-hy
                 local_phase = (phase - (0.5 if side == 'left' else 0)) % 1
+                leg_shift = shift*leg_transfer(local_phase, self.travel_adapter.stance_end)
+                dx, dy = ax-hx+leg_shift, ay-hy
+                leg_shifts[side] = sign*leg_shift*self.config['scale']*self.actor_scale
                 lift = 0.0
                 if self.travel_adapter.stance_end < local_phase < 0.5:
                     u = (local_phase-self.travel_adapter.stance_end)/(0.5-self.travel_adapter.stance_end)
@@ -87,6 +117,11 @@ class SupportRun(SideRun):
                 dy -= lift
                 recovery[side] = lift*self.config['scale']*self.actor_scale
                 reach = upper + lower - 0.5  # Avoid the fully straight IK singularity.
+                # A fixed near-straight radius made the planted knee lock,
+                # flex and lock again. Limit reach with a smooth support-phase
+                # knee envelope instead; ankle targets stay planted.
+                knee_floor = math.radians(weight*support_knee_floor(local_phase, *self.phases[1:4]))
+                reach = min(reach, math.sqrt(upper*upper+lower*lower+2*upper*lower*math.cos(knee_floor)))
                 if abs(dx) >= reach:
                     raise ValueError('Support-leg target exceeds horizontal reach')
                 drop += smooth_positive(dy - math.sqrt(reach*reach-dx*dx))
@@ -113,6 +148,7 @@ class SupportRun(SideRun):
                                       'remainingRootOffsetX': old_offset*(1-weight) if weight < 1 else 0.0,
                                       'hipDrop': drop*self.config['scale']*self.actor_scale,
                                       'recoveryLift': recovery,
+                                      'legOffsetX': leg_shifts,
                                       'originalGroundCorrection': original_contacts['ground_correction'],
                                       'maxJointChangeDegrees': maximum})
         return copy.deepcopy(self.solved[cache_key])

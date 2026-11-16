@@ -94,8 +94,9 @@ invalid in v1. Vertical travel is unsupported: both endpoint Y values must equal
 
 Optional `travelMode: "support-leg"` on a locked clip selects
 [leg IK with steadier middle-run body X](support-leg-travel.md). It changes both leg
-chains and may lower the hips slightly. Planted contacts and horizontal foot
-paths are retained; an earlier airborne heel lift improves recovery. It emits
+chains and may lower the hips slightly. Planted contacts are retained;
+airborne anchoring releases smoothly and a soft support knee prevents repeated
+locking. An earlier airborne heel lift improves recovery. It emits
 `SUPPORT_LEG_TRAVEL`. Saved poses and original action APIs remain unchanged;
 omit the field to retain the previous adapter. Short transfer ramps at each
 run boundary preserve the approved standing transitions.

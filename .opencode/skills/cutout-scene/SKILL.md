@@ -82,6 +82,13 @@ extension, stop scene production and plan that extension separately.
    root X, and may lower the hips slightly for reach. Disclose
    `SUPPORT_LEG_TRAVEL`, hip drop and leg-angle changes; request playback review.
    It is opt-in, not a replacement for the approved saved action.
+   Astra's revised support-leg run is the accepted general traveling-run
+   baseline. For new scenes requesting that movement, use `footLock: true`,
+   `speed: "auto"`, and `travelMode: "support-leg"`. The shared solver releases
+   airborne anchoring and keeps a soft support knee; do not recreate the older
+   hesitation in scene-specific code. Other character adaptations still need
+   their own playback approval. Keep existing legacy scenes unchanged unless
+   the author asks to upgrade them.
 6. For an existing background, read [plate registration and fitting](../../../backgrounds/README.md).
    Use `stage.image` with a registered `asset` ID and `contain`/`cover`; never
    invent file-path or URL fields. Cover crops edges and emits `BACKGROUND_CROP`.

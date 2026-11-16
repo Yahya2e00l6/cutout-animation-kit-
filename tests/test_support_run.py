@@ -66,7 +66,7 @@ class SupportRunTests(unittest.TestCase):
             self.assertGreater(weights[1], 0)
             self.assertLess(weights[1], 1)
 
-    def test_dense_mirrored_scaled_feet_preserve_stance_and_horizontal_paths_with_fixed_lengths(self):
+    def test_dense_mirrored_scaled_feet_preserve_stance_and_release_swing_with_fixed_lengths(self):
         for facing, sign in [('right', 1), ('left', -1)]:
             for speed, scale in [(0.3125, 0.5), (0.625, 1), (1.25, 1.2)]:
                 base = load_side_action(f'side-run-{facing}', speed=speed)
@@ -80,7 +80,7 @@ class SupportRunTests(unittest.TestCase):
                     old, _ = base.pose(t)
                     new = pose_character(action.tree, action.rig, key)
                     offset, _ = travel.correction(t, velocity, scale, 0)
-                    self.assertLessEqual(report['hipDrop'], 3.1*scale)
+                    self.assertLessEqual(report['hipDrop'], 5.2*scale)
                     self.assertGreaterEqual(report['hipDrop'], 0)
                     self.assertLess(report['maxJointChangeDegrees'], 34)
                     for name in original['angles']:
@@ -89,9 +89,17 @@ class SupportRunTests(unittest.TestCase):
                     for side in ['left', 'right']:
                         a = world_point(old, f'ankle-{side}', base.rig['review']['toe'])
                         b = world_point(new, f'ankle-{side}', base.rig['review']['toe'])
-                        self.assertAlmostEqual(sign*(b[0]-a[0])*base.config['scale']*scale, offset, places=6)
-                        self.assertAlmostEqual((a[1]-b[1])*base.config['scale']*scale, report['recoveryLift'][side], places=6)
                         local = (i/120 - (0.5 if side == 'left' else 0)) % 1
+                        displacement = sign*(b[0]-a[0])*base.config['scale']*scale
+                        self.assertAlmostEqual(displacement, report['legOffsetX'][side], places=6)
+                        if local <= .26:
+                            self.assertAlmostEqual(displacement, offset, places=6)
+                        elif .5 <= local <= .76:
+                            self.assertAlmostEqual(displacement, 0, places=6)
+                        else:
+                            self.assertLessEqual(abs(displacement), abs(offset)+1e-6)
+                            self.assertGreaterEqual(displacement*offset, -1e-6)
+                        self.assertAlmostEqual((a[1]-b[1])*base.config['scale']*scale, report['recoveryLift'][side], places=6)
                         if local <= .26 or local >= .5:
                             self.assertAlmostEqual(report['recoveryLift'][side], 0, places=6)
                         self.assertLessEqual(report['recoveryLift'][side], 18.8*scale)
@@ -100,6 +108,38 @@ class SupportRunTests(unittest.TestCase):
                         self.assertAlmostEqual(math.dist(points[1], points[2]), 158, places=6)
                         old_shoe = sum(original['angles'][f'{j}-{side}'] for j in ['hip', 'knee', 'ankle'])
                         self.assertAlmostEqual(sum(key['angles'][f'{j}-{side}'] for j in ['hip', 'knee', 'ankle']), old_shoe, places=6)
+
+    def test_exchange_has_no_backward_swing_tug_or_support_knee_relock(self):
+        for facing, sign in [('right', 1), ('left', -1)]:
+            for speed, scale in [(.3125, .5), (.625, 1), (1.25, 1.2)]:
+                base = load_side_action(f'side-run-{facing}', speed=speed)
+                action = SupportRun(base, sign*STRIDE*speed/.625*scale, scale)
+                for support, swing, offset in [('right', 'left', 0), ('left', 'right', .5)]:
+                    # The reference held the airborne ankle back another 36 px
+                    # over these four intervals, despite steady body travel.
+                    positions = []
+                    for phase in [0, 1/30, 2/30, 3/30, 4/30]:
+                        posed, _ = action.pose((offset+phase)*base.config['cycle'])
+                        hip = world_point(posed, f'hip-{swing}', (0, 0))
+                        ankle = world_point(posed, f'ankle-{swing}', (0, 0))
+                        positions.append((ankle[0]-hip[0])*base.config['scale'])
+                    self.assertTrue(all(b >= a-.1 for a, b in zip(positions, positions[1:])), positions)
+                    knees = [action.sample((offset+p)*base.config['cycle'])['angles'][f'knee-{support}']
+                             for p in [4/30, 5/30, 6/30, 7/30, 8/30]]
+                    self.assertTrue(all(b < a for a, b in zip(knees, knees[1:])), knees)
+                    self.assertGreater(min(knees), 10)
+
+    def test_swing_transfer_joins_have_continuous_ankle_velocity(self):
+        base = load_side_action('side-run-right', speed=.625)
+        action = SupportRun(base, STRIDE, 1)
+        h = 1e-5
+        for seam in [.26, .5, .76, 1]:
+            poses = [action.pose(seam+d)[0] for d in [-h, 0, h]]
+            for side in ['left', 'right']:
+                points = [world_point(p, f'ankle-{side}', (0, 0)) for p in poses]
+                for axis in [0, 1]:
+                    a, b, c = [p[axis] for p in points]
+                    self.assertLess(abs((b-a)/h-(c-b)/h), 2, (seam, side, axis))
 
     def test_released_knee_folds_promptly_instead_of_holding_near_full_extension(self):
         for facing, sign in [('right', 1), ('left', -1)]:
@@ -159,10 +199,10 @@ class SupportRunTests(unittest.TestCase):
                         for joint in ['root', 'head', 'ankle-left', 'ankle-right']:
                             for a, b in zip(delivered_point(svg, joint, (0, 0)), delivered_point(before, joint, (0, 0))):
                                 self.assertAlmostEqual(a, b, places=6)
-                    h = 1e-4
+                    h = 1e-5
                     for seam in [0.5, 1, 1+duration, 1.5+duration]:
                         svgs = [frame(renderer, actor_at(seam+d, facing, scale, duration))[0] for d in [-h, 0, h]]
-                        for joint in ['root', 'head', 'wrist-left', 'wrist-right']:
+                        for joint in ['root', 'head', 'wrist-left', 'wrist-right', 'ankle-left', 'ankle-right']:
                             a, b, c = [delivered_point(svg, joint, (0, 0))[0] for svg in svgs]
                             self.assertLess(abs((b-a)/h-(c-b)/h), 1.5, (facing, scale, duration, seam, joint))
 

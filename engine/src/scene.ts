@@ -219,7 +219,7 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
       if (clip.speed === 'auto') speed = matched;
       else if (matched && Math.abs(speed / matched - 1) > 0.05) error('CADENCE_MISMATCH', `${path}/speed`, 'Explicit cadence differs from travel-matched cadence by more than 5%; use speed: "auto".');
       diagnostics.push(clip.travelMode === 'support-leg'
-        ? { severity: 'warning', code: 'SUPPORT_LEG_TRAVEL', path: `${path}/travelMode`, message: 'Experimental leg IK steadies middle-run body X, preserves stance and horizontal foot paths, and lifts the released heel earlier. Leg poses and recovery timing need review.' }
+        ? { severity: 'warning', code: 'SUPPORT_LEG_TRAVEL', path: `${path}/travelMode`, message: 'Experimental leg IK steadies middle-run body X, preserves stance, releases swing-leg anchoring, and lifts the released heel earlier. Leg poses and recovery timing need review.' }
         : { severity: 'warning', code: 'POSE_PRESERVING_TRAVEL', path: `${path}/footLock`, message: 'Experimental toe-X anchoring alters body travel, not poses. Shoe roll and natural motion still need visual review.' });
     }
     if (clip.transitions && runDuration > 0) {

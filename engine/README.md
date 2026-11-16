@@ -145,7 +145,8 @@ Blends match joint velocity at the run joins while retaining the accepted
 standing pose and middle run. Grounding and natural acting still need review.
 Optional [support-leg travel](../docs/support-leg-travel.md) keeps middle-run body X
 linear by solving both leg chains while retaining planted contacts and horizontal
-foot paths. Released heels lift earlier to avoid an extension hold. Short
+stance foot paths. Airborne anchoring releases smoothly, the support knee
+extends without repeated locking, and released heels lift earlier. Short
 boundary ramps retain the approved standing transitions. It
 changes leg poses and may lower the hips slightly; it is not the default.
 There is no camera animation, audio, force-based physics, or general rig solver.

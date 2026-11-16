@@ -216,5 +216,26 @@ test('support-leg bridge reduces root-X correction while exporting changed legs'
     assert.equal(contacts[10].actors[0].horizontalLock.rootOffsetX, 0);
     assert(contacts[9].actors[0].sourceContacts.supportIK.recoveryLift.right > 2);
     assert.equal(contacts[2].actors[0].sourceContacts.supportIK.mode, 'support-leg');
+    // Check the final exported joint transforms, not only solver metadata.
+    // In opposite stance, the airborne right leg must swing forward freely
+    // and the supporting left knee must extend without locking twice.
+    const angle = (frame: number, joint: string) => {
+      const svg = readFileSync(join(output, `svg/frame_${String(frame).padStart(4, '0')}.svg`), 'utf8');
+      const encoded = svg.match(/href="data:image\/svg\+xml;base64,([^"]+)/)![1];
+      const actorSvg = Buffer.from(encoded, 'base64').toString();
+      const match = actorSvg.match(new RegExp(`id="${joint}"[^>]*transform="[^"]*rotate\\(([-+\\d.eE]+)\\)`));
+      assert(match, `Missing exported joint: ${joint}`);
+      return Number(match[1]);
+    };
+    const swing = [15, 16, 17, 18, 19].map(frame => {
+      const hip = angle(frame, 'hip-right') * Math.PI / 180;
+      const knee = angle(frame, 'knee-right') * Math.PI / 180;
+      assert(Math.abs(contacts[frame].actors[0].sourceContacts.supportIK.legOffsetX.right) < 1e-9);
+      return -145 * Math.sin(hip) - 158 * Math.sin(hip + knee);
+    });
+    assert(swing.slice(1).every((x, i) => x >= swing[i] - .1), JSON.stringify(swing));
+    const knees = [19, 20, 21, 22, 23].map(frame => angle(frame, 'knee-left'));
+    assert(knees.slice(1).every((x, i) => x < knees[i]), JSON.stringify(knees));
+    assert(Math.min(...knees) > 10);
   } finally { rmSync(dir, { recursive: true }); }
 });
