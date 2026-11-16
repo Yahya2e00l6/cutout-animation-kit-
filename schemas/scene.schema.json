@@ -24,6 +24,14 @@
       "required": ["background", "groundY"],
       "properties": {
         "background": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"},
+        "image": {
+          "type": "object", "additionalProperties": false,
+          "required": ["asset", "fit"],
+          "properties": {
+            "asset": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+            "fit": {"enum": ["contain", "cover"]}
+          }
+        },
         "groundY": {"type": "number", "minimum": 0}
       }
     },

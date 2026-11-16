@@ -31,7 +31,7 @@ characters. Left-facing art is mirrored. Front actions exist outside this scene
 format; do not silently replace a requested front view with a side view. Rear
 art is unapproved and not registered.
 
-Supported: fixed camera, solid background, horizontal linear travel, scale,
+Supported: fixed camera, solid or registered-image background, horizontal linear travel, scale,
 cadence, timed clips, and actor-array draw order (last on top).
 Optional experimental stand → run → stop: read
 [the transition guide](../../../docs/standing-transitions.md) before using
@@ -39,7 +39,7 @@ Optional experimental stand → run → stop: read
 standing pose with velocity-matched run joins, not force-based acceleration. Preserve `TRANSITION_TRIAL`
 and request playback review. Do not silently adjust distance to fit touchdown.
 Unsupported: standalone standing/idle, walk, jump, turns, view changes, expressions,
-dialogue/audio, props, drawn scenery, camera moves, physical collision avoidance,
+dialogue/audio, props, newly drawn scenery, camera moves, physical collision avoidance,
 arbitrary action blends, and full sole/IK locking. Say what is missing and ask
 whether a supported alternative is acceptable. Do not silently drop a story beat
 or invent action names/fields. If the request explicitly asks for an engine
@@ -72,6 +72,12 @@ extension, stop scene production and plan that extension separately.
    `POSE_PRESERVING_TRAVEL` warning and measured root offset. Do not silently
    enable it, claim full sole pinning, or change travel/duration to bypass a
    cadence-range error without agreement.
+6. For an existing background, read [plate registration and fitting](../../../backgrounds/README.md).
+   Use `stage.image` with a registered `asset` ID and `contain`/`cover`; never
+   invent file-path or URL fields. Cover crops edges and emits `BACKGROUND_CROP`.
+   Inspect actual ground/perspective before a full render. The DICE courtyard
+   example is explicitly a hoodie-runner background test, not a DICE cast/story
+   shot. Do not silently substitute this runner for a requested DICE character.
 
 Do not edit `samples.json` or generated SVGs to repair a scene. They are outputs,
 not the authoring source. Use the scene JSON, then render to a new directory.

@@ -16,6 +16,7 @@ from tools.preview import SVG
 from tools.side_actions import load_side_action
 from tools.travel_run import TravelRun
 from tools.side_transition import TransitionPose
+from tools.background import Backgrounds
 
 
 class SceneRenderer:
@@ -25,6 +26,7 @@ class SceneRenderer:
         self.loader = loader
         self.actions = {}
         self.travel = {}
+        self.backgrounds = Backgrounds()
 
     def frame(self, sample, number):
         width, height = sample['output']['width'], sample['output']['height']
@@ -35,6 +37,16 @@ class SceneRenderer:
         ET.SubElement(canvas, f'{{{SVG}}}rect', {
             'width': '100%', 'height': '100%', 'fill': sample['stage']['background'],
         })
+        plate = sample['stage'].get('plate')
+        if plate:
+            if plate['fit'] not in ('cover', 'contain'):
+                raise ValueError('Unsupported background fit')
+            data = self.backgrounds.image(plate)
+            ET.SubElement(canvas, f'{{{SVG}}}image', {
+                'id': 'stage-background', 'width': str(width), 'height': str(height),
+                'preserveAspectRatio': 'xMidYMid ' + ('slice' if plate['fit'] == 'cover' else 'meet'),
+                'href': data, '{http://www.w3.org/1999/xlink}href': data,
+            })
         records = []
         for actor in sample['actors']:
             key = actor['clipIndex']

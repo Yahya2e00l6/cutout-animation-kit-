@@ -29,6 +29,10 @@ review; it does not change the saved actions.
 
 ### Author scenes with an AI agent
 
+[Registered background plates](backgrounds/README.md) support contain/cover fitting.
+The DICE courtyard example is a technical background test with the hoodie runner,
+not a finished DICE story shot or an adapter for its cast.
+
 The project-local [cutout-scene skill](.opencode/skills/cutout-scene/SKILL.md)
 teaches an agent to create scene JSON, validate, export, and inspect it without
 writing custom animation scripts. Work inside `cutout-animation-kit/` and invoke

@@ -92,6 +92,10 @@ calls `frame(localTime, frameNumber, clean=True)`, and embeds each actor SVG as
 an SVG image data URI. Each image is an isolated SVG document, preventing IDs,
 gradient references, and global CSS from colliding between actors. The outer
 SVG applies placement and scale, draws the background, and clips to the canvas.
+An optional [registered PNG/JPEG plate](../backgrounds/README.md) is embedded
+behind the actors with contain/cover fitting. The bridge verifies and caches it
+once per render; reports retain its asset ID and fit. No image means the previous
+solid-color behavior.
 The existing librsvg rasterizer produces PNGs from that composite SVG.
 
 An export directory contains:
@@ -126,7 +130,8 @@ TMPDIR=/tmp/opencode python3 ~/.config/opencode/skills/ffmpeg/scripts/look.py ..
 ## Boundaries
 
 Only the registered hoodie side-left and side-right actions are supported.
-Front actions are unchanged but not bound to this scene format yet. Travel is
+Front actions are unchanged but not bound to this scene format yet. Registered
+background images are supported; this does not register the DICE cast. Travel is
 linear unless experimental root correction is enabled; gaps hide actors and clip starts reset
 phase. Multiple actors are composited in actor-array order, last on top.
 The [opt-in travel adapter](../docs/travel-foot-lock.md) uses `footLock: true`

@@ -24,6 +24,12 @@ The first adapter targets 30 fps, matching the saved action tools. The origin is
 the top-left; X increases rightward and Y downward. The camera is fixed.
 `background` is an opaque six-digit hex color. `groundY` is a placement guide,
 not a visible line or a physics surface.
+Optional `stage.image` selects a [registered background plate](../backgrounds/README.md)
+by `asset` ID and `fit` (`contain` or `cover`). It draws behind all actors.
+Contain preserves the whole image with solid-color margins; cover crops to fill
+and reports `BACKGROUND_CROP`. Paths and URLs are not scene inputs. The sampler
+includes a hash-pinned `stage.plate` descriptor for the rendering bridge; this
+internal output field is not accepted in authoring JSON.
 
 Each actor has a unique `id`, registered `character`, fixed `view`, and positive
 `scale`. Scale 1 preserves the saved action's rendered size, including its

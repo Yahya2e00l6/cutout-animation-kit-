@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { Ajv } from 'ajv';
 import { parseTree, type Node as JsonNode, type ParseError } from 'jsonc-parser';
+import { loadBackground, type BackgroundImage, type BackgroundPlate } from './background.ts';
 
 export const toolkitRoot = fileURLToPath(new URL('../../', import.meta.url));
 const schema = JSON.parse(readFileSync(new URL('../../schemas/scene.schema.json', import.meta.url), 'utf8'));
@@ -25,7 +26,7 @@ export type Clip = {
 export type Scene = {
   version: 1;
   output: { width: number; height: number; fps: 30; duration: number };
-  stage: { background: string; groundY: number };
+  stage: { background: string; groundY: number; image?: BackgroundImage };
   actors: Actor[]; clips: Clip[];
 };
 type ScheduledClip = Omit<Clip, 'speed'> & { speed: number; index: number; startFrame: number; durationFrames: number };
@@ -33,6 +34,7 @@ type Plan = {
   output: Scene['output']; stage: Scene['stage']; actors: Actor[];
   clips: ScheduledClip[]; frameCount: number; sourceAnchor: Point;
   warnings: Diagnostic[];
+  plate?: BackgroundPlate;
 };
 // Plans are opaque snapshots. Only a successful validator can produce one.
 const plans = new WeakMap<PreparedScene, Plan>();
@@ -102,6 +104,15 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     return count;
   };
   const frameCount = frames(scene.output.duration, '/output/duration', true);
+  let plate: BackgroundPlate | undefined;
+  if (scene.stage.image) {
+    try {
+      plate = loadBackground(scene.stage.image, root);
+      if (plate.fit === 'cover' && Math.abs(plate.width / plate.height - scene.output.width / scene.output.height) > 1e-6) {
+        diagnostics.push({ severity: 'warning', code: 'BACKGROUND_CROP', path: '/stage/image/fit', message: 'Cover centers and crops the background to fill the output; inspect the lost edges.' });
+      }
+    } catch (cause) { error('BACKGROUND_ASSET', '/stage/image/asset', String(cause)); }
+  }
   if (!Number.isSafeInteger(scene.output.width) || !Number.isSafeInteger(scene.output.height)) {
     error('NUMERIC_RANGE', '/output', 'Dimensions must be safe integers.');
   }
@@ -224,7 +235,7 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
   if (diagnostics.some(item => item.severity === 'error')) return { valid: false, diagnostics };
   const prepared = prepare({
     output: scene.output, stage: scene.stage, actors: scene.actors, clips,
-    frameCount, sourceAnchor, warnings: diagnostics,
+    frameCount, sourceAnchor, warnings: diagnostics, plate,
   });
   return { valid: true, diagnostics, frameCount, scene: prepared };
 }
@@ -283,7 +294,7 @@ export function sampleScene(scene: PreparedScene, time: number) {
       transform: [actor.scale, 0, 0, actor.scale, position[0] - actor.scale * plan.sourceAnchor[0], position[1] - actor.scale * plan.sourceAnchor[1]],
     }];
   });
-  return { time, output: { ...plan.output }, stage: { ...plan.stage }, actors: visible, warnings: structuredClone(plan.warnings) };
+  return { time, output: { ...plan.output }, stage: { ...structuredClone(plan.stage), ...(plan.plate ? { plate: { ...plan.plate } } : {}) }, actors: visible, warnings: structuredClone(plan.warnings) };
 }
 
 export function sampleFrame(scene: PreparedScene, frameIndex: number) {

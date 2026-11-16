@@ -147,3 +147,24 @@ test('transition export delivers standing holds, a run and planted transition re
     assert.equal(readFileSync(join(output, 'frames/frame_0022.png')).compare(readFileSync(join(output, 'frames/frame_0023.png'))), 0);
   } finally { rmSync(dir, { recursive: true }); }
 });
+
+test('image-background export retains asset provenance and embeds the plate behind the actor', () => {
+  const dir = temp();
+  try {
+    const source = example();
+    source.output = { width: 320, height: 180, fps: 30, duration: 2/30 };
+    source.stage.groundY = 150;
+    source.stage.image = { asset: 'dice-school-courtyard', fit: 'contain' };
+    source.actors[0].scale = 0.2;
+    source.clips[0].duration = 2/30;
+    source.clips[0].travel = { from: [160, 150], to: [180, 150] };
+    const output = join(dir, 'background');
+    const report = renderScene(JSON.stringify(source), output, { encode: false });
+    assert.equal(report.status, 'frames-complete');
+    assert.deepEqual(report.background, source.stage.image);
+    const svg = readFileSync(join(output, 'svg/frame_0000.svg'), 'utf8');
+    assert(svg.indexOf('id="stage-background"') < svg.indexOf('data:image/svg+xml'));
+    assert(svg.includes('data:image/jpeg;base64,'));
+    assert(svg.includes('preserveAspectRatio="xMidYMid meet"'));
+  } finally { rmSync(dir, { recursive: true }); }
+});

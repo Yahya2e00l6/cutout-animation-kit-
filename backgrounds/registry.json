@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "assets": {
+    "dice-school-courtyard": {
+      "file": "dice-school-courtyard.jpg",
+      "width": 1376,
+      "height": 768,
+      "mime": "image/jpeg",
+      "sha256": "0b699046f2f9597a3d8c6676c0bc33dd9f48e6779d3aa63ea84fb5df87fb32de",
+      "source": "DICE/pics/background/School_courtyard_background_plate_64cfa4e5.jpg"
+    }
+  }
+}

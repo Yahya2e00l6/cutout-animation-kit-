@@ -9,6 +9,7 @@ export type RenderReport = {
   status: 'rendering' | 'frames-complete' | 'complete' | 'failed';
   frameCount: number; output: Scene['output']; warnings: Diagnostic[];
   audio: 'none'; limitations: string[]; render?: unknown; video?: string; error?: string;
+  background?: Scene['stage']['image'];
 };
 const timeout = 600_000;
 
@@ -35,6 +36,7 @@ export function renderScene(text: string, output: string, options: RenderOptions
   const report: RenderReport = {
     status: 'rendering', frameCount: result.frameCount!, output: first.output,
     warnings: result.diagnostics, audio: 'none',
+    ...(source.stage.image ? { background: source.stage.image } : {}),
     limitations: [source.clips.some((clip: { footLock?: boolean }) => clip.footLock)
       ? 'Experimental toe-X anchoring changes root travel; shoe roll remains.'
       : 'No horizontal foot locking or standing transitions.', 'Technical success is not motion or likeness approval.'],
