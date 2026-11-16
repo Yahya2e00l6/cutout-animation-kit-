@@ -172,13 +172,13 @@ class FrontStudy:
         ankle = pose[side]['ankle']; forward = pose[side]['foot_forward']
         right = unit(cross((0, 1, 0), forward)); up = unit(cross(forward, right))
         def pt(x, y, z): return add(ankle, add(times(right, x), add(times(up, y), times(forward, z))))
-        # Authored 3D shoe silhouette, not a stretched standing shoe. Toe, heel,
-        # top and sole faces remain opaque and reorder by actual depth.
+        # Stable v03 contact envelope. Rounded visible sneaker surfaces are
+        # drawn separately; changing artwork must not silently change grounding.
         vertices = [pt(-22, -8, -17), pt(22, -8, -17), pt(34, -16, 70), pt(-34, -16, 70),
                     pt(-24, -35, -20), pt(24, -35, -20), pt(35, -35, 74), pt(-35, -35, 74)]
         return vertices, pt
 
-    def limb_path(self, start, end, wa, wb):
+    def limb_path(self, start, end, wa, wb, cap_start=.55, cap_end=.55):
         a = self.project(start); b = self.project(end)
         dx, dy = b[0]-a[0], b[1]-a[1]
         length = math.hypot(dx, dy)
@@ -188,50 +188,17 @@ class FrontStudy:
         wa *= a[2]; wb *= b[2]
         def pt(p, n, along=0): return f'{p[0]+nx*n+ux*along:.3f},{p[1]+ny*n+uy*along:.3f}'
         return (f'M {pt(a, wa)} C {pt(a, wa*1.03, length*.3)} {pt(b, wb*1.02, -length*.25)} {pt(b, wb)} '
-                f'Q {pt(b, 0, wb*.55)} {pt(b, -wb)} '
+                f'Q {pt(b, 0, wb*cap_end)} {pt(b, -wb)} '
                 f'C {pt(b, -wb*1.02, -length*.25)} {pt(a, -wa*1.03, length*.3)} {pt(a, -wa)} '
-                f'Q {pt(a, 0, -wa*.55)} {pt(a, wa)} Z')
+                f'Q {pt(a, 0, -wa*cap_start)} {pt(a, wa)} Z')
 
     def limb(self, parent, start, end, wa, wb, color, ident):
         return elt(parent, 'path', id=ident, d=self.limb_path(start, end, wa, wb), fill=color,
                    stroke='#292b25', stroke_width=2.4, stroke_linejoin='round')
 
     def foot_svg(self, parent, pose, side):
-        verts, pt = self.shoe(pose, side)
-        faces = [([0, 1, 2, 3], '#465352'), ([4, 5, 6, 7], '#aec5c8'),
-                 ([0, 1, 5, 4], '#718887'), ([1, 2, 6, 5], '#849c9e'),
-                 ([2, 3, 7, 6], '#aec5c8'), ([3, 0, 4, 7], '#849c9e')]
-        center = times(tuple(sum(v[i] for v in verts) for i in range(3)), 1/8)
-        visible = set()
-        for indices, color in sorted(faces, key=lambda f: sum(verts[i][2] for i in f[0])/len(f[0])):
-            face_center = times(tuple(sum(verts[j][i] for j in indices) for i in range(3)), 1/4)
-            normal = cross(sub(verts[indices[1]], verts[indices[0]]), sub(verts[indices[2]], verts[indices[0]]))
-            if sum(a*b for a, b in zip(normal, sub(face_center, center))) < 0:
-                normal = times(normal, -1)
-            if sum(a*b for a, b in zip(normal, sub((0, 420, 1800), face_center))) <= 0:
-                continue
-            visible.add(tuple(indices))
-            points = [self.project(verts[i])[:2] for i in indices]
-            # Round the projected shoe corners; the volume is a construction
-            # guide, not a box-shaped replacement for the character's sneakers.
-            def near(a, b):
-                length = math.dist(a, b)
-                amount = min(.22, 4/max(length, 1))
-                return tuple(x+(y-x)*amount for x, y in zip(a, b))
-            first = near(points[0], points[-1])
-            d = f'M {first[0]} {first[1]}'
-            for i, point in enumerate(points):
-                before, after = near(point, points[i-1]), near(point, points[(i+1)%len(points)])
-                d += f' L {before[0]} {before[1]} Q {point[0]} {point[1]} {after[0]} {after[1]}'
-            elt(parent, 'path', d=d+' Z', fill=color, stroke='#292b25', stroke_width=1.7, stroke_linejoin='round')
-        if (0, 1, 2, 3) in visible:
-            for z in (10, 27, 44):
-                a, b = self.project(pt(-17, -10-z*.08, z)), self.project(pt(17, -10-z*.08, z))
-                elt(parent, 'path', d=f'M {a[0]} {a[1]} L {b[0]} {b[1]}', fill='none', stroke='#b8cccd', stroke_width=1.5)
-        if (4, 5, 6, 7) in visible:
-            for z in (-6, 10, 27, 44, 60):
-                a, b = self.project(pt(-20, -35.2, z)), self.project(pt(20, -35.2, z))
-                elt(parent, 'path', d=f'M {a[0]} {a[1]} L {b[0]} {b[1]}', fill='none', stroke='#6d888c', stroke_width=2)
+        from tools.front_study_drawing import sneaker
+        sneaker(self, parent, pose, side)
 
     def depth(self, point, pose):
         up = pose['up']
@@ -239,25 +206,31 @@ class FrontStudy:
         return point[2]-plane
 
     def arm(self, parent, pose, side, foreground):
+        from tools.front_study_drawing import garment
         limb = pose[side]; a, b = limb['elbow'], limb['wrist']
-        if not foreground:
-            self.limb(parent, limb['shoulder'], a, 31, 29, '#85886a', 'study-upper-arm-'+side)
+        segments = [(f'study-upper-arm-{side}-{foreground}', limb['shoulder'], a, 36, 33),
+                    (f'study-forearm-{side}-{foreground}', a, b, 33, 27)]
         da, db = self.depth(a, pose), self.depth(b, pose)
-        if (da >= 0) != (db >= 0):
-            t = da/(da-db)
-            split = add(a, times(sub(b, a), t))
-            low, high = (a, split) if (da >= 0) == foreground else (split, b)
-            self.limb(parent, low, high, 29, 26, '#85886a', f'study-forearm-{side}-{foreground}')
-        elif (da >= 0) == foreground:
-            self.limb(parent, a, b, 29, 26, '#85886a', f'study-forearm-{side}-{foreground}')
+        if not foreground:
+            garment(self, parent, segments, 'study-sleeve-back-'+side, '#85886a')
+        elif da >= 0 or db >= 0:
+            low, high = a, b
+            if (da >= 0) != (db >= 0):
+                split = add(a, times(sub(b, a), da/(da-db)))
+                low, high = (a, split) if da >= 0 else (split, b)
+            clip_id = 'study-sleeve-clip-'+side
+            clip = elt(parent, 'clipPath', id=clip_id, clipPathUnits='userSpaceOnUse')
+            elt(clip, 'path', d=self.limb_path(low, high, 37, 31))
+            layer = elt(parent, 'g', clip_path=f'url(#{clip_id})')
+            garment(self, layer, segments, 'study-sleeve-front-'+side, '#85886a')
         if (db >= 0) == foreground:
             wrist = self.project(b)
             direction = self.project(add(b, times(unit(sub(b, a)), 20)))
             angle = math.degrees(math.atan2(direction[1]-wrist[1], direction[0]-wrist[0]))-90
             group = elt(parent, 'g', transform=f'translate({wrist[0]} {wrist[1]}) rotate({angle}) scale({wrist[2]})')
-            elt(group, 'path', d='M -26 -10 Q 0 -4 26 -10 L 24 10 Q 0 17 -24 10 Z', fill='#74795c', stroke='#292b25', stroke_width=3)
-            elt(group, 'path', d='M -19 8 Q -28 15 -24 32 Q -21 47 -5 48 L 14 44 Q 25 38 24 23 Q 23 10 13 8 Z', fill='#dfbd94', stroke='#292b25', stroke_width=3)
-            elt(group, 'path', d='M -18 27 Q -4 20 12 26 M -10 39 L -9 30 M 1 40 L 2 30 M 12 36 L 12 28', fill='none', stroke='#292b25', stroke_width=2)
+            elt(group, 'path', d='M-19 3 C-25 14-27 28-22 40 Q-18 48-11 44 Q-6 52 2 46 Q9 52 15 45 Q23 48 27 38 L28 21 Q33 15 28 8 Q23 2 18 9 Q8-4-3-3Z', fill='#dfbd94', stroke='#292b25', stroke_width=3)
+            elt(group, 'path', d='M18 9 Q11 15 15 27 Q19 32 24 26 M-11 32L-11 43 M2 35L2 45 M15 36L15 44', fill='none', stroke='#292b25', stroke_width=2, stroke_linecap='round')
+            elt(group, 'path', d='M-28 -9 Q0 -2 29 -9 L27 9 Q1 17-26 8Z', fill='#74795c', stroke='#292b25', stroke_width=3)
 
     def body_transform(self, pose, axis):
         origin = self.project(pose['root'])
@@ -272,20 +245,30 @@ class FrontStudy:
         pose = self.pose(seconds)
         canvas = ET.Element(f'{{{SVG}}}svg', {'width': '1280', 'height': '720', 'viewBox': '0 0 1280 720'})
         canvas.append(copy.deepcopy(self.original.find(f'{{{SVG}}}defs')))
+        defs = canvas.find(f'{{{SVG}}}defs')
+        for ident, radius in [('study-cloth-outline', 1.15), ('study-shoe-outline', .9)]:
+            filt = elt(defs, 'filter', id=ident, x='-50%', y='-50%', width='200%', height='200%', color_interpolation_filters='sRGB')
+            elt(filt, 'feMorphology', **{'in': 'SourceAlpha'}, operator='dilate', radius=radius, result='edge')
+            elt(filt, 'feFlood', flood_color='#292b25', result='ink')
+            elt(filt, 'feComposite', **{'in': 'ink'}, in2='edge', operator='in', result='border')
+            merge = elt(filt, 'feMerge')
+            elt(merge, 'feMergeNode', **{'in': 'border'})
+            elt(merge, 'feMergeNode', **{'in': 'SourceGraphic'})
         elt(canvas, 'rect', width='1280', height='720', fill='#f7f6f0')
         elt(canvas, 'line', x1=270, y1=self.floor+2, x2=1010, y2=self.floor+2, stroke='#d7d8cf', stroke_width=1)
         air = min(v[1] for side in ('left', 'right') for v in self.shoe(pose, side)[0])
         elt(canvas, 'ellipse', cx=self.center, cy=self.floor+5, rx=58-max(0, air)*.12, ry=7, fill='#48564d', opacity=.14)
         group = elt(canvas, 'g', id='front-study-character')
-        # Sort segments, not whole legs: a recovered heel belongs behind its
-        # own advancing knee. Whole-leg ordering painted shoes over the knees.
+        from tools.front_study_drawing import garment
+        # Each garment is one outlined silhouette; shoes still sort separately.
         pieces = []
         for side in ('left', 'right'):
             limb = pose[side]
-            for part, a, b, wa, wb in [('thigh', 'hip', 'knee', 34, 28), ('shin', 'knee', 'ankle', 28, 23)]:
-                node = ET.Element(f'{{{SVG}}}g')
-                self.limb(node, limb[a], limb[b], wa, wb, '#596666', f'study-{part}-{side}')
-                pieces.append(((limb[a][2]+limb[b][2])/2, node))
+            node = ET.Element(f'{{{SVG}}}g')
+            segments = [(f'study-thigh-{side}', limb['hip'], limb['knee'], 39, 32),
+                        (f'study-shin-{side}', limb['knee'], limb['ankle'], 32, 27)]
+            garment(self, node, segments, 'study-trousers-'+side, '#505a5c')
+            pieces.append(((limb['hip'][2]+limb['knee'][2])/2, node))
             node = ET.Element(f'{{{SVG}}}g', {'id': 'study-shoe-'+side})
             self.foot_svg(node, pose, side)
             pieces.append((sum(v[2] for v in self.shoe(pose, side)[0])/8, node))

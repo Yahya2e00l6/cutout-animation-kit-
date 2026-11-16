@@ -1,4 +1,6 @@
 import math
+import hashlib
+import json
 import unittest
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
@@ -61,6 +63,22 @@ class FrontStudyTests(unittest.TestCase):
         for seconds in (-1, math.nan, math.inf):
             with self.assertRaises(ValueError):
                 self.action.frame(seconds)
+
+    def test_drawing_revision_keeps_v03_motion_and_contact_states(self):
+        # Captured from v03 study-report.json before the drawing-only revision.
+        # Includes all joints, foot directions, body axes and ground corrections.
+        def rounded(value):
+            if isinstance(value, float):
+                return round(value, 6)
+            if isinstance(value, (tuple, list)):
+                return [rounded(v) for v in value]
+            if isinstance(value, dict):
+                return {k: rounded(v) for k, v in value.items()}
+            return value
+        states = [self.action.pose(i/30) for i in range(69)]
+        data = json.dumps(rounded(states), sort_keys=True, separators=(',', ':')).encode()
+        self.assertEqual(hashlib.sha256(data).hexdigest(),
+                         '973434487239c782f927338bb46596034eff85a00cb0ae4bcd3ca5ec304a5d26')
 
     def test_staging_can_be_disabled_to_recover_measured_bone_directions(self):
         measured = FrontStudy(readability=MotionReadability(

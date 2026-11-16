@@ -4,21 +4,33 @@
 the old front loop and asked to start without treating it as a motion baseline.
 The approved side run stays untouched. No DICE scenes are involved.
 
-## Review candidate: v03
+## Review candidate: v04 drawing revision
 
-Preview: `renders/front-run-study/v03/study.mp4` (2.3 seconds, 30 fps).
-Review `before-after.png`, `reference-comparison.png` and
-`sagittal-comparison.png` in that directory at matching phase labels.
+Preview: `renders/front-run-study/v04/study.mp4` (2.3 seconds, 30 fps).
+Start with `character-style-comparison.png` for the side/front artwork comparison
+and `before-after.png` for v03/v04 at identical poses. `reference-comparison.png`
+and `sagittal-comparison.png` retain the motion diagnostics.
 These local renders are excluded from Git. V01 remains available; its code
 checkpoint is `3db14e5`. V02 is an intermediate staging experiment.
 
-**Visual judgment:** the new poses show stronger knee lift and more balanced
-opposite-arm exchange. Flight is clearer, particularly at phase .25. This is
-still a review candidate, not a convincing-run approval. Decoded MP4 frames and
-eight exact phase comparisons were inspected; the author's playback decision
-is pending. Folded heels can still disappear behind the trousers at .0/.5;
-shoes remain blocky, the torso feels stiff, and contact lacks a planted-foot
-constraint. These are more important than clothing detail.
+The author identified the drawing mismatch as the problem after v03: segmented
+trousers/sleeves, box shoes and attached-looking fists did not match the side
+character. V04 changes drawing only. All 69 joint, body-axis, foot-direction and
+ground-correction states match v03 exactly.
+
+[Drawing helpers](../tools/front_study_drawing.py) now outline joined garment
+silhouettes using the side rig's SVG morphology technique. Fuller trousers,
+rounded knees/elbows and shoulder caps replace bone-by-bone outlines. Curled
+hand contours and overlapping cuffs follow the side drawing. Sneakers have a
+rounded upper, rubber toe cap, thin sole and curved laces; construction-face
+edges and ladder-like sole marks are removed. The original front head, torso
+and source artwork remain intact.
+
+**Visual judgment:** clothing reads as continuous fabric and sneakers are closer
+to the side design in the inspected phase sheets and decoded MP4 frames.
+Approval is pending. Folded heels still hide at .0/.5, soles are simplified,
+and front-view hand perspective needs review. The contact envelope is still
+the v03 shoe proxy, not a planted-foot or pixel-grounding solver.
 
 ### V01 assessment before changes
 
@@ -33,7 +45,7 @@ guarantee readable motion at this character's proportions.
 | Arm swing | At .125 both hands hang low; .75 has a much stronger single-arm lift. | Blend toward mirrored half-cycle directions and recenter/enlarge sagittal swing. |
 | Foreshortening | Most depth travel disappears in the front projection. | Stage the angles; keep perspective and fixed-length chains. |
 | Silhouette | Narrow overlapping legs obscure swing versus support. | Raise the swing knee and slightly spread the recovering ankle. |
-| Overlap | Whole-leg sorting puts a rear heel in front of its own thigh. | Sort thighs, shins and shoes individually. This remains painter ordering, not a depth buffer. |
+| Overlap | Whole-leg sorting puts a rear heel in front of its own thigh. | Sort shoes separately from joined trouser silhouettes. This remains painter ordering, not a depth buffer. |
 | Body weight | Bob is visible, but the tall torso looks carried rather than loaded. | Retain measured bob for now; stronger flight poses alone do not solve loading. |
 | Contact | Shoe-plane correction prevents penetration but gives no stance anchor or foot roll. | Keep this limitation explicit; do not call the guide line a contact test. |
 
@@ -46,9 +58,9 @@ It uses the existing hoodie's torso, head and palette only for identity.
 The reference supplies knee/heel recovery, opposite-arm motion, pelvis/chest
 orientation and body bob. Fixed-length character-specific 3D leg and arm chains
 are reconstructed from measured bone directions. Newly generated sleeve/trouser
-contours and rounded shoe faces are projected into the front view. Sole treads
-and laces appear only on the visible shoe faces; forearms split at the torso
-depth plane instead of crossfading through the body. No standing limb path is
+contours and rounded shoe surfaces are projected into the front view. Laces
+appear on the upper surface; foreground sleeves are clipped at the torso depth
+plane after outlining, avoiding a drawn seam at that plane. No standing limb path is
 axially stretched to simulate this run.
 
 These are new study drawings, **not approved limb/shoe artwork**. Contours,
@@ -89,7 +101,7 @@ Rendering uses checked-in JSON and needs no network, new package installation,
 paid generation, or external 3D application. From the toolkit root:
 
 ```sh
-TMPDIR=/tmp/opencode python3 -B -m tools.front_run_study --out renders/front-run-study/v04 --baseline renders/front-run-study/v01 --encode
+TMPDIR=/tmp/opencode python3 -B -m tools.front_run_study --out renders/front-run-study/v05 --baseline renders/front-run-study/v04 --encode
 ```
 
 Choose a fresh directory. Outputs include eight editable SVG blocking poses,
@@ -146,7 +158,8 @@ Tests verify the BVH rotation order against known 3D points, finite data,
 constant character bone lengths, actual depth excursion, loop position/velocity
 continuity, request-order independence, unique SVG IDs and read-only source art.
 They also check disabled staging against measured bone directions, mirrored
-half-cycle arm symmetry, invalid controls and recovered-shoe depth order.
+half-cycle arm symmetry, invalid controls, recovered-shoe depth order and a
+six-decimal digest of the complete v03 motion states to guard drawing-only edits.
 A test replaces the old front sampler/renderer with failures and confirms this
 study still renders. Preparation reproduces the checked-in data exactly from
 the recorded BVH source.
@@ -167,7 +180,9 @@ Relevant regression command (the test path is needed by existing cross-test impo
 PYTHONPATH=tests:. python3 -B -m unittest tests.test_front_study tests.test_front_run tests.test_reference_run tests.test_side_run tests.test_support_run tests.test_actions tests.test_dice_adapter tests.test_side_actions tests.test_side_transition tests.test_travel_run
 ```
 
-These suites contain 69 passing tests at this revision. The MP4 encoder probe
+These suites contain 70 tests. For the drawing revision, the front-study, side-run,
+SupportRun, DICE and saved-action suites were rerun: **46 tests passed**.
+The MP4 encoder probe
 confirms H.264, 1280×720, 30 fps, 69 frames and 2.3 seconds, with no audio.
 Delivery checks report no failures; optional audio/subtitle warnings are expected
 for this silent pose study. Neither result is visual approval.
