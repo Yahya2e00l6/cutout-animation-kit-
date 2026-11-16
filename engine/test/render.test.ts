@@ -9,6 +9,29 @@ const example = () => JSON.parse(readFileSync(new URL('../../scenes/examples/sid
 const temp = () => mkdtempSync(join(process.env.TMPDIR || tmpdir(), 'cutout-export-test-'));
 const media = () => ({ video: { width: 1280, height: 720, fps: 30, codec: 'h264', pix_fmt: 'yuv420p', nb_frames: 150, variable_frame_rate_suspected: false }, audio: null, duration: 5 });
 
+test('front preset reaches the real bridge with transformed in-place contact metrics', () => {
+  const dir = temp();
+  try {
+    const source = JSON.parse(readFileSync(new URL('../../scenes/examples/front-run-in-place.json', import.meta.url), 'utf8'));
+    source.output = { width: 320, height: 180, fps: 30, duration: .2 };
+    source.stage.groundY = 150; source.actors[0].scale = .2;
+    source.clips[0].duration = .2;
+    source.clips[0].travel = { from: [160, 150], to: [160, 150] };
+    const output = join(dir, 'front');
+    const report = renderScene(JSON.stringify(source), output, { encode: false });
+    assert.equal(report.status, 'frames-complete');
+    assert(report.warnings.some(w => w.code === 'FRONT_RUN_IN_PLACE'));
+    const metrics = report.render as { maxFrontContactError: number; maxFrontPlantedDrift: number };
+    assert(metrics.maxFrontContactError < .001);
+    assert(metrics.maxFrontPlantedDrift < .001);
+    const svg = readFileSync(join(output, 'svg/frame_0000.svg'), 'utf8');
+    const embedded = Buffer.from(svg.match(/href="data:image\/svg\+xml;base64,([^"]+)/)![1], 'base64').toString();
+    assert(!embedded.includes('CUTOUT MOTION TEST'));
+    assert(!embedded.includes('width="100%" height="100%" fill="#f5f3ec"'));
+    assert(embedded.includes('id="root"'));
+  } finally { rmSync(dir, { recursive: true }); }
+});
+
 test('DICE character reaches the real bridge with separate artwork and retarget metrics', () => {
   const dir = temp();
   try {

@@ -25,14 +25,18 @@ Only these scene bindings exist:
 | --- | --- | --- |
 | `hoodie` | `side-right` | `side-run-right` |
 | `hoodie` | `side-left` | `side-run-left` |
+| `hoodie` | `front` | `reference-run` |
 | `dice-dongtae-upgraded` | `side-right` | `side-run-right` |
 | `dice-dongtae-upgraded` | `side-left` | `side-run-left` |
 
 Actors use their registered artwork, not newly drawn characters. For DICE, read
 [the adapter guide](../../../docs/dice-character-adapter.md); preserve its
 separate design and `DICE_RETARGET_TRIAL` warning. Shared motion approval does
-not approve DICE's retargeted poses. Left-facing art is mirrored. Front actions exist outside this scene
-format; do not silently replace a requested front view with a side view. Rear
+not approve DICE's retargeted poses. Left-facing art is mirrored. For front runs,
+read [the front-run guide](../../../docs/front-run.md): numeric cadence and
+identical travel endpoints only. The saved loop has its own image-plane foot
+contacts; side locking, automatic cadence and standing blends are rejected.
+Do not silently replace a requested front view with a side view. Rear
 art is unapproved and not registered.
 
 Supported: fixed camera, solid or registered-image background, horizontal linear travel, scale,

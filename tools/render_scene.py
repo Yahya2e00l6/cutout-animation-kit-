@@ -54,10 +54,17 @@ class SceneRenderer:
         for actor in sample['actors']:
             key = actor['clipIndex']
             signature = (actor['action'], actor['duration'], actor['speed'],
-                         bool(actor.get('footLock')), actor.get('travelVelocity'), actor.get('scale'), actor.get('travelMode'), actor.get('runDuration'), actor.get('character', 'hoodie'))
+                         bool(actor.get('footLock')), actor.get('travelVelocity'), actor.get('scale'), actor.get('travelMode'), actor.get('runDuration'), actor.get('character', 'hoodie'), actor.get('view'))
             if key not in self.actions:
-                self.actions[key] = (signature, self.loader(
-                    actor['action'], duration=actor['duration'], speed=actor['speed']))
+                if actor['action'] == 'reference-run':
+                    from tools.front_run import FrontRun
+                    if (actor.get('character', 'hoodie') != 'hoodie' or actor.get('view') != 'front'
+                            or actor.get('footLock') or actor.get('travelMode') or actor.get('transition')):
+                        raise ValueError('Front run requires hoodie/front without side travel options')
+                    action = FrontRun(actor['action'], duration=actor['duration'], speed=actor['speed'])
+                else:
+                    action = self.loader(actor['action'], duration=actor['duration'], speed=actor['speed'])
+                self.actions[key] = (signature, action)
             previous, action = self.actions[key]
             if previous != signature:
                 raise ValueError('Clip settings changed inside the frame manifest')
@@ -162,6 +169,28 @@ def render_manifest(manifest, output):
           if 'supportIK' in actor['sourceContacts']]
     dice = [actor['sourceContacts']['diceRetarget'] for frame in contacts for actor in frame['actors']
             if 'diceRetarget' in actor['sourceContacts']]
+    front_error = front_drift = 0.0
+    previous = {}
+    has_front = False
+    for frame in contacts:
+        for actor in frame['actors']:
+            feet = actor['sourceContacts'].get('contacts')
+            if not feet:
+                continue
+            has_front = True
+            a, b, c, d, e, f = actor['transform']
+            def point(x, y):
+                return a*x+c*y+e, b*x+d*y+f
+            for side, foot in feet.items():
+                actual = point(foot['x'], foot['y'])
+                target = point(foot['target_x'], foot['target_y'])
+                front_error = max(front_error, math.dist(actual, target))
+                key = (actor['clipIndex'], side)
+                if key in previous:
+                    number, last, planted = previous[key]
+                    if number == frame['frame']-1 and planted and foot['planted']:
+                        front_drift = max(front_drift, math.dist(actual, last))
+                previous[key] = (frame['frame'], actual, foot['planted'])
     return {'frameCount': len(samples), 'actionInstances': len(renderer.actions),
             'maxRootOffsetX': max_offset,
             'maxRunRootOffsetX': max_run_offset,
@@ -170,6 +199,7 @@ def render_manifest(manifest, output):
             'maxLegJointChangeDegrees': max((record['maxJointChangeDegrees'] for record in ik), default=0),
             **({'maxDiceAnkleError': max(record['maxAnkleError'] for record in dice),
                 'maxDiceAdditionalHipDrop': max(record['additionalHipDrop'] for record in dice)} if dice else {}),
+            **({'maxFrontContactError': front_error, 'maxFrontPlantedDrift': front_drift} if has_front else {}),
             'width': samples[0]['output']['width'], 'height': samples[0]['output']['height']}
 
 

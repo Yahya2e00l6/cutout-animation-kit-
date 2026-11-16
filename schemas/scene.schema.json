@@ -60,7 +60,7 @@
       "properties": {
         "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
         "character": {"enum": ["hoodie", "dice-dongtae-upgraded"]},
-        "view": {"enum": ["side-right", "side-left"]},
+        "view": {"enum": ["side-right", "side-left", "front"]},
         "scale": {"type": "number", "exclusiveMinimum": 0}
       }
     },
@@ -70,7 +70,7 @@
       "required": ["actor", "action", "start", "duration", "speed", "travel"],
       "properties": {
         "actor": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
-        "action": {"enum": ["side-run-right", "side-run-left"]},
+        "action": {"enum": ["side-run-right", "side-run-left", "reference-run"]},
         "start": {"type": "number", "minimum": 0},
         "duration": {"type": "number", "exclusiveMinimum": 0},
         "speed": {"oneOf": [{"type": "number", "exclusiveMinimum": 0}, {"const": "auto"}]},

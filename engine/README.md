@@ -131,9 +131,10 @@ TMPDIR=/tmp/opencode python3 ~/.config/opencode/skills/ffmpeg/scripts/look.py ..
 
 ## Boundaries
 
-Only the registered hoodie side-left and side-right actions are supported.
-Front actions are unchanged but not bound to this scene format yet. Registered
-background images are supported; this does not register the DICE cast. Travel is
+Registered actions cover hoodie side-left/side-right runs, the in-place hoodie
+front run, and the separate upgraded-Dongtae side adapter described below.
+Other cast/action bindings are unsupported. Registered background images are
+supported independently of character registration. Side travel is
 linear unless experimental root correction is enabled; gaps hide actors and clip starts reset
 phase. Multiple actors are composited in actor-array order, last on top.
 The [opt-in travel adapter](../docs/travel-foot-lock.md) uses `footLock: true`
@@ -155,6 +156,13 @@ The separate [DICE character adapter](../docs/dice-character-adapter.md) registe
 `dice-dongtae-upgraded` for both side views. Its unchanged SVG/controller snapshot
 uses the shared motion through proportion-specific IK; it emits
 `DICE_RETARGET_TRIAL` and still needs visual approval.
+
+[Front run](../docs/front-run.md) registers the saved hoodie `reference-run`
+under `view: "front"`. It exports the unchanged loop on a clean scene canvas,
+with numeric cadence and identical travel endpoints. Front in-place contacts
+are built into the saved action; side locking, support-leg mode, standing
+transitions and depth travel are rejected. `FRONT_RUN_IN_PLACE` remains in
+reports. Mixed-view scenes use per-action source anchors.
 
 The project-local [cutout-scene skill](../.opencode/skills/cutout-scene/SKILL.md)
 guides JSON authoring, validation, export, and inspection without scene-specific

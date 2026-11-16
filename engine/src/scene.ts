@@ -16,10 +16,10 @@ export type Diagnostic = {
 };
 export type Point = [number, number];
 export type Actor = {
-  id: string; character: 'hoodie' | 'dice-dongtae-upgraded'; view: 'side-right' | 'side-left'; scale: number;
+  id: string; character: 'hoodie' | 'dice-dongtae-upgraded'; view: 'side-right' | 'side-left' | 'front'; scale: number;
 };
 export type Clip = {
-  actor: string; action: 'side-run-right' | 'side-run-left';
+  actor: string; action: 'side-run-right' | 'side-run-left' | 'reference-run';
   start: number; duration: number; speed: number | 'auto'; footLock?: boolean; travel: { from: Point; to: Point };
   transitions?: { standBefore: number; start: number; stop: number; standAfter: number };
   travelMode?: 'support-leg';
@@ -30,10 +30,11 @@ export type Scene = {
   stage: { background: string; groundY: number; image?: BackgroundImage };
   actors: Actor[]; clips: Clip[];
 };
-type ScheduledClip = Omit<Clip, 'speed'> & { speed: number; index: number; startFrame: number; durationFrames: number };
+type Source = { anchor: Point; width: number; height: number; cycle: number };
+type ScheduledClip = Omit<Clip, 'speed'> & { speed: number; index: number; startFrame: number; durationFrames: number; source: Source };
 type Plan = {
   output: Scene['output']; stage: Scene['stage']; actors: Actor[];
-  clips: ScheduledClip[]; frameCount: number; sourceAnchor: Point;
+  clips: ScheduledClip[]; frameCount: number;
   warnings: Diagnostic[];
   plate?: BackgroundPlate;
 };
@@ -123,9 +124,16 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     if (actors.has(actor.id)) error('DUPLICATE_ACTOR', `/actors/${index}/id`, 'Actor ID must be unique.');
     actors.set(actor.id, actor);
   });
-  const requiredFiles = [
+  const sideFiles = [
     'characters/hoodie-side/character.svg', 'characters/hoodie-side/rig.json',
     'poses/side-run.json', 'motions/side-run.json', 'tools/side_actions.py',
+  ];
+  const hasSide = scene.clips.some(clip => clip.action !== 'reference-run');
+  const hasFront = scene.clips.some(clip => clip.action === 'reference-run');
+  const requiredFiles = [
+    ...(hasSide ? sideFiles : []),
+    ...(hasFront ? ['characters/hoodie/character.svg', 'characters/hoodie/rig.json',
+      'motions/reference-run.json', 'tools/actions.py', 'tools/front_run.py'] : []),
     ...(scene.clips.some(clip => clip.transitions) ? ['poses/side-stand.json'] : []),
     ...(scene.clips.some(clip => clip.travelMode === 'support-leg') ? ['tools/support_run.py'] : []),
     ...(scene.actors.some(actor => actor.character === 'dice-dongtae-upgraded') ? ['tools/dice_adapter.py'] : []),
@@ -159,7 +167,7 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
   let sourceWidth = 1280;
   let sourceHeight = 720;
   let cycle = 0.625;
-  if (!diagnostics.some(item => item.code === 'ASSET_MISSING')) {
+  if (hasSide && !diagnostics.some(item => item.code === 'ASSET_MISSING')) {
     try {
       const config = JSON.parse(readFileSync(resolve(root, 'motions/side-run.json'), 'utf8'));
       if (![config.width, config.height, config.floor, config.cycle].every(Number.isFinite) ||
@@ -168,13 +176,28 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
       sourceWidth = config.width; sourceHeight = config.height; cycle = config.cycle;
     } catch { error('ASSET_INVALID', '', 'Saved side-run configuration is invalid.'); }
   }
+  let frontSource: Source = { anchor: [640, 650], width: 1280, height: 720, cycle: 2/3 };
+  if (hasFront && !diagnostics.some(item => item.code === 'ASSET_MISSING')) {
+    try {
+      const config = JSON.parse(readFileSync(resolve(root, 'motions/reference-run.json'), 'utf8'));
+      if (![config.width, config.height, config.floor, config.scale, config.run?.cycle].every(Number.isFinite) ||
+          !Number.isSafeInteger(config.width) || !Number.isSafeInteger(config.height) ||
+          config.width <= 0 || config.height <= 0 || config.scale <= 0 || config.run.cycle <= 0 ||
+          config.fps !== 30 || config.run.profile !== 'reference-run' || config.run.loop !== true ||
+          !['stance', 'stride', 'lift', 'arm_swing', 'flight', 'sway'].every(name => Number.isFinite(config.run[name])) ||
+          config.run.stance <= 0 || config.run.stance >= .5 || config.run.lift <= 0 || config.run.stride <= 0 ||
+          config.segments?.length !== 1 || config.segments[0].action !== 'run' ||
+          !Number.isFinite(config.segments[0].duration) || config.segments[0].duration <= 0) throw new Error('Invalid front preset');
+      frontSource = { anchor: [config.width/2, config.floor], width: config.width, height: config.height, cycle: config.run.cycle };
+    } catch { error('ASSET_INVALID', '', 'Saved front-run configuration is invalid.'); }
+  }
   let pixelsPerCycle = 0;
-  if (scene.clips.some(clip => clip.footLock)) {
+  if (scene.clips.some(clip => clip.action !== 'reference-run' && clip.footLock)) {
     try {
       const calibration = JSON.parse(readFileSync(resolve(root, 'motions/side-run-travel.json'), 'utf8'));
       if (calibration.version !== 1 || calibration.marker !== 'toe' || calibration.baseCycle !== cycle ||
           calibration.stanceEndPhase !== 0.26 || !Number.isFinite(calibration.pixelsPerCycle) || calibration.pixelsPerCycle <= 0) throw new Error('Invalid travel calibration');
-      for (const file of requiredFiles.slice(0, 4)) {
+      for (const file of sideFiles.slice(0, 4)) {
         const actual = createHash('sha256').update(readFileSync(resolve(root, file))).digest('hex');
         if (calibration.sources[file] !== actual) throw new Error('Stale travel calibration');
       }
@@ -182,7 +205,8 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     } catch { error('TRAVEL_CALIBRATION', '', 'Travel calibration is missing, invalid or does not match the saved source files.'); }
   }
   for (const [index, actor] of scene.actors.entries()) {
-    if (![sourceWidth * actor.scale, sourceHeight * actor.scale, ...sourceAnchor.map(n => n * actor.scale)].every(Number.isFinite)) {
+    const source = actor.view === 'front' ? frontSource : { anchor: sourceAnchor, width: sourceWidth, height: sourceHeight };
+    if (![source.width * actor.scale, source.height * actor.scale, ...source.anchor.map(n => n * actor.scale)].every(Number.isFinite)) {
       error('NUMERIC_RANGE', `/actors/${index}/scale`, 'Scaled source canvas must remain finite.');
     }
   }
@@ -191,9 +215,14 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     const startFrame = frames(clip.start, `${path}/start`, false);
     const durationFrames = frames(clip.duration, `${path}/duration`, true);
     const actor = actors.get(clip.actor);
+    const front = clip.action === 'reference-run';
+    const source = front ? frontSource : { anchor: sourceAnchor, width: sourceWidth, height: sourceHeight, cycle };
     if (!actor) error('ACTOR_UNKNOWN', `${path}/actor`, 'Clip refers to an unknown actor.');
-    else if (clip.action !== (actor.view === 'side-right' ? 'side-run-right' : 'side-run-left')) {
+    else if (clip.action !== (actor.view === 'front' ? 'reference-run' : actor.view === 'side-right' ? 'side-run-right' : 'side-run-left')) {
       error('ACTION_VIEW_MISMATCH', `${path}/action`, 'Action does not match the actor view.');
+    }
+    if (actor?.view === 'front' && actor.character !== 'hoodie') {
+      error('CHARACTER_VIEW_MISMATCH', `${path}/actor`, 'Front run is registered only for hoodie.');
     }
     if (!Number.isSafeInteger(startFrame + durationFrames) || startFrame + durationFrames > frameCount) {
       error('CLIP_RANGE', path, 'Clip ends outside the output duration.');
@@ -201,6 +230,13 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     const [x0, y0] = clip.travel.from;
     const [x1, y1] = clip.travel.to;
     const dx = x1 - x0;
+    if (front) {
+      if (x0 !== x1 || y0 !== y1) error('FRONT_TRAVEL', `${path}/travel`, 'Front run is in-place only; depth and lateral travel are unsupported.');
+      if (clip.footLock || clip.travelMode || clip.transitions || clip.speed === 'auto') {
+        error('FRONT_MODE', path, 'Front run uses numeric cadence and its own in-place contacts; side locking, support-leg and standing blends are unsupported.');
+      }
+      diagnostics.push({ severity: 'warning', code: 'FRONT_RUN_IN_PLACE', path, message: 'Saved front run uses projected limb foreshortening and in-place image-plane contacts. It does not provide depth travel, turning or standing transitions.' });
+    }
     const transitionDuration = clip.transitions ? Object.values(clip.transitions).reduce((a, b) => a + b, 0) : 0;
     const runDuration = clip.duration - transitionDuration;
     if (clip.transitions) {
@@ -233,14 +269,14 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
       error('TRAVEL_FACING', `${path}/travel`, 'Travel goes against the actor facing.');
     }
     if (!clip.footLock && (x0 !== x1 || y0 !== y1)) diagnostics.push({ severity: 'warning', code: 'UNLOCKED_TRAVEL', path: `${path}/travel`, message: 'Travel has no horizontal foot locking; sliding and cadence need visual review.' });
-    if (![dx, clip.duration * speed, clip.duration * speed / cycle, cycle / speed].every(Number.isFinite) ||
-        clip.duration * speed <= 0 || cycle / speed <= 0 ||
-        (actor && ![x0, x1].flatMap(x => [x - actor.scale * sourceAnchor[0], x + actor.scale * (sourceWidth - sourceAnchor[0])]).concat(
-          [y0, y1].flatMap(y => [y - actor.scale * sourceAnchor[1], y + actor.scale * (sourceHeight - sourceAnchor[1])])
+    if (![dx, clip.duration * speed, clip.duration * speed / source.cycle, source.cycle / speed].every(Number.isFinite) ||
+        clip.duration * speed <= 0 || source.cycle / speed <= 0 ||
+        (actor && ![x0, x1].flatMap(x => [x - actor.scale * source.anchor[0], x + actor.scale * (source.width - source.anchor[0])]).concat(
+          [y0, y1].flatMap(y => [y - actor.scale * source.anchor[1], y + actor.scale * (source.height - source.anchor[1])])
         ).every(Number.isFinite))) {
       error('NUMERIC_RANGE', path, 'Travel, cadence and placement calculations must remain finite and representable.');
     }
-    return { ...clip, speed, index, startFrame, durationFrames };
+    return { ...clip, speed, index, startFrame, durationFrames, source };
   });
   for (const actor of actors.values()) {
     const ordered = clips.filter(clip => clip.actor === actor.id).sort((a, b) => a.startFrame - b.startFrame);
@@ -253,7 +289,7 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
   if (diagnostics.some(item => item.severity === 'error')) return { valid: false, diagnostics };
   const prepared = prepare({
     output: scene.output, stage: scene.stage, actors: scene.actors, clips,
-    frameCount, sourceAnchor, warnings: diagnostics, plate,
+    frameCount, warnings: diagnostics, plate,
   });
   return { valid: true, diagnostics, frameCount, scene: prepared };
 }
@@ -309,9 +345,9 @@ export function sampleScene(scene: PreparedScene, time: number) {
       ...(clip.travelMode ? { travelMode: clip.travelMode } : {}),
       ...(clip.travelMode === 'support-leg' ? { runDuration } : {}),
       ...(clip.footLock ? { footLock: true, travelVelocity: (clip.travel.to[0] - clip.travel.from[0]) / runDuration } : {}),
-      position, scale: actor.scale, sourceAnchor: [...plan.sourceAnchor],
+      position, scale: actor.scale, sourceAnchor: [...clip.source.anchor],
       // SVG affine matrix [a,b,c,d,e,f], without applying facing a second time.
-      transform: [actor.scale, 0, 0, actor.scale, position[0] - actor.scale * plan.sourceAnchor[0], position[1] - actor.scale * plan.sourceAnchor[1]],
+      transform: [actor.scale, 0, 0, actor.scale, position[0] - actor.scale * clip.source.anchor[0], position[1] - actor.scale * clip.source.anchor[1]],
     }];
   });
   return { time, output: { ...plan.output }, stage: { ...structuredClone(plan.stage), ...(plan.plate ? { plate: { ...plan.plate } } : {}) }, actors: visible, warnings: structuredClone(plan.warnings) };

@@ -51,6 +51,12 @@ export function renderScene(text: string, output: string, options: RenderOptions
   if (source.actors.some((actor: { character: string }) => actor.character === 'dice-dongtae-upgraded')) {
     report.limitations.push('DICE retarget preserves artwork and native bone lengths, not the donor leg angles or hip height. Extra hip lowering and measured shoe roll require playback review. Shared supportIK metrics describe the donor; diceRetarget metrics describe the delivered DICE solve.');
   }
+  if (source.clips.some((clip: { action: string }) => clip.action === 'reference-run')) {
+    if (source.clips.every((clip: { action: string }) => clip.action === 'reference-run')) {
+      report.limitations[0] = 'Front run has in-place image-plane contacts, not scene travel or standing transitions.';
+    }
+    report.limitations.push('Front run preserves the saved projected gait, including axial limb foreshortening. Contact metrics use transformed model landmarks, not independent raster or real-world depth verification.');
+  }
   const saveReport = () => writeFileSync(join(directory, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   saveReport();
   try {
