@@ -13,7 +13,8 @@ the existing Python action loaders.
 The engine uses Ajv for schema validation and jsonc-parser for duplicate-key
 detection. It contains no copied reference code or new artwork.
 Front actions remain available through their existing API but are outside this
-first scene adapter. Rear actions, standing transitions, camera moves, audio,
+first scene adapter. An optional [standing-transition trial](standing-transitions.md)
+wraps the saved side runs. Rear actions, camera moves, audio,
 expressions, and arbitrary scripts are not part of v1.
 
 ## Coordinates and appearance
@@ -58,6 +59,10 @@ time zero and restarts the action phase; `speed` multiplies gait cadence using
 the existing action loader. `speed: "auto"` resolves to a numeric cadence during
 validation when opt-in toe-X anchoring is enabled. Pass unscaled local time to that loader: do not
 apply speed twice. A clip does not imply a stand-to-run or run-to-stand blend.
+Explicit `transitions` adds standing holds and pose blends, requires locking,
+and must leave a running interval ending at touchdown. Its `localTime` freezes
+at run endpoints during holds/blends; travel and matched cadence use only the
+running interval. See the trial guide for fields, contact constraints, and limits.
 
 Travel is linear. For local clip time `t` and duration `d`:
 

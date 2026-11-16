@@ -15,6 +15,7 @@ from tools.animate import raster
 from tools.preview import SVG
 from tools.side_actions import load_side_action
 from tools.travel_run import TravelRun
+from tools.side_transition import TransitionPose
 
 
 class SceneRenderer:
@@ -51,13 +52,29 @@ class SceneRenderer:
             values = list(actor['transform'])
             if len(values) != 6 or not all(math.isfinite(n) for n in values):
                 raise ValueError('Invalid sampled transform')
-            svg, contact = action.frame(actor['localTime'], number, clean=True)
+            transition = actor.get('transition')
+            motion_time = actor['localTime']
+            if transition:
+                half_cycles = motion_time / action.config['cycle'] * 2
+                if abs(half_cycles - round(half_cycles)) > 1e-6:
+                    raise ValueError('Standing blends require a touchdown endpoint')
+                motion_time = round(half_cycles) * action.config['cycle'] / 2
+            rendered_action = TransitionPose(action, transition['weight']) if transition else action
+            svg, contact = rendered_action.frame(motion_time, number, clean=True)
             locking = None
             if actor.get('footLock'):
                 if key not in self.travel:
                     self.travel[key] = TravelRun(action)
                 offset, locking = self.travel[key].correction(
-                    actor['localTime'], actor['travelVelocity'], actor['scale'], actor['position'][0])
+                    motion_time, actor['travelVelocity'], actor['scale'], actor['position'][0])
+                if transition:
+                    side = locking['side']
+                    if locking['mode'] != 'stance' or side is None:
+                        raise ValueError('Standing blends require a touchdown endpoint')
+                    phase = motion_time / action.config['cycle']
+                    offset += actor['scale'] * (self.travel[key].toe_x(phase, side) - rendered_action.toe_x(motion_time, side))
+                    locking = {**locking, 'mode': 'transition', 'rootOffsetX': offset,
+                               'toeX': locking['anchorX'], 'transition': transition}
                 values[4] += offset
             data = 'data:image/svg+xml;base64,' + base64.b64encode(svg).decode('ascii')
             # An SVG image is a separate document: IDs and CSS never leak between actors.

@@ -23,6 +23,10 @@ has no horizontal foot locking. An [experimental opt-in adapter](docs/travel-foo
 anchors toe X by correcting body travel and matching cadence; successful export
 is not natural-motion approval.
 
+An optional [stand → run → stop trial](docs/standing-transitions.md) adds
+standing holds and pose blends around a locked side run. It needs playback
+review; it does not change the saved actions.
+
 ### Author scenes with an AI agent
 
 The project-local [cutout-scene skill](.opencode/skills/cutout-scene/SKILL.md)

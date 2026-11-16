@@ -120,3 +120,27 @@ test('opt-in travel reaches the Python bridge and reports the applied root corre
     assert.notEqual(contacts.frames[2].actors[0].transform[4], manifest.samples[2].actors[0].transform[4]);
   } finally { rmSync(dir, { recursive: true }); }
 });
+
+test('transition export delivers standing holds, a run and planted transition records', () => {
+  const dir = temp();
+  try {
+    const source = example();
+    source.output = { width: 320, height: 180, fps: 30, duration: 0.8 };
+    source.stage.groundY = 150; source.actors[0].scale = 0.2;
+    const clip = source.clips[0];
+    clip.duration = 0.8; clip.speed = 'auto'; clip.footLock = true;
+    clip.transitions = { standBefore: 0.1, start: 0.2, stop: 0.2, standAfter: 0.1 };
+    clip.travel = { from: [100, 150], to: [147.23810882316693, 150] };
+    const output = join(dir, 'transitions');
+    const report = renderScene(JSON.stringify(source), output, { encode: false });
+    assert.equal(report.status, 'frames-complete');
+    assert(report.warnings.some(w => w.code === 'TRANSITION_TRIAL'));
+    const contacts = JSON.parse(readFileSync(join(output, 'contacts.json'), 'utf8')).frames;
+    assert.equal(contacts.length, 24);
+    assert.equal(contacts[0].actors[0].horizontalLock.transition.mode, 'stand');
+    assert.equal(contacts[9].actors[0].horizontalLock.mode, 'stance');
+    assert.equal(contacts[23].actors[0].horizontalLock.transition.mode, 'stand');
+    assert.equal(readFileSync(join(output, 'frames/frame_0000.png')).compare(readFileSync(join(output, 'frames/frame_0002.png'))), 0);
+    assert.equal(readFileSync(join(output, 'frames/frame_0022.png')).compare(readFileSync(join(output, 'frames/frame_0023.png'))), 0);
+  } finally { rmSync(dir, { recursive: true }); }
+});

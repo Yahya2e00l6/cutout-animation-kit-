@@ -33,9 +33,14 @@ art is unapproved and not registered.
 
 Supported: fixed camera, solid background, horizontal linear travel, scale,
 cadence, timed clips, and actor-array draw order (last on top).
-Unsupported: standing/idle, walk, jump, turns, view changes, expressions,
+Optional experimental stand → run → stop: read
+[the transition guide](../../../docs/standing-transitions.md) before using
+`transitions`. It requires toe locking and a touchdown endpoint; it blends a
+neutral pose rather than physically accelerating. Preserve `TRANSITION_TRIAL`
+and request playback review. Do not silently adjust distance to fit touchdown.
+Unsupported: standalone standing/idle, walk, jump, turns, view changes, expressions,
 dialogue/audio, props, drawn scenery, camera moves, physical collision avoidance,
-blended transitions, and full sole/IK locking. Say what is missing and ask
+arbitrary action blends, and full sole/IK locking. Say what is missing and ask
 whether a supported alternative is acceptable. Do not silently drop a story beat
 or invent action names/fields. If the request explicitly asks for an engine
 extension, stop scene production and plan that extension separately.
@@ -52,8 +57,8 @@ extension, stop scene production and plan that extension separately.
    [the schema](../../../schemas/scene.schema.json) for exact allowed values.
 3. Use seconds aligned to whole frames. Each clip lies inside output duration;
    no same-actor overlap. Gaps hide an actor; they do not mean standing still.
-   Each new clip restarts phase. A run clip starts/ends mid-stride without a
-   standing transition.
+   Each new clip restarts phase. Without explicit `transitions`, a run clip
+   starts/ends mid-stride without a standing transition.
 4. Place the ground anchor, not the SVG corner: both travel endpoint Y values
    equal `stage.groundY`. Right-facing travel goes right; left-facing travel goes
    left. Equal endpoints mean running in place, **not** idle. Scale=1 preserves
@@ -122,5 +127,8 @@ is authorized and needed. No custom agent or model is required to use this skill
 Deliver links to the scene, video/frames, and inspected images. Report measured
 duration, size, fps, audio, warnings, and whether playback was reviewed. Separate
 technical checks from natural-motion/likeness approval. `contacts.json` contains
-source-space metadata, not independent scene-space contact proof. Never commit
-or push without a request; exclude renders, videos, caches, and archives.
+source-space metadata, not independent scene-space contact proof. The author has
+authorized automatic commits and pushes for completed changes in this project.
+Keep focused, tested checkpoints; stage only your work, leaving unrelated changes
+untouched. Exclude renders, videos, caches, and archives. Report push failures;
+never force-push or rewrite history to recover from a problem.

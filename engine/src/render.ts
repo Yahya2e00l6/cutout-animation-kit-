@@ -36,9 +36,12 @@ export function renderScene(text: string, output: string, options: RenderOptions
     status: 'rendering', frameCount: result.frameCount!, output: first.output,
     warnings: result.diagnostics, audio: 'none',
     limitations: [source.clips.some((clip: { footLock?: boolean }) => clip.footLock)
-      ? 'Experimental toe-X anchoring changes root travel; shoe roll remains. No standing transitions.'
+      ? 'Experimental toe-X anchoring changes root travel; shoe roll remains.'
       : 'No horizontal foot locking or standing transitions.', 'Technical success is not motion or likeness approval.'],
   };
+  if (source.clips.some((clip: { transitions?: unknown }) => clip.transitions)) {
+    report.limitations.push('Standing transitions are pose blends, not physical acceleration. Only position continuity is intended at the run joins; velocity may change abruptly.');
+  }
   const saveReport = () => writeFileSync(join(directory, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   saveReport();
   try {

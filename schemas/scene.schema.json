@@ -67,6 +67,17 @@
         "duration": {"type": "number", "exclusiveMinimum": 0},
         "speed": {"oneOf": [{"type": "number", "exclusiveMinimum": 0}, {"const": "auto"}]},
         "footLock": {"type": "boolean"},
+        "transitions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["standBefore", "start", "stop", "standAfter"],
+          "properties": {
+            "standBefore": {"type": "number", "exclusiveMinimum": 0},
+            "start": {"type": "number", "exclusiveMinimum": 0},
+            "stop": {"type": "number", "exclusiveMinimum": 0},
+            "standAfter": {"type": "number", "exclusiveMinimum": 0}
+          }
+        },
         "travel": {
           "type": "object",
           "additionalProperties": false,

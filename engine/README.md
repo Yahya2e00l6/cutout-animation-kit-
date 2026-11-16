@@ -132,7 +132,9 @@ phase. Multiple actors are composited in actor-array order, last on top.
 The [opt-in travel adapter](../docs/travel-foot-lock.md) uses `footLock: true`
 and `speed: "auto"` for pose-preserving toe-X anchoring. It alters root travel,
 not limb angles, and reports its maximum root offset. Legacy scenes are unchanged.
-There is no camera animation, audio, standing transition, or leg IK contact solver.
+An optional [standing-transition trial](../docs/standing-transitions.md) adds
+holds and pose blends around a locked run, with a `TRANSITION_TRIAL` warning.
+There is no camera animation, audio, physical acceleration, or leg IK contact solver.
 
 The project-local [cutout-scene skill](../.opencode/skills/cutout-scene/SKILL.md)
 guides JSON authoring, validation, export, and inspection without scene-specific

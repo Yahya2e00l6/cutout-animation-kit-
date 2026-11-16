@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "status": "Upright standing pose accepted visually in the faster-run v02 review; other poses and transition timing still require review.",
+  "description": "Upright torso, straight knees, lightly staggered flat feet and arms hanging at the sides. Uses existing artwork without changing the saved run.",
+  "angles": {
+    "torso": -9, "head": 9,
+    "hip-right": -3.5, "knee-right": 0, "ankle-right": 3.5,
+    "hip-left": 3.5, "knee-left": 0, "ankle-left": -3.5,
+    "shoulder-right": 9, "elbow-right": -3,
+    "shoulder-left": 11, "elbow-left": -5
+  }
+}

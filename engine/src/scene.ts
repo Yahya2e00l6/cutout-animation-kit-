@@ -20,6 +20,7 @@ export type Actor = {
 export type Clip = {
   actor: string; action: 'side-run-right' | 'side-run-left';
   start: number; duration: number; speed: number | 'auto'; footLock?: boolean; travel: { from: Point; to: Point };
+  transitions?: { standBefore: number; start: number; stop: number; standAfter: number };
 };
 export type Scene = {
   version: 1;
@@ -113,12 +114,22 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
   const requiredFiles = [
     'characters/hoodie-side/character.svg', 'characters/hoodie-side/rig.json',
     'poses/side-run.json', 'motions/side-run.json', 'tools/side_actions.py',
+    ...(scene.clips.some(clip => clip.transitions) ? ['poses/side-stand.json'] : []),
   ];
   for (const file of requiredFiles) {
     try { if (!statSync(resolve(root, file)).isFile()) throw new Error('Not a file'); }
     catch { error('ASSET_MISSING', '', `Required toolkit file missing: ${file}`); }
   }
   let sourceAnchor: Point = [640, 650];
+  if (scene.clips.some(clip => clip.transitions) && !diagnostics.some(item => item.code === 'ASSET_MISSING')) {
+    try {
+      const standing = JSON.parse(readFileSync(resolve(root, 'poses/side-stand.json'), 'utf8'));
+      const running = JSON.parse(readFileSync(resolve(root, 'poses/side-run.json'), 'utf8'));
+      if (standing.version !== 1 || !standing.angles || typeof standing.angles !== 'object' || Array.isArray(standing.angles) ||
+          JSON.stringify(Object.keys(standing.angles).sort()) !== JSON.stringify(Object.keys(running.poses[0].angles).sort()) ||
+          !Object.values(standing.angles).every(Number.isFinite)) throw new Error('Invalid standing pose');
+    } catch { error('STANDING_POSE', '', 'Standing pose must contain finite angles matching the saved side-run joints.'); }
+  }
   let sourceWidth = 1280;
   let sourceHeight = 720;
   let cycle = 0.625;
@@ -164,15 +175,27 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     const [x0, y0] = clip.travel.from;
     const [x1, y1] = clip.travel.to;
     const dx = x1 - x0;
+    const transitionDuration = clip.transitions ? Object.values(clip.transitions).reduce((a, b) => a + b, 0) : 0;
+    const runDuration = clip.duration - transitionDuration;
+    if (clip.transitions) {
+      for (const [name, seconds] of Object.entries(clip.transitions)) frames(seconds, `${path}/transitions/${name}`, true);
+      if (!Number.isFinite(runDuration) || runDuration * scene.output.fps < 1 - 1e-6) error('TRANSITION_RANGE', `${path}/transitions`, 'Transitions must leave at least one running frame.');
+      if (!clip.footLock) error('TRANSITION_MODE', `${path}/transitions`, 'Transition trial requires footLock: true.');
+      diagnostics.push({ severity: 'warning', code: 'TRANSITION_TRIAL', path: `${path}/transitions`, message: 'Standing pose blends plant one toe and preserve the middle run. They are not physical acceleration or approved acting.' });
+    }
     let speed = typeof clip.speed === 'number' ? clip.speed : 1;
     if (clip.speed === 'auto' && !clip.footLock) error('CADENCE_MODE', `${path}/speed`, 'Automatic cadence requires footLock: true.');
     if (clip.footLock) {
       if (dx === 0) error('TRAVEL_REQUIRED', `${path}/footLock`, 'Foot locking requires nonzero horizontal travel.');
-      const matched = actor && pixelsPerCycle > 0 ? Math.abs(dx / clip.duration) * cycle / (pixelsPerCycle * actor.scale) : 0;
+      const matched = actor && pixelsPerCycle > 0 ? Math.abs(dx / runDuration) * cycle / (pixelsPerCycle * actor.scale) : 0;
       if (!Number.isFinite(matched) || matched < 0.2 || matched > 2) error('CADENCE_RANGE', `${path}/speed`, 'Matched cadence must be between 0.2 and 2 times the saved cadence. Change distance, duration or actor scale.');
       if (clip.speed === 'auto') speed = matched;
       else if (matched && Math.abs(speed / matched - 1) > 0.05) error('CADENCE_MISMATCH', `${path}/speed`, 'Explicit cadence differs from travel-matched cadence by more than 5%; use speed: "auto".');
       diagnostics.push({ severity: 'warning', code: 'POSE_PRESERVING_TRAVEL', path: `${path}/footLock`, message: 'Experimental toe-X anchoring alters body travel, not poses. Shoe roll and natural motion still need visual review.' });
+    }
+    if (clip.transitions && runDuration > 0) {
+      const halfCycles = runDuration * speed / cycle * 2;
+      if (!Number.isFinite(halfCycles) || Math.abs(halfCycles - Math.round(halfCycles)) > 1e-6) error('TRANSITION_CONTACT', `${path}/travel`, 'The running interval must end at a touchdown (a whole half-cycle). Adjust distance or explicit cadence.');
     }
     if (Math.abs(y0 - scene.stage.groundY) > 1e-6 || Math.abs(y1 - scene.stage.groundY) > 1e-6) {
       error('TRAVEL_GROUND', `${path}/travel`, 'Travel endpoints must lie on stage.groundY.');
@@ -223,8 +246,26 @@ export function sampleScene(scene: PreparedScene, time: number) {
   const visible = plan.actors.flatMap((actor, drawOrder) => {
     const clip = plan.clips.find(clip => clip.actor === actor.id && frame >= clip.startFrame && frame < clip.startFrame + clip.durationFrames);
     if (!clip) return [];
-    const localTime = (frame - clip.startFrame) / fps;
-    const u = (frame - clip.startFrame) / clip.durationFrames;
+    const elapsedFrame = frame - clip.startFrame;
+    const tr = clip.transitions;
+    const beforeFrames = tr ? Math.round(tr.standBefore * fps) : 0;
+    const startFrames = tr ? Math.round(tr.start * fps) : 0;
+    const stopFrames = tr ? Math.round(tr.stop * fps) : 0;
+    const afterFrames = tr ? Math.round(tr.standAfter * fps) : 0;
+    const runFrames = clip.durationFrames - beforeFrames - startFrames - stopFrames - afterFrames;
+    const runDuration = runFrames / fps;
+    const runStartFrame = beforeFrames + startFrames;
+    const runEndFrame = runStartFrame + runFrames;
+    const localTime = Math.max(0, Math.min(runFrames, elapsedFrame - runStartFrame)) / fps;
+    const smooth = (u: number) => u * u * (3 - 2 * u);
+    let transition: { mode: 'start' | 'stop' | 'stand'; weight: number } | undefined;
+    if (tr && elapsedFrame < runStartFrame) transition = elapsedFrame < beforeFrames
+      ? { mode: 'stand', weight: 0 }
+      : { mode: 'start', weight: smooth((elapsedFrame - beforeFrames) / startFrames) };
+    if (tr && elapsedFrame >= runEndFrame) transition = elapsedFrame < runEndFrame + stopFrames
+      ? { mode: 'stop', weight: 1 - smooth((elapsedFrame - runEndFrame) / stopFrames) }
+      : { mode: 'stand', weight: 0 };
+    const u = tr ? localTime / runDuration : elapsedFrame / clip.durationFrames;
     const position: Point = [
       clip.travel.from[0] + u * (clip.travel.to[0] - clip.travel.from[0]),
       clip.travel.from[1] + u * (clip.travel.to[1] - clip.travel.from[1]),
@@ -233,7 +274,8 @@ export function sampleScene(scene: PreparedScene, time: number) {
       id: actor.id, character: actor.character, view: actor.view, drawOrder,
       clipIndex: clip.index, action: clip.action, localTime,
       duration: clip.durationFrames / fps, speed: clip.speed,
-      ...(clip.footLock ? { footLock: true, travelVelocity: (clip.travel.to[0] - clip.travel.from[0]) / (clip.durationFrames / fps) } : {}),
+      ...(transition ? { transition } : {}),
+      ...(clip.footLock ? { footLock: true, travelVelocity: (clip.travel.to[0] - clip.travel.from[0]) / runDuration } : {}),
       position, scale: actor.scale, sourceAnchor: [...plan.sourceAnchor],
       // SVG affine matrix [a,b,c,d,e,f], without applying facing a second time.
       transform: [actor.scale, 0, 0, actor.scale, position[0] - actor.scale * plan.sourceAnchor[0], position[1] - actor.scale * plan.sourceAnchor[1]],
