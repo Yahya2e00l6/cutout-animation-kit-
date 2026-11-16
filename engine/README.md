@@ -99,9 +99,11 @@ An export directory contains:
 - `scene.json`: validated input text for reproduction.
 - `samples.json`: internal engine-to-Python manifest, not another public scene format.
 - `svg/` and `frames/`: exact numbered SVG/PNG frames, starting at zero.
-- `contacts.json`: saved-action metadata in **source coordinates**, not an
-  independent scene-space or delivered-pixel contact measurement.
-- `render-result.json`: frame count, size, and loaded action-instance count.
+- `contacts.json`: `sourceContacts` in source coordinates and optional
+  `horizontalLock` toe-anchor/correction records. Neither is an independent
+  delivered-pixel contact measurement; the applied transform is recorded too.
+- `render-result.json`: frame count, size, loaded action-instance count, and
+  `maxRootOffsetX` (zero for legacy unlocked rendering).
 - `report.json`: status, warnings, limitations, and any failure.
 - With video: `encode-plan.json`, `encode-result.json`, `probe.json`, and `scene.mp4`.
 
@@ -125,9 +127,12 @@ TMPDIR=/tmp/opencode python3 ~/.config/opencode/skills/ffmpeg/scripts/look.py ..
 
 Only the registered hoodie side-left and side-right actions are supported.
 Front actions are unchanged but not bound to this scene format yet. Travel is
-linear without horizontal foot locking; gaps hide actors and clip starts reset
+linear unless experimental root correction is enabled; gaps hide actors and clip starts reset
 phase. Multiple actors are composited in actor-array order, last on top.
-There is no camera animation, audio, transitions, or contact solver.
+The [opt-in travel adapter](../docs/travel-foot-lock.md) uses `footLock: true`
+and `speed: "auto"` for pose-preserving toe-X anchoring. It alters root travel,
+not limb angles, and reports its maximum root offset. Legacy scenes are unchanged.
+There is no camera animation, audio, standing transition, or leg IK contact solver.
 
 The project-local [cutout-scene skill](../.opencode/skills/cutout-scene/SKILL.md)
 guides JSON authoring, validation, export, and inspection without scene-specific

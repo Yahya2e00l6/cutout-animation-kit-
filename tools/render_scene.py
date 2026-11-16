@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 from tools.animate import raster
 from tools.preview import SVG
 from tools.side_actions import load_side_action
+from tools.travel_run import TravelRun
 
 
 class SceneRenderer:
@@ -22,6 +23,7 @@ class SceneRenderer:
     def __init__(self, loader=load_side_action):
         self.loader = loader
         self.actions = {}
+        self.travel = {}
 
     def frame(self, sample, number):
         width, height = sample['output']['width'], sample['output']['height']
@@ -35,7 +37,8 @@ class SceneRenderer:
         records = []
         for actor in sample['actors']:
             key = actor['clipIndex']
-            signature = (actor['action'], actor['duration'], actor['speed'])
+            signature = (actor['action'], actor['duration'], actor['speed'],
+                         bool(actor.get('footLock')), actor.get('travelVelocity'), actor.get('scale'))
             if key not in self.actions:
                 self.actions[key] = (signature, self.loader(
                     actor['action'], duration=actor['duration'], speed=actor['speed']))
@@ -45,10 +48,17 @@ class SceneRenderer:
             anchor = [action.config['width'] / 2, action.config['floor']]
             if anchor != actor['sourceAnchor']:
                 raise ValueError('Saved action anchor changed since scene validation')
-            values = actor['transform']
+            values = list(actor['transform'])
             if len(values) != 6 or not all(math.isfinite(n) for n in values):
                 raise ValueError('Invalid sampled transform')
             svg, contact = action.frame(actor['localTime'], number, clean=True)
+            locking = None
+            if actor.get('footLock'):
+                if key not in self.travel:
+                    self.travel[key] = TravelRun(action)
+                offset, locking = self.travel[key].correction(
+                    actor['localTime'], actor['travelVelocity'], actor['scale'], actor['position'][0])
+                values[4] += offset
             data = 'data:image/svg+xml;base64,' + base64.b64encode(svg).decode('ascii')
             # An SVG image is a separate document: IDs and CSS never leak between actors.
             ET.SubElement(canvas, f'{{{SVG}}}image', {
@@ -57,7 +67,8 @@ class SceneRenderer:
                 'href': data, '{http://www.w3.org/1999/xlink}href': data,
             })
             records.append({'actor': actor['id'], 'clipIndex': key,
-                            'transform': values, 'sourceContacts': contact})
+                            'transform': values, 'sourceContacts': contact,
+                            **({'horizontalLock': locking} if locking else {})})
         return ET.tostring(canvas, encoding='utf-8'), records
 
 
@@ -82,10 +93,13 @@ def render_manifest(manifest, output):
             str(frames / f'frame_{number:04d}.png'))
         contacts.append({'frame': number, 'actors': record})
     (output / 'contacts.json').write_text(json.dumps({
-        'scope': 'Saved action contact metadata in source coordinates; not independent scene-space contact verification.',
+        'scope': 'sourceContacts are saved-action metadata in source coordinates. horizontalLock is computed toe-X anchoring, not independent pixel/contact verification.',
         'frames': contacts,
     }, indent=2, allow_nan=False) + '\n')
+    max_offset = max((abs(actor.get('horizontalLock', {}).get('rootOffsetX', 0))
+                      for frame in contacts for actor in frame['actors']), default=0)
     return {'frameCount': len(samples), 'actionInstances': len(renderer.actions),
+            'maxRootOffsetX': max_offset,
             'width': samples[0]['output']['width'], 'height': samples[0]['output']['height']}
 
 

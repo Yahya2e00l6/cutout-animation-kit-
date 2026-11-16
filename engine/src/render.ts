@@ -35,7 +35,9 @@ export function renderScene(text: string, output: string, options: RenderOptions
   const report: RenderReport = {
     status: 'rendering', frameCount: result.frameCount!, output: first.output,
     warnings: result.diagnostics, audio: 'none',
-    limitations: ['No horizontal foot locking or standing transitions.', 'Technical success is not motion or likeness approval.'],
+    limitations: [source.clips.some((clip: { footLock?: boolean }) => clip.footLock)
+      ? 'Experimental toe-X anchoring changes root travel; shoe roll remains. No standing transitions.'
+      : 'No horizontal foot locking or standing transitions.', 'Technical success is not motion or likeness approval.'],
   };
   const saveReport = () => writeFileSync(join(directory, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   saveReport();

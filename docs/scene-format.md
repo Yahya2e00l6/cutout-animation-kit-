@@ -55,7 +55,8 @@ at exactly five seconds.
 
 Clips are active on `[start, start + duration)`. A clip begins at action-local
 time zero and restarts the action phase; `speed` multiplies gait cadence using
-the existing action loader. Pass unscaled local time to that loader: do not
+the existing action loader. `speed: "auto"` resolves to a numeric cadence during
+validation when opt-in toe-X anchoring is enabled. Pass unscaled local time to that loader: do not
 apply speed twice. A clip does not imply a stand-to-run or run-to-stand blend.
 
 Travel is linear. For local clip time `t` and duration `d`:
@@ -71,10 +72,12 @@ origin for continuous placement. Equal endpoints produce an in-place action.
 An actor is hidden outside its clips; an empty interval is not an implicit idle.
 Overlapping clips on one actor are invalid. Different actors may overlap.
 
-Travel and cadence are separate inputs. V1 does not infer stride length, choose
-speed from distance, or lock stance feet horizontally. Moving clips must produce
-an `UNLOCKED_TRAVEL` preflight warning. A successful render must retain this
-warning in its report, not claim natural locomotion. Travel against facing is
+By default, travel and numeric cadence are independent; moving clips produce
+`UNLOCKED_TRAVEL`. Optional `footLock: true` with `speed: "auto"` enables
+[experimental pose-preserving toe-X anchoring](travel-foot-lock.md) and matched
+cadence, with a `POSE_PRESERVING_TRAVEL` warning instead. It changes root travel,
+not limb poses, and is not natural-motion approval. A successful render must
+retain its warnings. Travel against facing is
 invalid in v1. Vertical travel is unsupported: both endpoint Y values must equal
 `stage.groundY` within `1e-6` output pixels.
 
@@ -117,8 +120,9 @@ The schema cannot enforce all relationships. The implemented validator also:
    Adjacent half-open clips are allowed; source-array order breaks no ties.
 5. Requires `0 <= groundY <= output.height`, horizontal travel on that ground,
    and nonnegative X displacement for right-facing / nonpositive for left-facing.
-6. Emits `UNLOCKED_TRAVEL` for every moving clip. Warning-free output still does
-   not establish natural motion or likeness approval.
+6. Checks opt-in travel calibration, cadence compatibility and range; emits
+   `UNLOCKED_TRAVEL` for unlocked motion or `POSE_PRESERVING_TRAVEL` for locked
+   motion. Warning-free output does not establish natural motion or likeness.
 
 Diagnostics should include a stable code, JSON pointer, and readable explanation,
 for example `ACTION_VIEW_MISMATCH` at `/clips/0/action`. Structural errors should

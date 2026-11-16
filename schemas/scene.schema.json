@@ -65,7 +65,8 @@
         "action": {"enum": ["side-run-right", "side-run-left"]},
         "start": {"type": "number", "minimum": 0},
         "duration": {"type": "number", "exclusiveMinimum": 0},
-        "speed": {"type": "number", "exclusiveMinimum": 0},
+        "speed": {"oneOf": [{"type": "number", "exclusiveMinimum": 0}, {"const": "auto"}]},
+        "footLock": {"type": "boolean"},
         "travel": {
           "type": "object",
           "additionalProperties": false,

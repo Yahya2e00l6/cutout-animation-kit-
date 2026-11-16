@@ -18,8 +18,10 @@ From `engine/`, export the example to a new version directory:
 TMPDIR=/tmp/opencode npm run scene -- export ../scenes/examples/side-run-across.json ../renders/scenes/side-run-across/v02
 ```
 
-See the engine guide for dependencies and installation. Screen travel currently
-has no horizontal foot locking; successful export is not natural-motion approval.
+See the engine guide for dependencies and installation. Default screen travel
+has no horizontal foot locking. An [experimental opt-in adapter](docs/travel-foot-lock.md)
+anchors toe X by correcting body travel and matching cadence; successful export
+is not natural-motion approval.
 
 ### Author scenes with an AI agent
 

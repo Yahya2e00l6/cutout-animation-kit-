@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "status": "Experimental pose-preserving travel; not natural-motion approval.",
+  "marker": "toe",
+  "stanceEndPhase": 0.26,
+  "baseCycle": 0.625,
+  "pixelsPerCycle": 472.38108823166925,
+  "sources": {
+    "characters/hoodie-side/character.svg": "ba0f87dd9879523275873f723d099696a3e597ed821ee4d6baf6b92123fe48f6",
+    "characters/hoodie-side/rig.json": "f26ac9849b4b62ba8018ca110ad0d80bfbff7fd4c05bacf0f13cebf22c4435ee",
+    "poses/side-run.json": "bb8cea6a7c2808d5cfe0e7098b69fd7827c9d731ac2c9466e9561940f2a76019",
+    "motions/side-run.json": "34d516e4cc777b37c9af740f0dcd177d4490239ea6e1de4def49b2b80a96a8ba"
+  }
+}

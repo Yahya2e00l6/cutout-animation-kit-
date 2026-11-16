@@ -98,3 +98,25 @@ test('real sequence encoder produces exactly two silent H.264 frames', () => {
     assert.equal(existsSync(join(output, 'encode-result.json')), true);
   } finally { rmSync(dir, { recursive: true }); }
 });
+
+test('opt-in travel reaches the Python bridge and reports the applied root correction', () => {
+  const dir = temp();
+  try {
+    const source = example();
+    source.output = { width: 320, height: 180, fps: 30, duration: 0.2 };
+    source.stage.groundY = 150; source.actors[0].scale = 0.2;
+    source.clips[0].duration = 0.2;
+    source.clips[0].speed = 'auto'; source.clips[0].footLock = true;
+    source.clips[0].travel = { from: [160, 150], to: [180, 150] };
+    const output = join(dir, 'locked');
+    const report = renderScene(JSON.stringify(source), output, { encode: false });
+    assert.equal(report.status, 'frames-complete');
+    assert.equal(report.warnings[0].code, 'POSE_PRESERVING_TRAVEL');
+    assert((report.render as { maxRootOffsetX: number }).maxRootOffsetX > 0);
+    const manifest = JSON.parse(readFileSync(join(output, 'samples.json'), 'utf8'));
+    const contacts = JSON.parse(readFileSync(join(output, 'contacts.json'), 'utf8'));
+    assert.equal(typeof manifest.samples[0].actors[0].speed, 'number');
+    assert.equal(contacts.frames[0].actors[0].horizontalLock.mode, 'stance');
+    assert.notEqual(contacts.frames[2].actors[0].transform[4], manifest.samples[2].actors[0].transform[4]);
+  } finally { rmSync(dir, { recursive: true }); }
+});

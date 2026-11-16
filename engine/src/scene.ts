@@ -1,6 +1,7 @@
 import { readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import { Ajv } from 'ajv';
 import { parseTree, type Node as JsonNode, type ParseError } from 'jsonc-parser';
 
@@ -18,7 +19,7 @@ export type Actor = {
 };
 export type Clip = {
   actor: string; action: 'side-run-right' | 'side-run-left';
-  start: number; duration: number; speed: number; travel: { from: Point; to: Point };
+  start: number; duration: number; speed: number | 'auto'; footLock?: boolean; travel: { from: Point; to: Point };
 };
 export type Scene = {
   version: 1;
@@ -26,7 +27,7 @@ export type Scene = {
   stage: { background: string; groundY: number };
   actors: Actor[]; clips: Clip[];
 };
-type ScheduledClip = Clip & { index: number; startFrame: number; durationFrames: number };
+type ScheduledClip = Omit<Clip, 'speed'> & { speed: number; index: number; startFrame: number; durationFrames: number };
 type Plan = {
   output: Scene['output']; stage: Scene['stage']; actors: Actor[];
   clips: ScheduledClip[]; frameCount: number; sourceAnchor: Point;
@@ -130,6 +131,19 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
       sourceWidth = config.width; sourceHeight = config.height; cycle = config.cycle;
     } catch { error('ASSET_INVALID', '', 'Saved side-run configuration is invalid.'); }
   }
+  let pixelsPerCycle = 0;
+  if (scene.clips.some(clip => clip.footLock)) {
+    try {
+      const calibration = JSON.parse(readFileSync(resolve(root, 'motions/side-run-travel.json'), 'utf8'));
+      if (calibration.version !== 1 || calibration.marker !== 'toe' || calibration.baseCycle !== cycle ||
+          calibration.stanceEndPhase !== 0.26 || !Number.isFinite(calibration.pixelsPerCycle) || calibration.pixelsPerCycle <= 0) throw new Error('Invalid travel calibration');
+      for (const file of requiredFiles.slice(0, 4)) {
+        const actual = createHash('sha256').update(readFileSync(resolve(root, file))).digest('hex');
+        if (calibration.sources[file] !== actual) throw new Error('Stale travel calibration');
+      }
+      pixelsPerCycle = calibration.pixelsPerCycle;
+    } catch { error('TRAVEL_CALIBRATION', '', 'Travel calibration is missing, invalid or does not match the saved source files.'); }
+  }
   for (const [index, actor] of scene.actors.entries()) {
     if (![sourceWidth * actor.scale, sourceHeight * actor.scale, ...sourceAnchor.map(n => n * actor.scale)].every(Number.isFinite)) {
       error('NUMERIC_RANGE', `/actors/${index}/scale`, 'Scaled source canvas must remain finite.');
@@ -150,21 +164,31 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     const [x0, y0] = clip.travel.from;
     const [x1, y1] = clip.travel.to;
     const dx = x1 - x0;
+    let speed = typeof clip.speed === 'number' ? clip.speed : 1;
+    if (clip.speed === 'auto' && !clip.footLock) error('CADENCE_MODE', `${path}/speed`, 'Automatic cadence requires footLock: true.');
+    if (clip.footLock) {
+      if (dx === 0) error('TRAVEL_REQUIRED', `${path}/footLock`, 'Foot locking requires nonzero horizontal travel.');
+      const matched = actor && pixelsPerCycle > 0 ? Math.abs(dx / clip.duration) * cycle / (pixelsPerCycle * actor.scale) : 0;
+      if (!Number.isFinite(matched) || matched < 0.2 || matched > 2) error('CADENCE_RANGE', `${path}/speed`, 'Matched cadence must be between 0.2 and 2 times the saved cadence. Change distance, duration or actor scale.');
+      if (clip.speed === 'auto') speed = matched;
+      else if (matched && Math.abs(speed / matched - 1) > 0.05) error('CADENCE_MISMATCH', `${path}/speed`, 'Explicit cadence differs from travel-matched cadence by more than 5%; use speed: "auto".');
+      diagnostics.push({ severity: 'warning', code: 'POSE_PRESERVING_TRAVEL', path: `${path}/footLock`, message: 'Experimental toe-X anchoring alters body travel, not poses. Shoe roll and natural motion still need visual review.' });
+    }
     if (Math.abs(y0 - scene.stage.groundY) > 1e-6 || Math.abs(y1 - scene.stage.groundY) > 1e-6) {
       error('TRAVEL_GROUND', `${path}/travel`, 'Travel endpoints must lie on stage.groundY.');
     }
     if (actor && ((actor.view === 'side-right' && dx < 0) || (actor.view === 'side-left' && dx > 0))) {
       error('TRAVEL_FACING', `${path}/travel`, 'Travel goes against the actor facing.');
     }
-    if (x0 !== x1 || y0 !== y1) diagnostics.push({ severity: 'warning', code: 'UNLOCKED_TRAVEL', path: `${path}/travel`, message: 'Travel has no horizontal foot locking; sliding and cadence need visual review.' });
-    if (![dx, clip.duration * clip.speed, clip.duration * clip.speed / cycle, cycle / clip.speed].every(Number.isFinite) ||
-        clip.duration * clip.speed <= 0 || cycle / clip.speed <= 0 ||
+    if (!clip.footLock && (x0 !== x1 || y0 !== y1)) diagnostics.push({ severity: 'warning', code: 'UNLOCKED_TRAVEL', path: `${path}/travel`, message: 'Travel has no horizontal foot locking; sliding and cadence need visual review.' });
+    if (![dx, clip.duration * speed, clip.duration * speed / cycle, cycle / speed].every(Number.isFinite) ||
+        clip.duration * speed <= 0 || cycle / speed <= 0 ||
         (actor && ![x0, x1].flatMap(x => [x - actor.scale * sourceAnchor[0], x + actor.scale * (sourceWidth - sourceAnchor[0])]).concat(
           [y0, y1].flatMap(y => [y - actor.scale * sourceAnchor[1], y + actor.scale * (sourceHeight - sourceAnchor[1])])
         ).every(Number.isFinite))) {
       error('NUMERIC_RANGE', path, 'Travel, cadence and placement calculations must remain finite and representable.');
     }
-    return { ...clip, index, startFrame, durationFrames };
+    return { ...clip, speed, index, startFrame, durationFrames };
   });
   for (const actor of actors.values()) {
     const ordered = clips.filter(clip => clip.actor === actor.id).sort((a, b) => a.startFrame - b.startFrame);
@@ -209,6 +233,7 @@ export function sampleScene(scene: PreparedScene, time: number) {
       id: actor.id, character: actor.character, view: actor.view, drawOrder,
       clipIndex: clip.index, action: clip.action, localTime,
       duration: clip.durationFrames / fps, speed: clip.speed,
+      ...(clip.footLock ? { footLock: true, travelVelocity: (clip.travel.to[0] - clip.travel.from[0]) / (clip.durationFrames / fps) } : {}),
       position, scale: actor.scale, sourceAnchor: [...plan.sourceAnchor],
       // SVG affine matrix [a,b,c,d,e,f], without applying facing a second time.
       transform: [actor.scale, 0, 0, actor.scale, position[0] - actor.scale * plan.sourceAnchor[0], position[1] - actor.scale * plan.sourceAnchor[1]],

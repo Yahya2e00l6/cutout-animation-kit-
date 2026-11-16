@@ -35,7 +35,7 @@ Supported: fixed camera, solid background, horizontal linear travel, scale,
 cadence, timed clips, and actor-array draw order (last on top).
 Unsupported: standing/idle, walk, jump, turns, view changes, expressions,
 dialogue/audio, props, drawn scenery, camera moves, physical collision avoidance,
-blended transitions, and horizontal foot locking. Say what is missing and ask
+blended transitions, and full sole/IK locking. Say what is missing and ask
 whether a supported alternative is acceptable. Do not silently drop a story beat
 or invent action names/fields. If the request explicitly asks for an engine
 extension, stop scene production and plan that extension separately.
@@ -59,8 +59,14 @@ extension, stop scene production and plan that extension separately.
    left. Equal endpoints mean running in place, **not** idle. Scale=1 preserves
    the saved action's size. Leave room around the whole silhouette; the renderer
    clips rather than automatically fitting it.
-5. Cadence `speed` and travel distance are independent. Do not claim that changing
-   cadence locks the feet. Preserve and disclose `UNLOCKED_TRAVEL` warnings.
+5. Numeric cadence and travel are independent by default. Preserve
+   `UNLOCKED_TRAVEL` warnings. An explicitly requested experimental alternative
+   uses `footLock: true` with `speed: "auto"`; first read
+   [the travel adapter's limits](../../../docs/travel-foot-lock.md). It anchors
+   toe X by changing root travel, not limb poses. Disclose its
+   `POSE_PRESERVING_TRAVEL` warning and measured root offset. Do not silently
+   enable it, claim full sole pinning, or change travel/duration to bypass a
+   cadence-range error without agreement.
 
 Do not edit `samples.json` or generated SVGs to repair a scene. They are outputs,
 not the authoring source. Use the scene JSON, then render to a new directory.
