@@ -84,6 +84,10 @@ Acceptance covers that upright pose, not arbitrary transition acting. Judge
 the body shift, settling, limb overlap, and timing in playback before accepting
 this approach. `TRANSITION_TRIAL` and `POSE_PRESERVING_TRAVEL` remain in reports.
 
+With [support-leg travel](support-leg-travel.md), short transfer ramps inside
+the run preserve the same endpoint tangents and accepted standing blends.
+That mode emits `SUPPORT_LEG_TRAVEL` rather than `POSE_PRESERVING_TRAVEL`.
+
 Tests cover schedule boundaries, static holds, repeatable sampling, invalid
 timing/contact endpoints, saved-pose equivalence at touchdown, mirrored toe
 placement through the delivered SVG, actual raster grounding, and independent

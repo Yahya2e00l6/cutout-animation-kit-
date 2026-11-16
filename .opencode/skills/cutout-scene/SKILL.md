@@ -40,7 +40,7 @@ standing pose with velocity-matched run joins, not force-based acceleration. Pre
 and request playback review. Do not silently adjust distance to fit touchdown.
 Unsupported: standalone standing/idle, walk, jump, turns, view changes, expressions,
 dialogue/audio, props, newly drawn scenery, camera moves, physical collision avoidance,
-arbitrary action blends, and full sole/IK locking. Say what is missing and ask
+arbitrary action blends, full-sole pinning, and arbitrary-rig IK. Say what is missing and ask
 whether a supported alternative is acceptable. Do not silently drop a story beat
 or invent action names/fields. If the request explicitly asks for an engine
 extension, stop scene production and plan that extension separately.
@@ -72,6 +72,12 @@ extension, stop scene production and plan that extension separately.
    `POSE_PRESERVING_TRAVEL` warning and measured root offset. Do not silently
    enable it, claim full sole pinning, or change travel/duration to bypass a
    cadence-range error without agreement.
+   If steadier body travel is explicitly requested, read
+   [the support-leg trial](../../../docs/support-leg-travel.md) before adding
+   `travelMode: "support-leg"`. It changes both leg chains rather than running
+   root X, and may lower the hips slightly for reach. Disclose
+   `SUPPORT_LEG_TRAVEL`, hip drop and leg-angle changes; request playback review.
+   It is opt-in, not a replacement for the approved saved action.
 6. For an existing background, read [plate registration and fitting](../../../backgrounds/README.md).
    Use `stage.image` with a registered `asset` ID and `contain`/`cover`; never
    invent file-path or URL fields. Cover crops edges and emits `BACKGROUND_CROP`.

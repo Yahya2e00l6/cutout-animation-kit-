@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "output": {"width": 1920, "height": 1080, "fps": 30, "duration": 4},
+  "stage": {
+    "background": "#e5e6dd", "groundY": 970,
+    "image": {"asset": "dice-school-courtyard", "fit": "contain"}
+  },
+  "actors": [
+    {"id": "test-runner", "character": "hoodie", "view": "side-right", "scale": 1}
+  ],
+  "clips": [
+    {
+      "actor": "test-runner", "action": "side-run-right", "start": 0, "duration": 4,
+      "speed": "auto", "footLock": true, "travelMode": "support-leg",
+      "transitions": {"standBefore": 0.5, "start": 0.5, "stop": 0.5, "standAfter": 0.5},
+      "travel": {"from": [300, 970], "to": [1244.7621764633385, 970]}
+    }
+  ]
+}

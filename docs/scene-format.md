@@ -92,6 +92,13 @@ retain its warnings. Travel against facing is
 invalid in v1. Vertical travel is unsupported: both endpoint Y values must equal
 `stage.groundY` within `1e-6` output pixels.
 
+Optional `travelMode: "support-leg"` on a locked clip selects
+[leg IK with steadier middle-run body X](support-leg-travel.md). It changes both leg
+chains and may lower the hips slightly to preserve previous foot paths. It emits
+`SUPPORT_LEG_TRAVEL`. Saved poses and original action APIs remain unchanged;
+omit the field to retain the previous adapter. Short transfer ramps at each
+run boundary preserve the approved standing transitions.
+
 ## Initial registry contract
 
 The validator binds these names to existing files and checks action/view
@@ -132,7 +139,8 @@ The schema cannot enforce all relationships. The implemented validator also:
 5. Requires `0 <= groundY <= output.height`, horizontal travel on that ground,
    and nonnegative X displacement for right-facing / nonpositive for left-facing.
 6. Checks opt-in travel calibration, cadence compatibility and range; emits
-   `UNLOCKED_TRAVEL` for unlocked motion or `POSE_PRESERVING_TRAVEL` for locked
+   `UNLOCKED_TRAVEL` for unlocked motion, `POSE_PRESERVING_TRAVEL` for default locked
+   travel, or `SUPPORT_LEG_TRAVEL` for the opt-in leg solver. Locked
    motion. Warning-free output does not establish natural motion or likeness.
 
 Diagnostics should include a stable code, JSON pointer, and readable explanation,

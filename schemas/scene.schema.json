@@ -75,6 +75,7 @@
         "duration": {"type": "number", "exclusiveMinimum": 0},
         "speed": {"oneOf": [{"type": "number", "exclusiveMinimum": 0}, {"const": "auto"}]},
         "footLock": {"type": "boolean"},
+        "travelMode": {"const": "support-leg"},
         "transitions": {
           "type": "object",
           "additionalProperties": false,

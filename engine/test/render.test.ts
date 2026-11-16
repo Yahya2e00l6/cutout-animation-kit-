@@ -168,3 +168,28 @@ test('image-background export retains asset provenance and embeds the plate behi
     assert(svg.includes('preserveAspectRatio="xMidYMid meet"'));
   } finally { rmSync(dir, { recursive: true }); }
 });
+
+test('support-leg bridge reduces root-X correction while exporting changed legs', () => {
+  const dir = temp();
+  try {
+    const source = example();
+    source.output = { width: 320, height: 180, fps: 30, duration: 0.2 };
+    source.stage.groundY = 150; source.actors[0].scale = 0.2;
+    const clip = source.clips[0];
+    clip.duration = 0.2; clip.speed = 'auto'; clip.footLock = true; clip.travelMode = 'support-leg';
+    clip.travel = { from: [160, 150], to: [180, 150] };
+    const output = join(dir, 'support');
+    const report = renderScene(JSON.stringify(source), output, { encode: false });
+    assert.equal(report.status, 'frames-complete');
+    assert(report.warnings.some(w => w.code === 'SUPPORT_LEG_TRAVEL'));
+    const metrics = report.render as { maxRunRootOffsetX: number; maxLegJointChangeDegrees: number };
+    const legacy = structuredClone(source); delete legacy.clips[0].travelMode;
+    const before = renderScene(JSON.stringify(legacy), join(dir, 'legacy'), { encode: false });
+    assert(metrics.maxRunRootOffsetX < (before.render as { maxRunRootOffsetX: number }).maxRunRootOffsetX * 0.7);
+    assert(metrics.maxLegJointChangeDegrees > 1);
+    const contacts = JSON.parse(readFileSync(join(output, 'contacts.json'), 'utf8')).frames;
+    assert.equal(contacts[2].actors[0].horizontalLock.method, 'support-leg');
+    assert.equal(contacts[3].actors[0].horizontalLock.rootOffsetX, 0);
+    assert.equal(contacts[2].actors[0].sourceContacts.supportIK.mode, 'support-leg');
+  } finally { rmSync(dir, { recursive: true }); }
+});

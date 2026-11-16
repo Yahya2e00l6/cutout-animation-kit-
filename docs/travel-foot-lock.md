@@ -3,6 +3,9 @@
 Use this opt-in mode to anchor a shoe's toe **horizontally** during authored
 stance intervals while keeping the saved limb angles, artwork, and vertical
 motion unchanged. It shifts the whole actor rather than solving leg IK.
+An alternative [support-leg trial](support-leg-travel.md) changes leg poses
+instead of running body X. The method here remains the default when
+`travelMode` is omitted.
 The five-second side-right comparison was accepted in playback. That acceptance
 covers this example, not all cadences, characters, or transition motion.
 

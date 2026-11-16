@@ -17,6 +17,7 @@ from tools.side_actions import load_side_action
 from tools.travel_run import TravelRun
 from tools.side_transition import TransitionPose
 from tools.background import Backgrounds
+from tools.support_run import SupportRun
 
 
 class SceneRenderer:
@@ -27,6 +28,7 @@ class SceneRenderer:
         self.actions = {}
         self.travel = {}
         self.backgrounds = Backgrounds()
+        self.support = {}
 
     def frame(self, sample, number):
         width, height = sample['output']['width'], sample['output']['height']
@@ -51,7 +53,7 @@ class SceneRenderer:
         for actor in sample['actors']:
             key = actor['clipIndex']
             signature = (actor['action'], actor['duration'], actor['speed'],
-                         bool(actor.get('footLock')), actor.get('travelVelocity'), actor.get('scale'))
+                         bool(actor.get('footLock')), actor.get('travelVelocity'), actor.get('scale'), actor.get('travelMode'), actor.get('runDuration'))
             if key not in self.actions:
                 self.actions[key] = (signature, self.loader(
                     actor['action'], duration=actor['duration'], speed=actor['speed']))
@@ -71,7 +73,17 @@ class SceneRenderer:
                 if abs(half_cycles - round(half_cycles)) > 1e-6:
                     raise ValueError('Standing blends require a touchdown endpoint')
                 motion_time = round(half_cycles) * action.config['cycle'] / 2
-            rendered_action = TransitionPose(action, transition['weight'], transition) if transition else action
+            motion_action = action
+            support_leg = actor.get('travelMode') == 'support-leg'
+            if actor.get('travelMode') and not support_leg:
+                raise ValueError('Unsupported travel mode')
+            if support_leg:
+                if not actor.get('footLock'):
+                    raise ValueError('Support-leg mode requires foot locking')
+                if key not in self.support:
+                    self.support[key] = SupportRun(action, actor['travelVelocity'], actor['scale'], actor['runDuration'])
+                motion_action = self.support[key]
+            rendered_action = TransitionPose(action, transition['weight'], transition) if transition else motion_action
             svg, contact = rendered_action.frame(motion_time, number, clean=True)
             locking = None
             if actor.get('footLock'):
@@ -87,6 +99,12 @@ class SceneRenderer:
                     offset += actor['scale'] * (self.travel[key].toe_x(phase, side) - rendered_action.toe_x(motion_time, side))
                     locking = {**locking, 'mode': 'transition', 'rootOffsetX': offset,
                                'toeX': locking['anchorX'], 'transition': transition}
+                elif support_leg:
+                    adjustment = self.support[key].solve(motion_time)[1]
+                    offset = adjustment['remainingRootOffsetX']
+                    locking = {**locking, 'method': 'support-leg', 'rootOffsetX': offset,
+                               'transferredRootOffsetX': adjustment['transferredRootOffsetX'],
+                               'transferWeight': adjustment['transferWeight']}
                 values[4] += offset
             data = 'data:image/svg+xml;base64,' + base64.b64encode(svg).decode('ascii')
             # An SVG image is a separate document: IDs and CSS never leak between actors.
@@ -122,13 +140,21 @@ def render_manifest(manifest, output):
             str(frames / f'frame_{number:04d}.png'))
         contacts.append({'frame': number, 'actors': record})
     (output / 'contacts.json').write_text(json.dumps({
-        'scope': 'sourceContacts are saved-action metadata in source coordinates. horizontalLock is computed toe-X anchoring, not independent pixel/contact verification.',
+        'scope': 'sourceContacts are source-space metadata for the selected action/adapter. horizontalLock is computed toe-X anchoring, not independent pixel/contact verification.',
         'frames': contacts,
     }, indent=2, allow_nan=False) + '\n')
     max_offset = max((abs(actor.get('horizontalLock', {}).get('rootOffsetX', 0))
                       for frame in contacts for actor in frame['actors']), default=0)
+    max_run_offset = max((abs(actor.get('horizontalLock', {}).get('rootOffsetX', 0))
+                          for frame in contacts for actor in frame['actors']
+                          if actor.get('horizontalLock', {}).get('mode') != 'transition'), default=0)
+    ik = [actor['sourceContacts']['supportIK'] for frame in contacts for actor in frame['actors']
+          if 'supportIK' in actor['sourceContacts']]
     return {'frameCount': len(samples), 'actionInstances': len(renderer.actions),
             'maxRootOffsetX': max_offset,
+            'maxRunRootOffsetX': max_run_offset,
+            'maxHipDrop': max((record['hipDrop'] for record in ik), default=0),
+            'maxLegJointChangeDegrees': max((record['maxJointChangeDegrees'] for record in ik), default=0),
             'width': samples[0]['output']['width'], 'height': samples[0]['output']['height']}
 
 

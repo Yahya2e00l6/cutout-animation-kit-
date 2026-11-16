@@ -22,6 +22,7 @@ export type Clip = {
   actor: string; action: 'side-run-right' | 'side-run-left';
   start: number; duration: number; speed: number | 'auto'; footLock?: boolean; travel: { from: Point; to: Point };
   transitions?: { standBefore: number; start: number; stop: number; standAfter: number };
+  travelMode?: 'support-leg';
 };
 export type Scene = {
   version: 1;
@@ -126,6 +127,7 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     'characters/hoodie-side/character.svg', 'characters/hoodie-side/rig.json',
     'poses/side-run.json', 'motions/side-run.json', 'tools/side_actions.py',
     ...(scene.clips.some(clip => clip.transitions) ? ['poses/side-stand.json'] : []),
+    ...(scene.clips.some(clip => clip.travelMode === 'support-leg') ? ['tools/support_run.py'] : []),
   ];
   for (const file of requiredFiles) {
     try { if (!statSync(resolve(root, file)).isFile()) throw new Error('Not a file'); }
@@ -196,13 +198,16 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     }
     let speed = typeof clip.speed === 'number' ? clip.speed : 1;
     if (clip.speed === 'auto' && !clip.footLock) error('CADENCE_MODE', `${path}/speed`, 'Automatic cadence requires footLock: true.');
+    if (clip.travelMode && !clip.footLock) error('TRAVEL_MODE', `${path}/travelMode`, 'Support-leg travel requires footLock: true.');
     if (clip.footLock) {
       if (dx === 0) error('TRAVEL_REQUIRED', `${path}/footLock`, 'Foot locking requires nonzero horizontal travel.');
       const matched = actor && pixelsPerCycle > 0 ? Math.abs(dx / runDuration) * cycle / (pixelsPerCycle * actor.scale) : 0;
       if (!Number.isFinite(matched) || matched < 0.2 || matched > 2) error('CADENCE_RANGE', `${path}/speed`, 'Matched cadence must be between 0.2 and 2 times the saved cadence. Change distance, duration or actor scale.');
       if (clip.speed === 'auto') speed = matched;
       else if (matched && Math.abs(speed / matched - 1) > 0.05) error('CADENCE_MISMATCH', `${path}/speed`, 'Explicit cadence differs from travel-matched cadence by more than 5%; use speed: "auto".');
-      diagnostics.push({ severity: 'warning', code: 'POSE_PRESERVING_TRAVEL', path: `${path}/footLock`, message: 'Experimental toe-X anchoring alters body travel, not poses. Shoe roll and natural motion still need visual review.' });
+      diagnostics.push(clip.travelMode === 'support-leg'
+        ? { severity: 'warning', code: 'SUPPORT_LEG_TRAVEL', path: `${path}/travelMode`, message: 'Experimental leg IK steadies middle-run body X while preserving previous foot paths. Short boundary ramps retain old transitions; leg poses and reach need review.' }
+        : { severity: 'warning', code: 'POSE_PRESERVING_TRAVEL', path: `${path}/footLock`, message: 'Experimental toe-X anchoring alters body travel, not poses. Shoe roll and natural motion still need visual review.' });
     }
     if (clip.transitions && runDuration > 0) {
       const halfCycles = runDuration * speed / cycle * 2;
@@ -288,6 +293,8 @@ export function sampleScene(scene: PreparedScene, time: number) {
       clipIndex: clip.index, action: clip.action, localTime,
       duration: clip.durationFrames / fps, speed: clip.speed,
       ...(transition ? { transition } : {}),
+      ...(clip.travelMode ? { travelMode: clip.travelMode } : {}),
+      ...(clip.travelMode === 'support-leg' ? { runDuration } : {}),
       ...(clip.footLock ? { footLock: true, travelVelocity: (clip.travel.to[0] - clip.travel.from[0]) / runDuration } : {}),
       position, scale: actor.scale, sourceAnchor: [...plan.sourceAnchor],
       // SVG affine matrix [a,b,c,d,e,f], without applying facing a second time.
