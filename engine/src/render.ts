@@ -48,6 +48,9 @@ export function renderScene(text: string, output: string, options: RenderOptions
     report.limitations[0] = 'Foot locking changes root travel or leg poses according to the selected clip mode; shoe roll remains.';
     report.limitations.push('Support-leg IK changes both leg chains, may lower the hips for reach, and lifts released heels during recovery. Middle-run body X follows the baseline; boundary ramps retain old start/stop motion. Shoe roll remains and unreachable targets fail.');
   }
+  if (source.actors.some((actor: { character: string }) => actor.character === 'dice-dongtae-upgraded')) {
+    report.limitations.push('DICE retarget preserves artwork and native bone lengths, not the donor leg angles or hip height. Extra hip lowering and measured shoe roll require playback review. Shared supportIK metrics describe the donor; diceRetarget metrics describe the delivered DICE solve.');
+  }
   const saveReport = () => writeFileSync(join(directory, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   saveReport();
   try {

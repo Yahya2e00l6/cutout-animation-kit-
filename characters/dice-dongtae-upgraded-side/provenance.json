@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "character": "dice-dongtae-upgraded",
+  "files": {
+    "character.svg": {
+      "source": "/home/yahya/creator/DICE/assets/characters/puppets/dongtae_upgraded_side_puppet.svg",
+      "sha256": "57e2ba19b6d2b771aaf6d7d9abadb3cb43ce5d54e918174178905c867e3eb23d"
+    },
+    "puppet_rig.py": {
+      "source": "/home/yahya/creator/DICE/assets/characters/puppets/puppet_rig.py",
+      "sha256": "16c1a35b5556f66e36d556af76bd08535d66f65ef98ac83421ace002405f9ac5"
+    }
+  }
+}

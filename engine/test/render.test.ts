@@ -9,6 +9,29 @@ const example = () => JSON.parse(readFileSync(new URL('../../scenes/examples/sid
 const temp = () => mkdtempSync(join(process.env.TMPDIR || tmpdir(), 'cutout-export-test-'));
 const media = () => ({ video: { width: 1280, height: 720, fps: 30, codec: 'h264', pix_fmt: 'yuv420p', nb_frames: 150, variable_frame_rate_suspected: false }, audio: null, duration: 5 });
 
+test('DICE character reaches the real bridge with separate artwork and retarget metrics', () => {
+  const dir = temp();
+  try {
+    const source = example();
+    source.output = { width: 320, height: 180, fps: 30, duration: 1 };
+    source.stage.groundY = 150;
+    source.actors[0].character = 'dice-dongtae-upgraded'; source.actors[0].scale = .2;
+    Object.assign(source.clips[0], { duration: 1, speed: 'auto', footLock: true, travelMode: 'support-leg',
+      travel: { from: [100, 150], to: [194.47621764633385, 150] } });
+    const output = join(dir, 'dice');
+    const report = renderScene(JSON.stringify(source), output, { encode: false });
+    assert.equal(report.status, 'frames-complete');
+    assert(report.warnings.some(w => w.code === 'DICE_RETARGET_TRIAL'));
+    const metrics = report.render as { maxDiceAnkleError: number; maxDiceAdditionalHipDrop: number };
+    assert(metrics.maxDiceAnkleError < .001);
+    assert(metrics.maxDiceAdditionalHipDrop > 0);
+    const svg = readFileSync(join(output, 'svg/frame_0009.svg'), 'utf8');
+    const embedded = Buffer.from(svg.match(/href="data:image\/svg\+xml;base64,([^"]+)/)![1], 'base64').toString();
+    assert(embedded.includes('dt_upg_side_root'));
+    assert(!embedded.includes('hip-right-silhouette'));
+  } finally { rmSync(dir, { recursive: true }); }
+});
+
 test('output probe rejects wrong frame count, codec, size, rate, duration, pixels or audio', () => {
   const output = { width: 1280, height: 720, fps: 30 };
   verifyProbe(media(), output, 150);

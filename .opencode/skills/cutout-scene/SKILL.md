@@ -1,6 +1,6 @@
 ---
 name: cutout-scene
-description: Assemble and export 2D hoodie animation scenes from story requests using the cutout-animation-kit scene engine. Use for scene JSON, saved side-run actions, multi-actor staging, SVG/PNG rendering, and silent MP4 export. Report unsupported actions rather than writing scene-specific animation scripts.
+description: Assemble and export registered 2D character scenes using the cutout-animation-kit scene engine. Use for scene JSON, saved side-run actions, multi-actor staging, SVG/PNG rendering, and silent MP4 export. Report unsupported actions rather than writing scene-specific animation scripts.
 ---
 
 # Cutout scene authoring
@@ -25,9 +25,13 @@ Only these scene bindings exist:
 | --- | --- | --- |
 | `hoodie` | `side-right` | `side-run-right` |
 | `hoodie` | `side-left` | `side-run-left` |
+| `dice-dongtae-upgraded` | `side-right` | `side-run-right` |
+| `dice-dongtae-upgraded` | `side-left` | `side-run-left` |
 
-Multiple actors are instances of the same saved hoodie artwork, not newly drawn
-characters. Left-facing art is mirrored. Front actions exist outside this scene
+Actors use their registered artwork, not newly drawn characters. For DICE, read
+[the adapter guide](../../../docs/dice-character-adapter.md); preserve its
+separate design and `DICE_RETARGET_TRIAL` warning. Shared motion approval does
+not approve DICE's retargeted poses. Left-facing art is mirrored. Front actions exist outside this scene
 format; do not silently replace a requested front view with a side view. Rear
 art is unapproved and not registered.
 
@@ -82,8 +86,9 @@ extension, stop scene production and plan that extension separately.
    Use `stage.image` with a registered `asset` ID and `contain`/`cover`; never
    invent file-path or URL fields. Cover crops edges and emits `BACKGROUND_CROP`.
    Inspect actual ground/perspective before a full render. The DICE courtyard
-   example is explicitly a hoodie-runner background test, not a DICE cast/story
-   shot. Do not silently substitute this runner for a requested DICE character.
+    `dice-courtyard-support-leg.json` example is a hoodie background test;
+    `dice-dongtae-courtyard.json` is the separate DICE character test. Neither is
+    a finished story shot. Do not substitute one character for the other.
 
 Do not edit `samples.json` or generated SVGs to repair a scene. They are outputs,
 not the authoring source. Use the scene JSON, then render to a new directory.

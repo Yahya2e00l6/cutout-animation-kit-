@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" width="800" height="1200" id="dt_upg_side_root" data-view="side" data-facing="right">
+  <title>Upgraded Dongtae — side action puppet</title>
+  <desc>Editable vector parts; switchable hands, eyes, brows and mouths; no baked background or props.</desc>
+  <defs>
+    <style>
+#dt_upg_side_root .navy-base {fill:#1e3a5f;stroke:#0f172a;stroke-linecap:round;stroke-linejoin:round;}
+#dt_upg_side_root .navy-far {fill:#18304e;stroke:#0f172a;stroke-linecap:round;stroke-linejoin:round;}
+#dt_upg_side_root .skin-base {fill:#fed7aa;stroke:#0f172a;stroke-linecap:round;stroke-linejoin:round;}
+#dt_upg_side_root .hair-base {fill:#0f172a;stroke:#0f172a;stroke-linecap:round;stroke-linejoin:round;}
+#dt_upg_side_root .shoe-base {fill:#0f172a;stroke:#0f172a;stroke-linecap:round;stroke-linejoin:round;}
+#dt_upg_side_root .ink-base {fill:none;stroke:#0f172a;stroke-linecap:round;stroke-linejoin:round;}
+#dt_upg_side_root .fatigue-base {fill:none;stroke:#94a3b8;stroke-linecap:round;stroke-linejoin:round;}
+#dt_upg_side_upper_body {transform-origin:400px 590px;}
+#dt_upg_side_head_group {transform-origin:400px 220px;}
+#dt_upg_side_upper_arm_left {transform-origin:383px 312px;}
+#dt_upg_side_forearm_left {transform-origin:373px 440px;}
+#dt_upg_side_hand_left {transform-origin:383px 550px;}
+#dt_upg_side_upper_arm_right {transform-origin:416px 312px;}
+#dt_upg_side_forearm_right {transform-origin:426px 440px;}
+#dt_upg_side_hand_right {transform-origin:436px 550px;}
+#dt_upg_side_thigh_left {transform-origin:385px 590px;}
+#dt_upg_side_shin_left {transform-origin:365px 780px;}
+#dt_upg_side_foot_left {transform-origin:345px 970px;}
+#dt_upg_side_thigh_right {transform-origin:415px 590px;}
+#dt_upg_side_shin_right {transform-origin:430px 780px;}
+#dt_upg_side_foot_right {transform-origin:440px 970px;}
+</style>
+  </defs>
+  <g id="dt_upg_side_puppet">
+    <g id="dt_upg_side_legs">
+      <g id="dt_upg_side_thigh_left" data-pivot="385 590">
+        <circle id="dt_upg_side_hip_pivot_left" cx="385" cy="590" r="19" class="navy-far" stroke-width="4" />
+        <polygon points="368.093,588.220 401.907,591.780 379.420,781.518 350.580,778.482" class="navy-far" stroke-width="4" />
+        <g id="dt_upg_side_shin_left" data-pivot="365 780">
+          <circle id="dt_upg_side_knee_pivot_left" cx="365" cy="780" r="18" class="navy-far" stroke-width="4" />
+          <polygon points="350.580,778.482 379.420,781.518 357.929,971.361 332.071,968.639" class="navy-far" stroke-width="4" />
+          <g id="dt_upg_side_foot_left" data-pivot="345 970">
+            <circle id="dt_upg_side_ankle_pivot_left" cx="345" cy="970" r="14" class="navy-far" stroke-width="4" />
+            <path d="M 326 961 L 355 961 L 368 978 Q 391 980 406 990 L 407 995 L 322 995 Z" class="shoe-base" stroke-width="4" />
+            <path d="M 323 995 L 405 995" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round" />
+          </g>
+        </g>
+      </g>
+      <g id="dt_upg_side_thigh_right" data-pivot="415 590">
+        <circle id="dt_upg_side_hip_pivot_right" cx="415" cy="590" r="19" class="navy-base" stroke-width="4" />
+        <polygon points="398.053,591.338 431.947,588.662 444.455,778.859 415.545,781.141" class="navy-base" stroke-width="4" />
+        <g id="dt_upg_side_shin_right" data-pivot="430 780">
+          <circle id="dt_upg_side_knee_pivot_right" cx="430" cy="780" r="18" class="navy-base" stroke-width="4" />
+          <polygon points="415.520,780.762 444.480,779.238 452.982,969.317 427.018,970.683" class="navy-base" stroke-width="4" />
+          <g id="dt_upg_side_foot_right" data-pivot="440 970">
+            <circle id="dt_upg_side_ankle_pivot_right" cx="440" cy="970" r="14" class="navy-base" stroke-width="4" />
+            <path d="M 421 961 L 450 961 L 463 978 Q 486 980 501 990 L 502 995 L 417 995 Z" class="shoe-base" stroke-width="4" />
+            <path d="M 418 995 L 500 995" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round" />
+          </g>
+        </g>
+      </g>
+      <g id="dt_upg_side_pelvis">
+        <path d="M 368 570 L 435 570 L 436 611 Q 400 629 368 611 Z" class="navy-base" stroke-width="4" />
+      </g>
+    </g>
+    <g id="dt_upg_side_upper_body" data-pivot="400 590">
+      <g id="dt_upg_side_arms_far">
+        <g id="dt_upg_side_upper_arm_left" data-pivot="383 312">
+          <circle id="dt_upg_side_shoulder_pivot_left" cx="383" cy="312" r="21" class="navy-far" stroke-width="4" />
+          <polygon points="367.049,310.754 398.951,313.246 386.957,441.090 359.043,438.910" class="navy-far" stroke-width="4" />
+          <g id="dt_upg_side_forearm_left" data-pivot="373 440">
+            <circle id="dt_upg_side_elbow_pivot_left" cx="373" cy="440" r="17" class="navy-far" stroke-width="4" />
+            <polygon points="359.555,441.222 386.445,438.778 394.453,548.959 371.547,551.041" class="navy-far" stroke-width="4" />
+            <g id="dt_upg_side_hand_left" data-pivot="383 550">
+              <circle id="dt_upg_side_wrist_pivot_left" cx="383" cy="550" r="12" class="navy-far" stroke-width="4" />
+              <g id="dt_upg_side_hand_left_shapes" transform="translate(383 550) rotate(-5.194429)">
+                <g id="dt_upg_side_hand_left_states">
+                  <g id="dt_upg_side_hand_left_relaxed" style="display: inline;">
+                    <path d="M -11 -2 Q -17 7 -12 19 Q -4 27 8 22 Q 17 16 12 4 L 9 -2 Z" class="skin-base" stroke-width="3" />
+                    <path d="M -9 9 Q 1 4 9 10 M -5 16 Q 3 12 10 16" class="ink-base" stroke-width="2" />
+                  </g>
+                  <g id="dt_upg_side_hand_left_fist" style="display: none;">
+                    <path d="M -11 -2 Q -16 3 -15 13 L -12 23 Q 0 29 12 22 L 15 8 Q 14 1 8 0 Z" class="skin-base" stroke-width="3" />
+                    <path d="M -13 7 Q -3 2 2 9 L 0 16 Q -7 20 -13 13 M 3 4 L 3 12 M 8 4 L 8 12" class="ink-base" stroke-width="2" />
+                  </g>
+                  <g id="dt_upg_side_hand_left_open" style="display: none;">
+                    <path d="M -11 0 L -13 11 L -21 7 Q -26 8 -23 13 L -13 24 Q -9 30 1 29 Q 12 29 13 20 L 15 -8 Q 14 -13 11 -9 L 8 8 L 8 -15 Q 5 -20 3 -14 L 2 8 L 0 -17 Q -3 -20 -5 -14 L -4 9 L -8 -10 Q -12 -13 -12 -7 Z" class="skin-base" stroke-width="3" />
+                    <path d="M -8 16 Q 0 11 7 17" class="ink-base" stroke-width="2" />
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="dt_upg_side_torso">
+        <path d="M 365 310 Q 405 300 438 319 L 432 586 Q 402 603 372 586 Z" class="navy-base" stroke-width="4" />
+      </g>
+      <g id="dt_upg_side_neck">
+        <path d="M 390 220 L 410 220 L 412 304 L 388 304 Z" class="skin-base" stroke-width="4" />
+      </g>
+      <g id="dt_upg_side_uniform_details">
+        <polygon points="408,299 430,311 422,341 409,317" fill="#fff" stroke="#0f172a" stroke-width="3" />
+        <polygon points="421,323 428,327 433,437 426,429" fill="#dc2626" stroke="#991b1b" stroke-width="2" />
+        <path d="M 400 315 L 418 379 L 437 330 M 418 379 L 422 552" class="ink-base" stroke-width="3" />
+      </g>
+      <g id="dt_upg_side_head_group" data-pivot="400 220">
+        <g id="dt_upg_side_hair_back" data-hair-style="short-tousled">
+          <path d="M 352 157 Q 342 176 354 191 L 365 183 L 373 153 Z" class="hair-base" stroke-width="2" />
+        </g>
+        <g id="dt_upg_side_head_base">
+          <path d="M 369 140 C 382 122 416 117 435 129 Q 449 140 450 160 L 468 171 Q 474 176 459 179 L 450 180 Q 455 188 450 193 L 450 204 Q 442 224 416 223 L 388 216 Q 376 209 373 193 L 360 183 Z" class="skin-base" stroke-width="4" />
+        </g>
+        <g id="dt_upg_side_ear">
+          <ellipse cx="371" cy="182" rx="9" ry="11" class="skin-base" stroke-width="3" />
+        </g>
+        <path d="M 368 179 Q 376 176 374 186" class="ink-base" stroke-width="2" />
+        <g id="dt_upg_side_face">
+          <g id="dt_upg_side_eyes">
+            <g id="dt_upg_side_eyes_open" style="display: inline;">
+              <ellipse cx="427" cy="168" rx="6" ry="4.8" fill="#0f172a" />
+              <circle cx="428.5" cy="167" r="1.3" fill="#fff" />
+            </g>
+            <g id="dt_upg_side_eyes_closed" style="display: none;">
+              <path d="M 421 168 Q 427 173 433 168" class="ink-base" stroke-width="2.8" />
+            </g>
+            <g id="dt_upg_side_eyes_focused" style="display: none;">
+              <ellipse cx="427" cy="168" rx="6" ry="2.7" fill="#0f172a" />
+              <circle cx="428.5" cy="167" r="1.3" fill="#fff" />
+            </g>
+            <g id="dt_upg_side_eyes_wide" style="display: none;">
+              <ellipse cx="427" cy="168" rx="7" ry="8" fill="#fff" stroke="#0f172a" stroke-width="2" />
+              <circle cx="428" cy="168" r="3" fill="#0f172a" />
+            </g>
+            <g id="dt_upg_side_eyes_pain" style="display: none;">
+              <path d="M 421 166 L 428 170 L 421 173" class="ink-base" stroke-width="2.8" />
+            </g>
+            <g id="dt_upg_side_eyes_time_pause" style="display: none;">
+              <ellipse cx="427" cy="168" rx="6" ry="4.8" fill="#00e5ff" />
+              <circle cx="428.5" cy="167" r="1.3" fill="#fff" />
+            </g>
+          </g>
+          <g id="dt_upg_side_under_eye_marks">
+            <path d="M 419 177 Q 427 182 435 177" class="fatigue-base" stroke-width="2" />
+          </g>
+          <g id="dt_upg_side_brows">
+            <g id="dt_upg_side_brows_neutral" style="display: inline;">
+              <path d="M 419 156.0 L 435 156.0" class="ink-base" stroke-width="3.5" />
+            </g>
+            <g id="dt_upg_side_brows_determined" style="display: none;">
+              <path d="M 419 154.5 L 435 157.5" class="ink-base" stroke-width="3.5" />
+            </g>
+            <g id="dt_upg_side_brows_angry" style="display: none;">
+              <path d="M 419 153.0 L 435 159.0" class="ink-base" stroke-width="3.5" />
+            </g>
+            <g id="dt_upg_side_brows_pain" style="display: none;">
+              <path d="M 419 158.5 L 435 153.5" class="ink-base" stroke-width="3.5" />
+            </g>
+            <g id="dt_upg_side_brows_shock" style="display: none;">
+              <path d="M 419 145.0 L 435 145.0" class="ink-base" stroke-width="3.5" />
+            </g>
+          </g>
+          <g id="dt_upg_side_mouth">
+            <g id="dt_upg_side_mouth_neutral" style="display: inline;">
+              <path d="M 436 199 L 451 199" class="ink-base" stroke-width="3" />
+            </g>
+            <g id="dt_upg_side_mouth_gritted" style="display: none;">
+              <rect x="435" y="196" width="18" height="8" rx="2" fill="#fff" stroke="#0f172a" stroke-width="2" />
+              <path d="M 441 196 L 441 204 M 447 196 L 447 204" class="ink-base" stroke-width="1" />
+            </g>
+            <g id="dt_upg_side_mouth_pain" style="display: none;">
+              <ellipse cx="444" cy="200" rx="7" ry="9" fill="#0f172a" />
+            </g>
+            <g id="dt_upg_side_mouth_talking_small" style="display: none;">
+              <ellipse cx="444" cy="200" rx="4" ry="4" fill="#0f172a" />
+            </g>
+            <g id="dt_upg_side_mouth_talking_open" style="display: none;">
+              <ellipse cx="444" cy="200" rx="7" ry="4" fill="#0f172a" />
+            </g>
+          </g>
+        </g>
+        <g id="dt_upg_side_hair_front" data-hair-style="short-tousled">
+          <path d="M 352 190 Q 344 183 346 168 L 341 163 L 347 154 L 343 150 Q 338 131 354 118 L 351 115 Q 368 103 381 105 L 381 100 L 397 104 Q 418 98 433 111 L 444 116 L 440 119 Q 452 131 452 147 L 447 145 L 440 134 L 436 143 L 426 133 L 419 141 L 410 134 L 402 144 L 393 140 L 386 156 L 378 151 L 375 178 L 367 174 L 363 190 Z" class="hair-base" stroke-width="2" />
+          <path d="M 389 115 Q 369 119 359 139" fill="none" stroke="#26324b" stroke-width="1.4" stroke-linecap="round" />
+          <path d="M 408 113 Q 429 117 440 132" fill="none" stroke="#26324b" stroke-width="1.4" stroke-linecap="round" />
+        </g>
+      </g>
+      <g id="dt_upg_side_arms_near">
+        <g id="dt_upg_side_upper_arm_right" data-pivot="416 312">
+          <circle id="dt_upg_side_shoulder_pivot_right" cx="416" cy="312" r="21" class="navy-base" stroke-width="4" />
+          <polygon points="400.049,313.246 431.951,310.754 439.957,438.910 412.043,441.090" class="navy-base" stroke-width="4" />
+          <g id="dt_upg_side_forearm_right" data-pivot="426 440">
+            <circle id="dt_upg_side_elbow_pivot_right" cx="426" cy="440" r="17" class="navy-base" stroke-width="4" />
+            <polygon points="412.555,441.222 439.445,438.778 447.453,548.959 424.547,551.041" class="navy-base" stroke-width="4" />
+            <g id="dt_upg_side_hand_right" data-pivot="436 550">
+              <circle id="dt_upg_side_wrist_pivot_right" cx="436" cy="550" r="12" class="navy-base" stroke-width="4" />
+              <g id="dt_upg_side_hand_right_shapes" transform="translate(436 550) rotate(-5.194429)">
+                <g id="dt_upg_side_hand_right_states">
+                  <g id="dt_upg_side_hand_right_relaxed" style="display: inline;">
+                    <path d="M -11 -2 Q -17 7 -12 19 Q -4 27 8 22 Q 17 16 12 4 L 9 -2 Z" class="skin-base" stroke-width="3" />
+                    <path d="M -9 9 Q 1 4 9 10 M -5 16 Q 3 12 10 16" class="ink-base" stroke-width="2" />
+                  </g>
+                  <g id="dt_upg_side_hand_right_fist" style="display: none;">
+                    <path d="M -11 -2 Q -16 3 -15 13 L -12 23 Q 0 29 12 22 L 15 8 Q 14 1 8 0 Z" class="skin-base" stroke-width="3" />
+                    <path d="M -13 7 Q -3 2 2 9 L 0 16 Q -7 20 -13 13 M 3 4 L 3 12 M 8 4 L 8 12" class="ink-base" stroke-width="2" />
+                  </g>
+                  <g id="dt_upg_side_hand_right_open" style="display: none;">
+                    <path d="M -11 0 L -13 11 L -21 7 Q -26 8 -23 13 L -13 24 Q -9 30 1 29 Q 12 29 13 20 L 15 -8 Q 14 -13 11 -9 L 8 8 L 8 -15 Q 5 -20 3 -14 L 2 8 L 0 -17 Q -3 -20 -5 -14 L -4 9 L -8 -10 Q -12 -13 -12 -7 Z" class="skin-base" stroke-width="3" />
+                    <path d="M -8 16 Q 0 11 7 17" class="ink-base" stroke-width="2" />
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

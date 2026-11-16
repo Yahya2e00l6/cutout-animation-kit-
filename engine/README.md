@@ -150,6 +150,11 @@ boundary ramps retain the approved standing transitions. It
 changes leg poses and may lower the hips slightly; it is not the default.
 There is no camera animation, audio, force-based physics, or general rig solver.
 
+The separate [DICE character adapter](../docs/dice-character-adapter.md) registers
+`dice-dongtae-upgraded` for both side views. Its unchanged SVG/controller snapshot
+uses the shared motion through proportion-specific IK; it emits
+`DICE_RETARGET_TRIAL` and still needs visual approval.
+
 The project-local [cutout-scene skill](../.opencode/skills/cutout-scene/SKILL.md)
 guides JSON authoring, validation, export, and inspection without scene-specific
 scripts. Work inside this toolkit for OpenCode to discover it; invoke it with

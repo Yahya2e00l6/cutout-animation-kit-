@@ -59,7 +59,7 @@
       "required": ["id", "character", "view", "scale"],
       "properties": {
         "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
-        "character": {"const": "hoodie"},
+        "character": {"enum": ["hoodie", "dice-dongtae-upgraded"]},
         "view": {"enum": ["side-right", "side-left"]},
         "scale": {"type": "number", "exclusiveMinimum": 0}
       }

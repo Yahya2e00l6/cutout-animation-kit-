@@ -29,6 +29,7 @@ class SceneRenderer:
         self.travel = {}
         self.backgrounds = Backgrounds()
         self.support = {}
+        self.dice = None
 
     def frame(self, sample, number):
         width, height = sample['output']['width'], sample['output']['height']
@@ -53,7 +54,7 @@ class SceneRenderer:
         for actor in sample['actors']:
             key = actor['clipIndex']
             signature = (actor['action'], actor['duration'], actor['speed'],
-                         bool(actor.get('footLock')), actor.get('travelVelocity'), actor.get('scale'), actor.get('travelMode'), actor.get('runDuration'))
+                         bool(actor.get('footLock')), actor.get('travelVelocity'), actor.get('scale'), actor.get('travelMode'), actor.get('runDuration'), actor.get('character', 'hoodie'))
             if key not in self.actions:
                 self.actions[key] = (signature, self.loader(
                     actor['action'], duration=actor['duration'], speed=actor['speed']))
@@ -84,7 +85,16 @@ class SceneRenderer:
                     self.support[key] = SupportRun(action, actor['travelVelocity'], actor['scale'], actor['runDuration'])
                 motion_action = self.support[key]
             rendered_action = TransitionPose(action, transition['weight'], transition) if transition else motion_action
-            svg, contact = rendered_action.frame(motion_time, number, clean=True)
+            character = actor.get('character', 'hoodie')
+            if character == 'dice-dongtae-upgraded':
+                from tools.dice_adapter import DiceAdapter
+                if self.dice is None:
+                    self.dice = DiceAdapter()
+                svg, contact = self.dice.frame(rendered_action, motion_time, number)
+            elif character == 'hoodie':
+                svg, contact = rendered_action.frame(motion_time, number, clean=True)
+            else:
+                raise ValueError('Unsupported scene character')
             locking = None
             if actor.get('footLock'):
                 if key not in self.travel:
@@ -150,12 +160,16 @@ def render_manifest(manifest, output):
                           if actor.get('horizontalLock', {}).get('mode') != 'transition'), default=0)
     ik = [actor['sourceContacts']['supportIK'] for frame in contacts for actor in frame['actors']
           if 'supportIK' in actor['sourceContacts']]
+    dice = [actor['sourceContacts']['diceRetarget'] for frame in contacts for actor in frame['actors']
+            if 'diceRetarget' in actor['sourceContacts']]
     return {'frameCount': len(samples), 'actionInstances': len(renderer.actions),
             'maxRootOffsetX': max_offset,
             'maxRunRootOffsetX': max_run_offset,
             'maxHipDrop': max((record['hipDrop'] for record in ik), default=0),
             'maxRecoveryLift': max((max(record.get('recoveryLift', {}).values(), default=0) for record in ik), default=0),
             'maxLegJointChangeDegrees': max((record['maxJointChangeDegrees'] for record in ik), default=0),
+            **({'maxDiceAnkleError': max(record['maxAnkleError'] for record in dice),
+                'maxDiceAdditionalHipDrop': max(record['additionalHipDrop'] for record in dice)} if dice else {}),
             'width': samples[0]['output']['width'], 'height': samples[0]['output']['height']}
 
 

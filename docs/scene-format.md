@@ -110,11 +110,17 @@ root, never from the scene directory.
 | --- | --- | --- | --- |
 | `hoodie` | `side-right` | `side-run-right` | `tools.side_actions.load_side_action` |
 | `hoodie` | `side-left` | `side-run-left` | `tools.side_actions.load_side_action` |
+| `dice-dongtae-upgraded` | `side-right` / `side-left` | matching `side-run-right` / `side-run-left` | `tools.dice_adapter.DiceAdapter` over shared timing |
 
 Both use `characters/hoodie-side/`, `poses/side-run.json`, and
 `motions/side-run.json`. Keep their current settings and source artwork unchanged.
 Use one loader instance per clip to retain calibration caches. Do not load
 experimental preview settings or rear artwork as a fallback.
+
+The [DICE adapter](dice-character-adapter.md) uses a separate unchanged SVG and
+controller snapshot. It shares motion scheduling, not the hoodie's drawing or
+bone lengths, and emits `DICE_RETARGET_TRIAL`. A successful hoodie test does not
+approve the resulting DICE motion.
 
 The bridge calls `frame(..., clean=True)` and embeds each returned SVG as an
 isolated SVG image data URI in the scene SVG, then rasterizes that composite.

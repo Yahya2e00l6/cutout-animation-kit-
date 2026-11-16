@@ -16,7 +16,7 @@ export type Diagnostic = {
 };
 export type Point = [number, number];
 export type Actor = {
-  id: string; character: 'hoodie'; view: 'side-right' | 'side-left'; scale: number;
+  id: string; character: 'hoodie' | 'dice-dongtae-upgraded'; view: 'side-right' | 'side-left'; scale: number;
 };
 export type Clip = {
   actor: string; action: 'side-run-right' | 'side-run-left';
@@ -128,10 +128,23 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     'poses/side-run.json', 'motions/side-run.json', 'tools/side_actions.py',
     ...(scene.clips.some(clip => clip.transitions) ? ['poses/side-stand.json'] : []),
     ...(scene.clips.some(clip => clip.travelMode === 'support-leg') ? ['tools/support_run.py'] : []),
+    ...(scene.actors.some(actor => actor.character === 'dice-dongtae-upgraded') ? ['tools/dice_adapter.py'] : []),
   ];
   for (const file of requiredFiles) {
     try { if (!statSync(resolve(root, file)).isFile()) throw new Error('Not a file'); }
     catch { error('ASSET_MISSING', '', `Required toolkit file missing: ${file}`); }
+  }
+  if (scene.actors.some(actor => actor.character === 'dice-dongtae-upgraded')) {
+    try {
+      const directory = 'characters/dice-dongtae-upgraded-side/';
+      const provenance = JSON.parse(readFileSync(resolve(root, directory, 'provenance.json'), 'utf8'));
+      if (provenance.version !== 1 || provenance.character !== 'dice-dongtae-upgraded') throw new Error('Invalid provenance');
+      for (const name of ['character.svg', 'puppet_rig.py']) {
+        const hash = createHash('sha256').update(readFileSync(resolve(root, directory, name))).digest('hex');
+        if (provenance.files[name].sha256 !== hash) throw new Error(`Snapshot changed: ${name}`);
+      }
+      diagnostics.push({ severity: 'warning', code: 'DICE_RETARGET_TRIAL', path: '/actors', message: 'DICE uses its unchanged SVG and controller with proportion-specific leg IK and measured shoe roll. Shared timing is not DICE motion or likeness approval.' });
+    } catch (cause) { error('DICE_ASSET', '/actors', String(cause)); }
   }
   let sourceAnchor: Point = [640, 650];
   if (scene.clips.some(clip => clip.transitions) && !diagnostics.some(item => item.code === 'ASSET_MISSING')) {
