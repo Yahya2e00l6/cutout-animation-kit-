@@ -1,8 +1,9 @@
 # Steadier body travel with leg IK
 
 This opt-in trial transfers the old root-X correction into both leg chains.
-The middle run follows the baseline X path; feet keep the previous
-adapter's world paths and shoe rotations. The approved pose-preserving run
+The middle run follows the baseline X path; feet retain planted contacts,
+horizontal paths and shoe rotations. Released heels lift earlier to avoid a
+near-straight-knee hold during exchange. The approved pose-preserving run
 remains the default. Artwork, saved settings, and standing angles are unchanged.
 
 Add to a locked clip:
@@ -29,9 +30,21 @@ locking and the same calibration, cadence, facing and touchdown checks.
 
 Both ankle targets absorb the previous root correction, then a two-link solve
 changes hip/knee angles without stretching bones. The swing leg is included so
-its world trajectory stays unchanged too. Ankle angles compensate to preserve
+its horizontal trajectory stays unchanged too. Ankle angles compensate to preserve
 each shoe's total rotation. Upper-body joint angles are retained apart from
 numerical phase normalization. Shoe roll remains; this is not full sole pinning.
+
+After each leg's toe-off at local phase 0.26, an earlier-peaked recovery arc
+lifts that ankle until the opposite touchdown at phase 0.5. Its height is
+`0.1 * legLength * (729/16) * u^2 * (1-u)^4`, multiplied by transfer weight,
+where `u` runs from zero to one through this interval. Peak lift is at `u=1/3`;
+value and velocity are zero at both ends. With this rig it adds at most 18.79
+output pixels at scale 1. It changes airborne Y, not planted contact or foot X.
+
+The original pose's measured vertical correction is applied before solving.
+Lifting a released shoe therefore cannot lower the other shoe or change the
+original standing height. `originalGroundCorrection` records this value in
+source units; `recoveryLift` records each leg's added lift in output pixels.
 
 At each end of the running interval, a smoothstep ramp over 0.15 cycles eases
 the transfer in/out (short clips cap each ramp at half the running interval).
@@ -62,16 +75,19 @@ complete. Holds/blends retain their usual transition records.
 
 `maxRunRootOffsetX` excludes standing transitions; `maxRootOffsetX` includes
 them. `maxHipDrop` and `maxLegJointChangeDegrees` summarize sampled running
-frames, not exhaustive continuous-time bounds. They are zero for legacy clips.
+frames, not exhaustive continuous-time bounds. `maxRecoveryLift` reports sampled
+heel lift; all three leg-solver metrics are zero for legacy clips.
 
 The rendered four-second courtyard comparison reduced `maxRunRootOffsetX`
-from 41.69 to 14.17 output pixels (about 66%). Sampled hip drop was 2.65 pixels
-and maximum leg-joint change was 30.73 degrees. All standing/start/stop PNGs
+from 41.69 to 14.17 output pixels (about 66%). With earlier recovery, sampled hip
+drop is 1.58 pixels, heel lift 18.59 pixels, and maximum leg-joint change 30.73
+degrees. All standing/start/stop PNGs
 matched the previous courtyard export pixel-for-pixel. The new leg performance
 still needs playback acceptance; these measurements do not establish smoothness.
 
 Tests check independent delivered joint transforms, isolated shoe rasters,
-mirrored/scaled targets, fixed limb lengths, upper-body preservation, scrubbing,
+mirrored/scaled targets, fixed limb lengths, prompt knee recovery after release,
+unchanged planted contacts, upper-body preservation, scrubbing,
 reach failures, source preservation and horizontal velocity at the run joins.
 Review playback against the previous test before adopting this mode. This is
 kinematic leg IK, not force/gravity simulation, a general rig solver, or acting

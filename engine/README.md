@@ -109,7 +109,7 @@ An export directory contains:
 - `render-result.json`: frame count, size, loaded action-instance count, and
   `maxRootOffsetX` (zero for legacy unlocked rendering).
   Reports also include `maxRunRootOffsetX` (excluding standing transitions),
-  `maxHipDrop`, and `maxLegJointChangeDegrees` for the opt-in leg solver.
+  `maxHipDrop`, `maxRecoveryLift`, and `maxLegJointChangeDegrees` for the opt-in leg solver.
 - `report.json`: status, warnings, limitations, and any failure.
 - With video: `encode-plan.json`, `encode-result.json`, `probe.json`, and `scene.mp4`.
 
@@ -144,7 +144,8 @@ holds and pose blends around a locked run, with a `TRANSITION_TRIAL` warning.
 Blends match joint velocity at the run joins while retaining the accepted
 standing pose and middle run. Grounding and natural acting still need review.
 Optional [support-leg travel](../docs/support-leg-travel.md) keeps middle-run body X
-linear by solving both leg chains while retaining previous foot paths. Short
+linear by solving both leg chains while retaining planted contacts and horizontal
+foot paths. Released heels lift earlier to avoid an extension hold. Short
 boundary ramps retain the approved standing transitions. It
 changes leg poses and may lower the hips slightly; it is not the default.
 There is no camera animation, audio, force-based physics, or general rig solver.

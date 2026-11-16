@@ -154,6 +154,7 @@ def render_manifest(manifest, output):
             'maxRootOffsetX': max_offset,
             'maxRunRootOffsetX': max_run_offset,
             'maxHipDrop': max((record['hipDrop'] for record in ik), default=0),
+            'maxRecoveryLift': max((max(record.get('recoveryLift', {}).values(), default=0) for record in ik), default=0),
             'maxLegJointChangeDegrees': max((record['maxJointChangeDegrees'] for record in ik), default=0),
             'width': samples[0]['output']['width'], 'height': samples[0]['output']['height']}
 

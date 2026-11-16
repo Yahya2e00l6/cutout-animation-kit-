@@ -66,7 +66,7 @@ class SupportRunTests(unittest.TestCase):
             self.assertGreater(weights[1], 0)
             self.assertLess(weights[1], 1)
 
-    def test_dense_mirrored_scaled_feet_follow_previous_world_paths_with_fixed_bone_lengths(self):
+    def test_dense_mirrored_scaled_feet_preserve_stance_and_horizontal_paths_with_fixed_lengths(self):
         for facing, sign in [('right', 1), ('left', -1)]:
             for speed, scale in [(0.3125, 0.5), (0.625, 1), (1.25, 1.2)]:
                 base = load_side_action(f'side-run-{facing}', speed=speed)
@@ -77,7 +77,7 @@ class SupportRunTests(unittest.TestCase):
                     t = i/120*base.config['cycle']
                     key, report = action.solve(t)
                     original = base.sample(t)
-                    old = pose_character(base.tree, base.rig, original)
+                    old, _ = base.pose(t)
                     new = pose_character(action.tree, action.rig, key)
                     offset, _ = travel.correction(t, velocity, scale, 0)
                     self.assertLessEqual(report['hipDrop'], 3.1*scale)
@@ -90,12 +90,42 @@ class SupportRunTests(unittest.TestCase):
                         a = world_point(old, f'ankle-{side}', base.rig['review']['toe'])
                         b = world_point(new, f'ankle-{side}', base.rig['review']['toe'])
                         self.assertAlmostEqual(sign*(b[0]-a[0])*base.config['scale']*scale, offset, places=6)
-                        self.assertAlmostEqual(b[1], a[1], places=6)
+                        self.assertAlmostEqual((a[1]-b[1])*base.config['scale']*scale, report['recoveryLift'][side], places=6)
+                        local = (i/120 - (0.5 if side == 'left' else 0)) % 1
+                        if local <= .26 or local >= .5:
+                            self.assertAlmostEqual(report['recoveryLift'][side], 0, places=6)
+                        self.assertLessEqual(report['recoveryLift'][side], 18.8*scale)
                         points = [world_point(new, f'{joint}-{side}', (0, 0)) for joint in ['hip', 'knee', 'ankle']]
                         self.assertAlmostEqual(math.dist(points[0], points[1]), 145, places=6)
                         self.assertAlmostEqual(math.dist(points[1], points[2]), 158, places=6)
                         old_shoe = sum(original['angles'][f'{j}-{side}'] for j in ['hip', 'knee', 'ankle'])
                         self.assertAlmostEqual(sum(key['angles'][f'{j}-{side}'] for j in ['hip', 'knee', 'ankle']), old_shoe, places=6)
+
+    def test_released_knee_folds_promptly_instead_of_holding_near_full_extension(self):
+        for facing, sign in [('right', 1), ('left', -1)]:
+            for speed in [.3125, .625, 1.25]:
+                base = load_side_action(f'side-run-{facing}', speed=speed)
+                action = SupportRun(base, sign*STRIDE*speed/.625, 1)
+                for side, offset in [('right', 0), ('left', .5)]:
+                    # After toe-off at phase .26, the former adapter held this
+                    # knee around 6.6 degrees through phase .30 (~two frames).
+                    key = action.sample((offset+.30)*base.config['cycle'])
+                    self.assertGreater(key['angles'][f'knee-{side}'], 30)
+                    _, info = action.solve((offset+.30)*base.config['cycle'])
+                    self.assertGreater(info['recoveryLift'][side], 10)
+                    for phase in [.26, .5]:
+                        _, endpoint = action.solve((offset+phase)*base.config['cycle'])
+                        self.assertAlmostEqual(endpoint['recoveryLift'][side], 0, places=8)
+
+    def test_delivered_knee_flexes_by_the_second_recovery_frame(self):
+        for facing in ['right', 'left']:
+            for side, offset in [('right', 0), ('left', .5)]:
+                svg, _ = frame(SceneRenderer(), actor_at(1.30+offset, facing))
+                hip, knee, ankle = [delivered_point(svg, f'{joint}-{side}', (0, 0)) for joint in ['hip', 'knee', 'ankle']]
+                upper = (knee[0]-hip[0], knee[1]-hip[1])
+                lower = (ankle[0]-knee[0], ankle[1]-knee[1])
+                cosine = sum(a*b for a,b in zip(upper,lower))/(math.hypot(*upper)*math.hypot(*lower))
+                self.assertGreater(math.degrees(math.acos(max(-1,min(1,cosine)))), 30)
 
     def test_actual_flat_stance_shoe_pixels_remain_anchored_with_linear_body_x(self):
         for facing in ['right', 'left']:

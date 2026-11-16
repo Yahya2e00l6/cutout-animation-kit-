@@ -1,14 +1,15 @@
 """Opt-in leg IK: transfer the old root-X correction into both leg chains.
 
-Feet retain the pose-preserving adapter's world paths and shoe rotations while
-the middle run travels on the baseline. Short boundary ramps retain the old
+Feet retain planted contacts, horizontal paths and shoe rotations; an earlier
+heel-recovery arc removes the released leg's extension hold. The middle run
+travels on the baseline. Short boundary ramps retain the old
 transition tangents. A small, smooth hip drop keeps both ankles
 within reach. This changes leg poses, not source artwork or saved run settings.
 """
 import copy
 import math
 
-from tools.side_review import pose_character, world_point
+from tools.side_review import world_point
 from tools.side_run import SideRun
 from tools.travel_run import TravelRun
 
@@ -62,16 +63,29 @@ class SupportRun(SideRun):
             time = phase * self.config['cycle']
             key = self.base.sample(time)
             original = copy.deepcopy(key)
-            posed = pose_character(self.tree, self.rig, key)
+            posed, original_contacts = self.base.pose(time)
+            # Preserve the saved pose's actual vertical placement before adding
+            # recovery lift, so releasing one shoe cannot move the other shoe.
+            key['root_y'] -= original_contacts['ground_correction']
             old_offset, _ = self.travel_adapter.correction(time, self.velocity, self.actor_scale, 0)
             sign = -1 if self.facing == 'left' else 1
             shift = sign * old_offset * weight / (self.actor_scale*self.config['scale'])
             targets = {}
+            recovery = {}
             drop = 0.0
             for side, (upper, lower) in self.lengths.items():
                 hx, hy = world_point(posed, f'hip-{side}', (0, 0))
                 ax, ay = world_point(posed, f'ankle-{side}', (0, 0))
                 dx, dy = ax-hx+shift, ay-hy
+                local_phase = (phase - (0.5 if side == 'left' else 0)) % 1
+                lift = 0.0
+                if self.travel_adapter.stance_end < local_phase < 0.5:
+                    u = (local_phase-self.travel_adapter.stance_end)/(0.5-self.travel_adapter.stance_end)
+                    # Earlier-peaked C1 heel-recovery arc: zero value/velocity
+                    # at toe-off and the opposite touchdown, maximum at u=1/3.
+                    lift = 0.1*(upper+lower)*(729/16)*u*u*(1-u)**4*weight
+                dy -= lift
+                recovery[side] = lift*self.config['scale']*self.actor_scale
                 reach = upper + lower - 0.5  # Avoid the fully straight IK singularity.
                 if abs(dx) >= reach:
                     raise ValueError('Support-leg target exceeds horizontal reach')
@@ -98,6 +112,8 @@ class SupportRun(SideRun):
                                       'transferWeight': weight, 'transferredRootOffsetX': old_offset*weight,
                                       'remainingRootOffsetX': old_offset*(1-weight) if weight < 1 else 0.0,
                                       'hipDrop': drop*self.config['scale']*self.actor_scale,
+                                      'recoveryLift': recovery,
+                                      'originalGroundCorrection': original_contacts['ground_correction'],
                                       'maxJointChangeDegrees': maximum})
         return copy.deepcopy(self.solved[cache_key])
 

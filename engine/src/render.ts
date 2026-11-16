@@ -46,7 +46,7 @@ export function renderScene(text: string, output: string, options: RenderOptions
   }
   if (source.clips.some((clip: { travelMode?: string }) => clip.travelMode === 'support-leg')) {
     report.limitations[0] = 'Foot locking changes root travel or leg poses according to the selected clip mode; shoe roll remains.';
-    report.limitations.push('Support-leg IK changes both leg chains and may lower the hips for reach. Middle-run body X follows the baseline; boundary ramps retain the old start/stop motion. Shoe roll remains and unreachable targets fail.');
+    report.limitations.push('Support-leg IK changes both leg chains, may lower the hips for reach, and lifts released heels during recovery. Middle-run body X follows the baseline; boundary ramps retain old start/stop motion. Shoe roll remains and unreachable targets fail.');
   }
   const saveReport = () => writeFileSync(join(directory, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   saveReport();
