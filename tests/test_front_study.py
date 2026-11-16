@@ -4,7 +4,7 @@ from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
 from tools.bvh_reference import BVH
-from tools.front_run_study import FrontStudy
+from tools.front_run_study import FrontStudy, MotionReadability, sub, unit
 from tools.preview import ROOT
 
 
@@ -61,6 +61,46 @@ class FrontStudyTests(unittest.TestCase):
         for seconds in (-1, math.nan, math.inf):
             with self.assertRaises(ValueError):
                 self.action.frame(seconds)
+
+    def test_staging_can_be_disabled_to_recover_measured_bone_directions(self):
+        measured = FrontStudy(readability=MotionReadability(
+            knee_drive=0, heel_fold=0, recovery_spread=0,
+            arm_center=0, arm_gain=1, arm_symmetry=0))
+        for i in range(24):
+            t = i/24*measured.cycle
+            pose = measured.pose(t)
+            ref = measured.sample(t)['joints']
+            for side, name in [('left', 'Left'), ('right', 'Right')]:
+                for a, b, ra, rb in [('hip', 'knee', 'UpLeg', 'Leg'), ('knee', 'ankle', 'Leg', 'Foot'),
+                                      ('shoulder', 'elbow', 'Arm', 'ForeArm'), ('elbow', 'wrist', 'ForeArm', 'Hand')]:
+                    actual = unit(sub(pose[side][b], pose[side][a]))
+                    expected = unit(sub(ref[name+rb], ref[name+ra]))
+                    for x, y in zip(actual, expected):
+                        self.assertAlmostEqual(x, y, places=9)
+
+    def test_invalid_staging_controls_are_rejected(self):
+        for config in [{'knee_drive': math.nan}, {'arm_symmetry': 1.1}, {'arm_gain': 0},
+                       {'recovery_spread': -.1}, {'heel_fold': 1}, {'arm_center': math.inf}]:
+            with self.assertRaises(ValueError):
+                MotionReadability(**config)
+
+    def test_full_arm_symmetry_matches_mirrored_half_cycle_directions(self):
+        action = FrontStudy(readability=MotionReadability(arm_symmetry=1))
+        for i in range(16):
+            a = action.pose(i/16*action.cycle)['left']
+            b = action.pose((i/16+.5)*action.cycle)['right']
+            for start, end in [('shoulder', 'elbow'), ('elbow', 'wrist')]:
+                left, right = sub(a[end], a[start]), sub(b[end], b[start])
+                for x, y in zip(left, (-right[0], right[1], right[2])):
+                    self.assertAlmostEqual(x, y, places=7)
+
+    def test_recovering_shoe_is_drawn_behind_its_own_advancing_thigh(self):
+        # Phase zero has the left heel tucked behind the knee. This used to
+        # paint the shoe across the knee despite its much lower world depth.
+        svg, pose = self.action.frame(0)
+        self.assertLess(pose['left']['ankle'][2], pose['left']['knee'][2])
+        ids = [e.get('id') for e in ET.fromstring(svg).iter() if e.get('id')]
+        self.assertLess(ids.index('study-shoe-left'), ids.index('study-thigh-left'))
 
     def test_retargeted_bones_keep_actual_3d_lengths_and_feet_stay_above_mesh_plane(self):
         depths = {side: [] for side in ('left', 'right')}
