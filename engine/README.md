@@ -157,15 +157,14 @@ The separate [DICE character adapter](../docs/dice-character-adapter.md) registe
 uses the shared motion through proportion-specific IK; it emits
 `DICE_RETARGET_TRIAL` and still needs visual approval.
 
-[Front run](../docs/front-run.md) registers the saved hoodie `reference-run`
-for technical rollback only: the author rejected that motion. The separate
-[fresh front study](../docs/front-run-study.md) is not registered or approved yet.
-The legacy binding remains
-under `view: "front"`. It exports the unchanged loop on a clean scene canvas,
-with numeric cadence and identical travel endpoints. Front in-place contacts
-are built into the saved action; side locking, support-leg mode, standing
-transitions and depth travel are rejected. `FRONT_RUN_IN_PLACE` remains in
-reports. Mixed-view scenes use per-action source anchors.
+[Front run](../docs/front-run.md) registers Astra's v04 motion and drawing as
+`front-run` for `hoodie` / `front`, using the
+[measured study](../docs/front-run-study.md) without changing its character poses.
+The rejected `reference-run` remains available only for rollback. Both use
+numeric cadence and identical travel endpoints. The revised run uses shoe-proxy
+plane grounding, not planted-foot verification. Side locking, support-leg mode,
+standing transitions and depth travel are rejected. `FRONT_RUN_IN_PLACE` remains
+in reports. Mixed-view scenes use per-action source anchors.
 
 The project-local [cutout-scene skill](../.opencode/skills/cutout-scene/SKILL.md)
 guides JSON authoring, validation, export, and inspection without scene-specific

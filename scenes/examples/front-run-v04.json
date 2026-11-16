@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "output": {"width": 1280, "height": 720, "fps": 30, "duration": 2.3},
+  "stage": {"background": "#f7f6f0", "groundY": 650},
+  "actors": [
+    {"id": "runner", "character": "hoodie", "view": "front", "scale": 1}
+  ],
+  "clips": [
+    {
+      "actor": "runner", "action": "front-run", "start": 0, "duration": 2.3,
+      "speed": 1, "travel": {"from": [640, 650], "to": [640, 650]}
+    }
+  ]
+}

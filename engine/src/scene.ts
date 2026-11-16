@@ -19,7 +19,7 @@ export type Actor = {
   id: string; character: 'hoodie' | 'dice-dongtae-upgraded'; view: 'side-right' | 'side-left' | 'front'; scale: number;
 };
 export type Clip = {
-  actor: string; action: 'side-run-right' | 'side-run-left' | 'reference-run';
+  actor: string; action: 'side-run-right' | 'side-run-left' | 'reference-run' | 'front-run';
   start: number; duration: number; speed: number | 'auto'; footLock?: boolean; travel: { from: Point; to: Point };
   transitions?: { standBefore: number; start: number; stop: number; standAfter: number };
   travelMode?: 'support-leg';
@@ -31,6 +31,7 @@ export type Scene = {
   actors: Actor[]; clips: Clip[];
 };
 type Source = { anchor: Point; width: number; height: number; cycle: number };
+const isFrontAction = (action: Clip['action']) => action === 'reference-run' || action === 'front-run';
 type ScheduledClip = Omit<Clip, 'speed'> & { speed: number; index: number; startFrame: number; durationFrames: number; source: Source };
 type Plan = {
   output: Scene['output']; stage: Scene['stage']; actors: Actor[];
@@ -128,12 +129,16 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     'characters/hoodie-side/character.svg', 'characters/hoodie-side/rig.json',
     'poses/side-run.json', 'motions/side-run.json', 'tools/side_actions.py',
   ];
-  const hasSide = scene.clips.some(clip => clip.action !== 'reference-run');
+  const hasSide = scene.clips.some(clip => !isFrontAction(clip.action));
   const hasFront = scene.clips.some(clip => clip.action === 'reference-run');
+  const hasStudy = scene.clips.some(clip => clip.action === 'front-run');
   const requiredFiles = [
     ...(hasSide ? sideFiles : []),
     ...(hasFront ? ['characters/hoodie/character.svg', 'characters/hoodie/rig.json',
       'motions/reference-run.json', 'tools/actions.py', 'tools/front_run.py'] : []),
+    ...(hasStudy ? ['characters/hoodie/character.svg', 'motions/front-run.json',
+      'motions/front-run-study/athletic-reference.json', 'tools/front_study_action.py',
+      'tools/front_run_study.py', 'tools/front_study_drawing.py'] : []),
     ...(scene.clips.some(clip => clip.transitions) ? ['poses/side-stand.json'] : []),
     ...(scene.clips.some(clip => clip.travelMode === 'support-leg') ? ['tools/support_run.py'] : []),
     ...(scene.actors.some(actor => actor.character === 'dice-dongtae-upgraded') ? ['tools/dice_adapter.py'] : []),
@@ -191,8 +196,25 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
       frontSource = { anchor: [config.width/2, config.floor], width: config.width, height: config.height, cycle: config.run.cycle };
     } catch { error('ASSET_INVALID', '', 'Saved front-run configuration is invalid.'); }
   }
+  let studySource: Source = { anchor: [640, 650], width: 1280, height: 720, cycle: 92/120 };
+  if (hasStudy && !diagnostics.some(item => item.code === 'ASSET_MISSING')) {
+    try {
+      const config = JSON.parse(readFileSync(resolve(root, 'motions/front-run.json'), 'utf8'));
+      const reference = JSON.parse(readFileSync(resolve(root, 'motions/front-run-study/athletic-reference.json'), 'utf8'));
+      const r = config.readability;
+      if (config.version !== 1 || config.width !== 1280 || config.height !== 720 ||
+          config.floor !== 650 || config.fps !== 30 || config.scale !== .64 ||
+          !r || Object.keys(r).sort().join(',') !== 'arm_center,arm_gain,arm_symmetry,heel_fold,knee_drive,recovery_spread' ||
+          !Object.values(r).every(Number.isFinite) || r.knee_drive < 0 || r.knee_drive > 1 ||
+          r.heel_fold < 0 || r.heel_fold > .5 || r.recovery_spread < 0 || r.recovery_spread > .4 ||
+          Math.abs(r.arm_center) > 1 || r.arm_gain <= 0 || r.arm_symmetry < 0 || r.arm_symmetry > 1 ||
+          reference.version !== 1 || !Number.isFinite(reference.cycle) || reference.cycle <= 0 ||
+          !Array.isArray(reference.samples) || reference.samples.length < 8) throw new Error('Invalid front-run preset');
+      studySource = { anchor: [config.width/2, config.floor], width: config.width, height: config.height, cycle: reference.cycle };
+    } catch { error('ASSET_INVALID', '', 'Revised front-run configuration is invalid.'); }
+  }
   let pixelsPerCycle = 0;
-  if (scene.clips.some(clip => clip.action !== 'reference-run' && clip.footLock)) {
+  if (scene.clips.some(clip => !isFrontAction(clip.action) && clip.footLock)) {
     try {
       const calibration = JSON.parse(readFileSync(resolve(root, 'motions/side-run-travel.json'), 'utf8'));
       if (calibration.version !== 1 || calibration.marker !== 'toe' || calibration.baseCycle !== cycle ||
@@ -215,10 +237,10 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     const startFrame = frames(clip.start, `${path}/start`, false);
     const durationFrames = frames(clip.duration, `${path}/duration`, true);
     const actor = actors.get(clip.actor);
-    const front = clip.action === 'reference-run';
-    const source = front ? frontSource : { anchor: sourceAnchor, width: sourceWidth, height: sourceHeight, cycle };
+    const front = isFrontAction(clip.action);
+    const source = clip.action === 'front-run' ? studySource : front ? frontSource : { anchor: sourceAnchor, width: sourceWidth, height: sourceHeight, cycle };
     if (!actor) error('ACTOR_UNKNOWN', `${path}/actor`, 'Clip refers to an unknown actor.');
-    else if (clip.action !== (actor.view === 'front' ? 'reference-run' : actor.view === 'side-right' ? 'side-run-right' : 'side-run-left')) {
+    else if (actor.view === 'front' ? !front : clip.action !== (actor.view === 'side-right' ? 'side-run-right' : 'side-run-left')) {
       error('ACTION_VIEW_MISMATCH', `${path}/action`, 'Action does not match the actor view.');
     }
     if (actor?.view === 'front' && actor.character !== 'hoodie') {
@@ -233,9 +255,11 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
     if (front) {
       if (x0 !== x1 || y0 !== y1) error('FRONT_TRAVEL', `${path}/travel`, 'Front run is in-place only; depth and lateral travel are unsupported.');
       if (clip.footLock || clip.travelMode || clip.transitions || clip.speed === 'auto') {
-        error('FRONT_MODE', path, 'Front run uses numeric cadence and its own in-place contacts; side locking, support-leg and standing blends are unsupported.');
+        error('FRONT_MODE', path, 'Front run requires numeric cadence; side locking, support-leg and standing blends are unsupported.');
       }
-      diagnostics.push({ severity: 'warning', code: 'FRONT_RUN_IN_PLACE', path, message: 'Saved front run uses projected limb foreshortening and in-place image-plane contacts. It does not provide depth travel, turning or standing transitions.' });
+      diagnostics.push({ severity: 'warning', code: 'FRONT_RUN_IN_PLACE', path, message: clip.action === 'front-run'
+        ? 'Astra v04 front run uses fixed-length 3D chains and shoe-proxy plane grounding, not planted-foot verification. Depth travel, turning and standing transitions are unsupported.'
+        : 'Legacy reference-run is retained for rollback; its motion was rejected. Depth travel, turning and standing transitions are unsupported.' });
     }
     const transitionDuration = clip.transitions ? Object.values(clip.transitions).reduce((a, b) => a + b, 0) : 0;
     const runDuration = clip.duration - transitionDuration;

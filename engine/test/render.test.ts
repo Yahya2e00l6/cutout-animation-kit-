@@ -9,6 +9,31 @@ const example = () => JSON.parse(readFileSync(new URL('../../scenes/examples/sid
 const temp = () => mkdtempSync(join(process.env.TMPDIR || tmpdir(), 'cutout-export-test-'));
 const media = () => ({ video: { width: 1280, height: 720, fps: 30, codec: 'h264', pix_fmt: 'yuv420p', nb_frames: 150, variable_frame_rate_suspected: false }, audio: null, duration: 5 });
 
+test('Astra front-run reaches the real bridge without study scenery or false contact metrics', () => {
+  const dir = temp();
+  try {
+    const source = JSON.parse(readFileSync(new URL('../../scenes/examples/front-run-v04.json', import.meta.url), 'utf8'));
+    source.output = { width: 320, height: 180, fps: 30, duration: 2/30 };
+    source.stage.groundY = 150; source.actors[0].scale = .2;
+    source.clips[0].duration = 2/30;
+    source.clips[0].travel = { from: [160, 150], to: [160, 150] };
+    const output = join(dir, 'astra');
+    const report = renderScene(JSON.stringify(source), output, { encode: false });
+    assert.equal(report.status, 'frames-complete');
+    assert(report.warnings.some(w => w.code === 'FRONT_RUN_IN_PLACE'));
+    const metrics = report.render as Record<string, unknown>;
+    assert(!('maxFrontContactError' in metrics));
+    assert(!('maxFrontPlantedDrift' in metrics));
+    const svg = readFileSync(join(output, 'svg/frame_0000.svg'), 'utf8');
+    const embedded = Buffer.from(svg.match(/href="data:image\/svg\+xml;base64,([^"]+)/)![1], 'base64').toString();
+    assert(embedded.includes('id="front-study-character"'));
+    assert(!embedded.includes('<ns0:rect'));
+    assert(!embedded.includes('<ns0:line'));
+    const records = JSON.parse(readFileSync(join(output, 'contacts.json'), 'utf8'));
+    assert.equal(records.frames[0].actors[0].sourceContacts.frontRun.sourceCheckpoint, '6fc6134');
+  } finally { rmSync(dir, { recursive: true }); }
+});
+
 test('front preset reaches the real bridge with transformed in-place contact metrics', () => {
   const dir = temp();
   try {

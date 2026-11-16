@@ -1,4 +1,4 @@
-"""Scene bridge for the unchanged, approved reference-run front loop."""
+"""Rollback scene bridge for the unchanged, rejected reference-run front loop."""
 import math
 import xml.etree.ElementTree as ET
 

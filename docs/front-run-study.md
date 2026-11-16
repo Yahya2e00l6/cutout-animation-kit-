@@ -1,8 +1,11 @@
 # Fresh front-run pose study
 
-**Status: unapproved blocking study, not an engine action.** The author rejected
-the old front loop and asked to start without treating it as a motion baseline.
-The approved side run stays untouched. No DICE scenes are involved.
+**Status: v04 saved into the engine at the author's request.** Use
+`hoodie` / `front` / `front-run`; see [the engine action guide](front-run.md).
+The adapter preserves v04 poses and character drawing, removing only the study
+plate, guide line and shadow. This registration does not establish planted-foot
+contact, approve future edits or enable depth travel. The rejected legacy front
+loop and approved side run stay untouched. No DICE scenes are involved.
 
 ## Review candidate: v04 drawing revision
 
@@ -28,7 +31,7 @@ and source artwork remain intact.
 
 **Visual judgment:** clothing reads as continuous fabric and sneakers are closer
 to the side design in the inspected phase sheets and decoded MP4 frames.
-Approval is pending. Folded heels still hide at .0/.5, soles are simplified,
+The author subsequently requested engine registration. Folded heels still hide at .0/.5, soles are simplified,
 and front-view hand perspective needs review. The contact envelope is still
 the v03 shoe proxy, not a planted-foot or pixel-grounding solver.
 
@@ -63,8 +66,8 @@ appear on the upper surface; foreground sleeves are clipped at the torso depth
 plane after outlining, avoiding a drawn seam at that plane. No standing limb path is
 axially stretched to simulate this run.
 
-These are new study drawings, **not approved limb/shoe artwork**. Contours,
-foreshortening, ground contact, occlusion and performance need playback review.
+These are new drawings saved with v04, not changes to the original SVG artwork.
+Ground contact and future contour, foreshortening or occlusion edits still need review.
 The renderer currently targets the hoodie's proportions; the source motion data
 is independent of that drawing. Do not call this universal retargeting.
 
@@ -187,6 +190,6 @@ confirms H.264, 1280×720, 30 fps, 69 frames and 2.3 seconds, with no audio.
 Delivery checks report no failures; optional audio/subtitle warnings are expected
 for this silent pose study. Neither result is visual approval.
 
-Review the motion and silhouette before polishing clothing/shoes or changing
-the engine. The next acceptance decision is whether the new stride reads as
-running; passing the geometry checks does not answer that question.
+Preserve this saved revision when authoring scenes. Further motion, contact or
+drawing changes require their own playback review; passing geometry checks does
+not establish visual quality.

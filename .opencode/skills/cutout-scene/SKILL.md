@@ -25,6 +25,7 @@ Only these scene bindings exist:
 | --- | --- | --- |
 | `hoodie` | `side-right` | `side-run-right` |
 | `hoodie` | `side-left` | `side-run-left` |
+| `hoodie` | `front` | `front-run` (Astra v04) |
 | `hoodie` | `front` | `reference-run` (legacy; motion rejected) |
 | `dice-dongtae-upgraded` | `side-right` | `side-run-right` |
 | `dice-dongtae-upgraded` | `side-left` | `side-run-left` |
@@ -34,11 +35,13 @@ Actors use their registered artwork, not newly drawn characters. For DICE, read
 separate design and `DICE_RETARGET_TRIAL` warning. Shared motion approval does
 not approve DICE's retargeted poses. Left-facing art is mirrored. For front runs,
 read [the front-run guide](../../../docs/front-run.md): numeric cadence and
-identical travel endpoints only. The saved loop has its own image-plane foot
-contacts; side locking, automatic cadence and standing blends are rejected.
-The author rejected this legacy front motion. Do not reuse it for a new front
-run just because the engine can render it. The [fresh motion study](../../../docs/front-run-study.md)
-needs playback review before engine registration; it is not a scene action.
+identical travel endpoints only. Use `front-run` for the saved Astra v04 motion
+and drawing. Its shoe-proxy grounding is not planted-foot verification; side
+locking, automatic cadence and standing blends are rejected. The author asked
+to save this revision into the engine. Preserve its poses and contours rather
+than silently redesigning them. `reference-run` is rejected legacy motion, kept
+only for rollback. The [study history](../../../docs/front-run-study.md) records
+the source and remaining contact limits.
 Do not silently replace a requested front view with a side view. Rear
 art is unapproved and not registered.
 

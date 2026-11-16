@@ -56,12 +56,14 @@ class SceneRenderer:
             signature = (actor['action'], actor['duration'], actor['speed'],
                          bool(actor.get('footLock')), actor.get('travelVelocity'), actor.get('scale'), actor.get('travelMode'), actor.get('runDuration'), actor.get('character', 'hoodie'), actor.get('view'))
             if key not in self.actions:
-                if actor['action'] == 'reference-run':
+                if actor['action'] in ('reference-run', 'front-run'):
                     from tools.front_run import FrontRun
+                    from tools.front_study_action import FrontStudyAction
                     if (actor.get('character', 'hoodie') != 'hoodie' or actor.get('view') != 'front'
                             or actor.get('footLock') or actor.get('travelMode') or actor.get('transition')):
                         raise ValueError('Front run requires hoodie/front without side travel options')
-                    action = FrontRun(actor['action'], duration=actor['duration'], speed=actor['speed'])
+                    factory = FrontStudyAction if actor['action'] == 'front-run' else FrontRun
+                    action = factory(actor['action'], duration=actor['duration'], speed=actor['speed'])
                 else:
                     action = self.loader(actor['action'], duration=actor['duration'], speed=actor['speed'])
                 self.actions[key] = (signature, action)

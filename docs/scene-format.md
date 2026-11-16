@@ -33,7 +33,7 @@ internal output field is not accepted in authoring JSON.
 
 Each actor has a unique `id`, registered `character`, fixed `view`, and positive
 `scale`. Scale 1 preserves the saved action's rendered size, including its
-artwork scale (0.62 for hoodie side runs, 0.56 for the front run); it does not
+artwork scale (0.62 for hoodie side runs, 0.64 for `front-run`, 0.56 for legacy `reference-run`); it does not
 mean one raw artwork unit per pixel.
 Actors draw in array order, last actor on top. Offscreen artwork is clipped to
 the output canvas, not automatically shrunk or repositioned.
@@ -112,7 +112,8 @@ root, never from the scene directory.
 | --- | --- | --- | --- |
 | `hoodie` | `side-right` | `side-run-right` | `tools.side_actions.load_side_action` |
 | `hoodie` | `side-left` | `side-run-left` | `tools.side_actions.load_side_action` |
-| `hoodie` | `front` | `reference-run` | `tools.front_run.FrontRun` |
+| `hoodie` | `front` | `front-run` (Astra v04) | `tools.front_study_action.FrontStudyAction` |
+| `hoodie` | `front` | `reference-run` (rejected; rollback only) | `tools.front_run.FrontRun` |
 | `dice-dongtae-upgraded` | `side-right` / `side-left` | matching `side-run-right` / `side-run-left` | `tools.dice_adapter.DiceAdapter` over shared timing |
 
 The two side bindings use `characters/hoodie-side/`, `poses/side-run.json`, and
@@ -120,8 +121,11 @@ The two side bindings use `characters/hoodie-side/`, `poses/side-run.json`, and
 Use one loader instance per clip to retain calibration caches. Do not load
 experimental preview settings or rear artwork as a fallback.
 
-The front binding uses `characters/hoodie/` and `motions/reference-run.json`.
-It requires identical travel endpoints, numeric speed, and no side `footLock`,
+The `front-run` binding uses the hoodie's head/torso identity, newly drawn limbs,
+`motions/front-run.json` and the prepared CMU cycle. It preserves Astra's v04
+revision and uses shoe-proxy plane correction, not planted-foot verification.
+The legacy front binding uses `characters/hoodie/` and `motions/reference-run.json`.
+Both require identical travel endpoints, numeric speed, and no side `footLock`,
 `travelMode` or standing `transitions`. `FRONT_RUN_IN_PLACE` discloses that the
 saved projected gait is not depth travel. Source anchor, canvas size and cycle
 are pinned per clip; mixed front/side scenes do not share one source config.

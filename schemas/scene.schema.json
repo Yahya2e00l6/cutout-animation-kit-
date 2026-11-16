@@ -70,7 +70,7 @@
       "required": ["actor", "action", "start", "duration", "speed", "travel"],
       "properties": {
         "actor": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
-        "action": {"enum": ["side-run-right", "side-run-left", "reference-run"]},
+        "action": {"enum": ["side-run-right", "side-run-left", "reference-run", "front-run"]},
         "start": {"type": "number", "minimum": 0},
         "duration": {"type": "number", "exclusiveMinimum": 0},
         "speed": {"oneOf": [{"type": "number", "exclusiveMinimum": 0}, {"const": "auto"}]},

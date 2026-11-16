@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "sourceCheckpoint": "6fc6134",
+  "width": 1280,
+  "height": 720,
+  "floor": 650,
+  "fps": 30,
+  "scale": 0.64,
+  "readability": {
+    "knee_drive": 0.85,
+    "heel_fold": 0.18,
+    "recovery_spread": 0.18,
+    "arm_center": 0.4,
+    "arm_gain": 1.35,
+    "arm_symmetry": 0.8
+  }
+}
