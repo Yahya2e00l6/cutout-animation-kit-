@@ -138,6 +138,9 @@ test('transition export delivers standing holds, a run and planted transition re
     const contacts = JSON.parse(readFileSync(join(output, 'contacts.json'), 'utf8')).frames;
     assert.equal(contacts.length, 24);
     assert.equal(contacts[0].actors[0].horizontalLock.transition.mode, 'stand');
+    assert.equal(contacts[4].actors[0].horizontalLock.transition.mode, 'start');
+    assert.equal(contacts[4].actors[0].horizontalLock.transition.duration, 0.2);
+    assert(Math.abs(contacts[4].actors[0].horizontalLock.transition.progress - 1/6) < 1e-12);
     assert.equal(contacts[9].actors[0].horizontalLock.mode, 'stance');
     assert.equal(contacts[23].actors[0].horizontalLock.transition.mode, 'stand');
     assert.equal(readFileSync(join(output, 'frames/frame_0000.png')).compare(readFileSync(join(output, 'frames/frame_0002.png'))), 0);

@@ -181,7 +181,7 @@ export function validateScene(value: unknown, root = toolkitRoot): ValidationRes
       for (const [name, seconds] of Object.entries(clip.transitions)) frames(seconds, `${path}/transitions/${name}`, true);
       if (!Number.isFinite(runDuration) || runDuration * scene.output.fps < 1 - 1e-6) error('TRANSITION_RANGE', `${path}/transitions`, 'Transitions must leave at least one running frame.');
       if (!clip.footLock) error('TRANSITION_MODE', `${path}/transitions`, 'Transition trial requires footLock: true.');
-      diagnostics.push({ severity: 'warning', code: 'TRANSITION_TRIAL', path: `${path}/transitions`, message: 'Standing pose blends plant one toe and preserve the middle run. They are not physical acceleration or approved acting.' });
+      diagnostics.push({ severity: 'warning', code: 'TRANSITION_TRIAL', path: `${path}/transitions`, message: 'Velocity-matched standing blends plant one toe and preserve the middle run. Grounding and acting still need playback review; this is not physical simulation.' });
     }
     let speed = typeof clip.speed === 'number' ? clip.speed : 1;
     if (clip.speed === 'auto' && !clip.footLock) error('CADENCE_MODE', `${path}/speed`, 'Automatic cadence requires footLock: true.');
@@ -258,12 +258,14 @@ export function sampleScene(scene: PreparedScene, time: number) {
     const runEndFrame = runStartFrame + runFrames;
     const localTime = Math.max(0, Math.min(runFrames, elapsedFrame - runStartFrame)) / fps;
     const smooth = (u: number) => u * u * (3 - 2 * u);
-    let transition: { mode: 'start' | 'stop' | 'stand'; weight: number } | undefined;
+    let transition: { mode: 'start' | 'stop' | 'stand'; weight: number; progress?: number; duration?: number } | undefined;
     if (tr && elapsedFrame < runStartFrame) transition = elapsedFrame < beforeFrames
       ? { mode: 'stand', weight: 0 }
-      : { mode: 'start', weight: smooth((elapsedFrame - beforeFrames) / startFrames) };
+      : { mode: 'start', weight: smooth((elapsedFrame - beforeFrames) / startFrames),
+          progress: (elapsedFrame - beforeFrames) / startFrames, duration: startFrames / fps };
     if (tr && elapsedFrame >= runEndFrame) transition = elapsedFrame < runEndFrame + stopFrames
-      ? { mode: 'stop', weight: 1 - smooth((elapsedFrame - runEndFrame) / stopFrames) }
+      ? { mode: 'stop', weight: 1 - smooth((elapsedFrame - runEndFrame) / stopFrames),
+          progress: (elapsedFrame - runEndFrame) / stopFrames, duration: stopFrames / fps }
       : { mode: 'stand', weight: 0 };
     const u = tr ? localTime / runDuration : elapsedFrame / clip.durationFrames;
     const position: Point = [

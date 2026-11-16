@@ -32,7 +32,78 @@ def transform_point(point, transform):
     return x, y
 
 
+def delivered_point(svg, name, point):
+    outer = ET.fromstring(svg)
+    image = outer.find(f'{{{SVG}}}image')
+    embedded = ET.fromstring(base64.b64decode(image.get('href').split(',')[1]))
+    parents = {child: parent for parent in embedded.iter() for child in parent}
+    node = next(n for n in embedded.iter() if n.get('id') == name)
+    while node is not None:
+        point = transform_point(point, node.get('transform', ''))
+        node = parents.get(node)
+    return transform_point(point, image.get('transform'))
+
+
 class SideTransitionTests(unittest.TestCase):
+    def test_hermite_angles_match_run_velocity_and_rest_at_both_ends(self):
+        action = load_side_action('side-run-right', speed=0.625)
+        for time in [0, 0.5, 2]:
+            for duration in [0.2, 0.5, 0.8]:
+                h = 1e-5
+                run_before = action.sample((time - h) % action.config['cycle'])['angles']
+                run_after = action.sample((time + h) % action.config['cycle'])['angles']
+                expected = {name: (run_after[name] - value) / (2*h) for name, value in run_before.items()}
+                for mode in ['start', 'stop']:
+                    def at(u):
+                        return TransitionPose(action, 0, {'mode': mode, 'duration': duration, 'progress': u}).sample(time)['angles']
+                    begin, end = at(0), at(1)
+                    running, standing = action.sample(time)['angles'], standing_angles()
+                    self.assertEqual(begin, standing if mode == 'start' else running)
+                    self.assertEqual(end, running if mode == 'start' else standing)
+                    du = h/duration
+                    first, last = at(du), at(1-du)
+                    for name in begin:
+                        self.assertAlmostEqual((first[name] - begin[name])/h, 0 if mode == 'start' else expected[name], delta=0.2)
+                        self.assertAlmostEqual((end[name] - last[name])/h, expected[name] if mode == 'start' else 0, delta=0.2)
+
+    def test_delivered_body_horizontal_velocity_is_continuous_at_all_four_joins(self):
+        # Measure the delivered SVG, not the renderer's contact/velocity report.
+        for facing, sign in [('right', 1), ('left', -1)]:
+            for scale in [0.5, 1.25]:
+                for run_duration in [0.5, 2]:
+                    renderer = SceneRenderer()
+                    velocity = sign * 472.38108823166925 * scale
+                    def frame(t):
+                        local_time = max(0, min(run_duration, t - 1))
+                        x = 640 + velocity * local_time
+                        item = {'id': 'runner', 'clipIndex': 0, 'action': f'side-run-{facing}',
+                                'duration': 4, 'speed': 0.625, 'localTime': local_time,
+                                'sourceAnchor': [640, 650], 'position': [x, 620], 'scale': scale,
+                                'transform': [scale, 0, 0, scale, x-640*scale, 620-650*scale],
+                                'footLock': True, 'travelVelocity': velocity}
+                        if t < 0.5 or t >= 1 + run_duration + 0.5:
+                            item['transition'] = {'mode': 'stand', 'weight': 0}
+                        elif t < 1 or t >= 1 + run_duration:
+                            mode = 'start' if t < 1 else 'stop'
+                            u = (t - 0.5)/0.5 if mode == 'start' else (t-1-run_duration)/0.5
+                            weight = u*u*(3-2*u)
+                            item['transition'] = {'mode': mode, 'weight': weight if mode == 'start' else 1-weight,
+                                                  'duration': 0.5, 'progress': u}
+                        return renderer.frame({'output': {'width': 2560, 'height': 900},
+                                               'stage': {'background': '#ffffff'}, 'actors': [item]}, 0)[0]
+                    h = 1e-4
+                    for seam in [0.5, 1, 1 + run_duration, 1.5 + run_duration]:
+                        svgs = [frame(seam+offset) for offset in [-h, 0, h]]
+                        for name in ['root', 'head', 'wrist-right', 'wrist-left']:
+                            x0, x1, x2 = [delivered_point(svg, name, (0, 0))[0] for svg in svgs]
+                            self.assertLess(abs((x1-x0)/h - (x2-x1)/h), 1.5, (facing, scale, run_duration, seam, name))
+
+    def test_invalid_velocity_blend_parameters_are_rejected(self):
+        action = load_side_action('side-run-right')
+        for duration, progress in [(0, 0.5), (-1, 0.5), (math.nan, 0.5), (0.5, -0.1), (0.5, 1.1), (0.5, math.inf)]:
+            with self.assertRaises(ValueError):
+                TransitionPose(action, 0, {'mode': 'start', 'duration': duration, 'progress': progress})
+
     def test_transition_requests_do_not_change_middle_run_or_request_order(self):
         renderer = SceneRenderer()
         item = {'id': 'runner', 'clipIndex': 0, 'action': 'side-run-right',
@@ -102,7 +173,8 @@ class SideTransitionTests(unittest.TestCase):
                             'sourceAnchor': [640, 650], 'position': [x, 620], 'scale': 0.7,
                             'transform': [0.7, 0, 0, 0.7, x-448, 165],
                             'footLock': True, 'travelVelocity': sign*236.19054411583462,
-                            'transition': {'mode': 'start', 'weight': weight}}
+                            'transition': {'mode': 'start', 'weight': weight*weight*(3-2*weight),
+                                           'progress': weight, 'duration': 0.5}}
                     svg, records = renderer.frame({'output': {'width': 1280, 'height': 720},
                                                   'stage': {'background': '#ffffff'}, 'actors': [item]}, 0)
                     outer = ET.fromstring(svg)

@@ -15,12 +15,16 @@ test('transition schedule includes real standing holds and preserves middle cade
   assert.deepEqual(at(0).transition, { mode: 'stand', weight: 0 });
   assert.deepEqual(at(0.4).transition, { mode: 'stand', weight: 0 });
   assert.equal(at(0.9).transition!.mode, 'start');
+  assert.equal(at(0.9).transition!.duration, 0.8);
+  assert(Math.abs(at(0.9).transition!.progress! - 0.5) < 1e-12);
   assert(Math.abs(at(0.9).transition!.weight - 0.5) < 1e-12);
   assert.equal(at(1.3).transition, undefined);
   assert.equal(at(1.3).localTime, 0);
   assert(Math.abs(at(3.3).localTime - 2) < 1e-12);
   assert(Math.abs(at(3.3).speed - 0.3125) < 1e-12);
   assert.equal(at(5.3).transition!.mode, 'stop');
+  assert.equal(at(5.3).transition!.duration, 0.8);
+  assert.equal(at(5.3).transition!.progress, 0);
   assert(Math.abs(at(5.3).transition!.weight - 1) < 1e-12);
   assert.deepEqual(at(6.2).transition, { mode: 'stand', weight: 0 });
   assert.deepEqual(sampleFrame(result.scene!, 197).actors[0].transition, { mode: 'stand', weight: 0 });

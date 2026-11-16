@@ -36,7 +36,7 @@ cadence, timed clips, and actor-array draw order (last on top).
 Optional experimental stand → run → stop: read
 [the transition guide](../../../docs/standing-transitions.md) before using
 `transitions`. It requires toe locking and a touchdown endpoint; it blends a
-neutral pose rather than physically accelerating. Preserve `TRANSITION_TRIAL`
+standing pose with velocity-matched run joins, not force-based acceleration. Preserve `TRANSITION_TRIAL`
 and request playback review. Do not silently adjust distance to fit touchdown.
 Unsupported: standalone standing/idle, walk, jump, turns, view changes, expressions,
 dialogue/audio, props, drawn scenery, camera moves, physical collision avoidance,

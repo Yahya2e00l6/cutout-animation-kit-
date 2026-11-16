@@ -9,6 +9,7 @@ import json
 import math
 
 from tools.preview import ROOT
+from tools.motion import hermite
 from tools.side_run import SideRun
 from tools.side_review import world_point
 
@@ -24,18 +25,41 @@ def standing_angles():
 
 
 class TransitionPose(SideRun):
-    def __init__(self, action, weight):
+    def __init__(self, action, weight, transition=None):
         if not 0 <= weight <= 1:
             raise ValueError('Transition weight must be in [0, 1]')
         # Sources/config are read-only; keep the existing shoe measurement cache.
         self.__dict__ = action.__dict__.copy()
         self.weight = weight
+        self.transition = transition
+        if transition and transition['mode'] != 'stand' and 'progress' in transition:
+            if (not math.isfinite(transition.get('duration', 0)) or transition.get('duration', 0) <= 0
+                    or not 0 <= transition['progress'] <= 1
+                    or transition['mode'] not in ('start', 'stop')):
+                raise ValueError('Invalid velocity-matched transition')
         self.standing = standing_angles()
         if set(self.standing) != set(self.channels):
             raise ValueError('Standing pose joints must match the saved side run')
 
     def sample(self, seconds):
         key = super().sample(seconds)
+        tr = self.transition
+        if tr and tr['mode'] != 'stand' and 'progress' in tr:
+            # Sample a periodic central difference, including touchdown at t=0.
+            # Tangents are degrees/second, so changing blend duration does not
+            # accidentally change the saved run's incoming/outgoing velocity.
+            h = self.config['cycle'] * 1e-5
+            before = super().sample((seconds - h) % self.config['cycle'])
+            after = super().sample((seconds + h) % self.config['cycle'])
+            def blend(standing, running, previous, following):
+                velocity = (following - previous) / (2 * h)
+                if tr['mode'] == 'start':
+                    return hermite(standing, running, 0, velocity, tr['duration'], tr['progress'])
+                return hermite(running, standing, velocity, 0, tr['duration'], tr['progress'])
+            key['angles'] = {name: blend(self.standing[name], value, before['angles'][name], after['angles'][name])
+                             for name, value in key['angles'].items()}
+            key['root_y'] = blend(0, key['root_y'], before['root_y'], after['root_y'])
+            return key
         # Blend an explicit standing pose, not the rig's stacked zero-angle pose.
         key['angles'] = {name: self.standing[name] + (value - self.standing[name]) * self.weight
                          if self.weight < 1 else value for name, value in key['angles'].items()}

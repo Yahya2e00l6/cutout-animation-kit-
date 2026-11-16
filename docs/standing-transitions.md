@@ -53,22 +53,30 @@ Omitting `transitions` retains the previous scene behavior.
 
 ## Rendering and limits
 
-TypeScript schedules holds and supplies smoothstep blend weights. During holds
+TypeScript schedules holds and supplies transition progress and duration, plus
+a smoothstep weight for inspection. During holds
 and blends it freezes action time at the adjacent run endpoint. `localTime` in
 samples therefore means run time, not elapsed clip time. Baseline placement
 holds at `travel.from/to` outside the running interval.
 
-Python interpolates joint angles between the explicit
+Python uses cubic Hermite curves between the explicit
 [standing pose](../poses/side-stand.json) and the adjacent
-run pose; it does not regenerate or crossfade artwork. The lowest measured shoe
+run pose. Standing endpoints have zero joint velocity; run endpoints match
+the saved action's joint velocities, measured with a periodic central difference.
+Tangents use degrees per second and the actual blend duration, so the middle
+run's cadence is unchanged. This does not regenerate or crossfade artwork. The lowest measured shoe
 is grounded vertically. A root-X correction plants the support toe, including
 through the blends. The other shoe may move. Baseline endpoints are not exact
 corrected body positions. Contacts record `mode: "transition"`, the blend mode
-and weight, toe anchor, and applied root offset.
+and weight, progress/duration for moving blends, toe anchor, and applied root offset.
 
-Only position continuity is intended at run joins. The blends freeze the
-endpoint pose while the run has its own velocity: joins can change velocity
-abruptly, and the body does not physically accelerate/decelerate along the path.
+Matching joint velocity removes the old horizontal body-speed snap at run joins
+while retaining the toe anchor. The rendered root moves as the planted leg
+changes pose; the baseline path itself still holds outside the running interval.
+This is kinematic easing, not a force-based acceleration/deceleration model.
+Acceleration is not matched, and raster grounding can still introduce small
+vertical steps or switch the lowest shoe. Long blends or new cadences can
+overshoot joint angles: review them rather than assuming smooth curves look natural.
 The standing pose uses straight knees, lightly staggered flat feet, a torso
 aligned over the pelvis, and arms hanging at the sides. It replaces both the
 stacked zero-angle pose and the rejected bent-knee standing trial.
@@ -78,5 +86,8 @@ this approach. `TRANSITION_TRIAL` and `POSE_PRESERVING_TRAVEL` remain in reports
 
 Tests cover schedule boundaries, static holds, repeatable sampling, invalid
 timing/contact endpoints, saved-pose equivalence at touchdown, mirrored toe
-placement through the delivered SVG, and actual raster grounding. These do not
+placement through the delivered SVG, actual raster grounding, and independent
+horizontal root/head/hand velocity checks at all four joins in both facings and
+two scales. Tests also verify joint tangents across several blend durations.
+These checks do not
 establish natural motion or stationary contact over the whole sole.

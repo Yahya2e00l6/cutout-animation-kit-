@@ -134,6 +134,8 @@ and `speed: "auto"` for pose-preserving toe-X anchoring. It alters root travel,
 not limb angles, and reports its maximum root offset. Legacy scenes are unchanged.
 An optional [standing-transition trial](../docs/standing-transitions.md) adds
 holds and pose blends around a locked run, with a `TRANSITION_TRIAL` warning.
+Blends match joint velocity at the run joins while retaining the accepted
+standing pose and middle run. Grounding and natural acting still need review.
 There is no camera animation, audio, physical acceleration, or leg IK contact solver.
 
 The project-local [cutout-scene skill](../.opencode/skills/cutout-scene/SKILL.md)

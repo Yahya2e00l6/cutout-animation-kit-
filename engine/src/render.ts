@@ -40,7 +40,7 @@ export function renderScene(text: string, output: string, options: RenderOptions
       : 'No horizontal foot locking or standing transitions.', 'Technical success is not motion or likeness approval.'],
   };
   if (source.clips.some((clip: { transitions?: unknown }) => clip.transitions)) {
-    report.limitations.push('Standing transitions are pose blends, not physical acceleration. Only position continuity is intended at the run joins; velocity may change abruptly.');
+    report.limitations.push('Standing blends match saved joint velocities at run joins and keep a toe anchored in X. Raster grounding can still change contact; this is not physical simulation or acting approval.');
   }
   const saveReport = () => writeFileSync(join(directory, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   saveReport();

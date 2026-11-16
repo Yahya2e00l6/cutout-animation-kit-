@@ -59,7 +59,7 @@ class SceneRenderer:
                 if abs(half_cycles - round(half_cycles)) > 1e-6:
                     raise ValueError('Standing blends require a touchdown endpoint')
                 motion_time = round(half_cycles) * action.config['cycle'] / 2
-            rendered_action = TransitionPose(action, transition['weight']) if transition else action
+            rendered_action = TransitionPose(action, transition['weight'], transition) if transition else action
             svg, contact = rendered_action.frame(motion_time, number, clean=True)
             locking = None
             if actor.get('footLock'):
