@@ -1,5 +1,11 @@
 # Front run in the scene engine
 
+**Motion rejected:** the author rejected this front loop after comparing it with
+the approved side run. Its registration and preservation tests establish only
+technical behavior. Do not use it as the basis for new front-run motion. It is
+retained for rollback; [the fresh front-run study](front-run-study.md) is separate
+and is not an approved replacement or registered engine action yet.
+
 Use `character: "hoodie"`, `view: "front"`, and `action: "reference-run"` to
 render the existing saved front-view loop through the scene engine. The
 [plain-background example](../scenes/examples/front-run-in-place.json) exports

@@ -158,6 +158,9 @@ uses the shared motion through proportion-specific IK; it emits
 `DICE_RETARGET_TRIAL` and still needs visual approval.
 
 [Front run](../docs/front-run.md) registers the saved hoodie `reference-run`
+for technical rollback only: the author rejected that motion. The separate
+[fresh front study](../docs/front-run-study.md) is not registered or approved yet.
+The legacy binding remains
 under `view: "front"`. It exports the unchanged loop on a clean scene canvas,
 with numeric cadence and identical travel endpoints. Front in-place contacts
 are built into the saved action; side locking, support-leg mode, standing
