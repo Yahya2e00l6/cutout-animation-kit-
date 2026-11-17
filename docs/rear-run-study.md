@@ -1,6 +1,9 @@
 # Rear-view run study
 
-**Status: first review candidate, not a registered engine action.** The front
+**Status: drawing rejected; retained for rollback, not a registered engine action.**
+The author rejected the rear artwork after reviewing the preview. Work now moves
+to [one static rear drawing](rear-drawing.md) before more motion or rigging.
+The front
 `front-run` and both approved side actions remain unchanged. Review the rear
 artwork and playback before registering a back view or treating it as approved.
 

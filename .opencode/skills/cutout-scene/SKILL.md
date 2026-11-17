@@ -45,7 +45,8 @@ the source and remaining contact limits.
 Do not silently replace a requested front view with a side view. Rear
 art is unapproved and not registered. The [rear study](../../../docs/rear-run-study.md)
 shares saved front-run joint motion with a rear camera and separate identity
-artwork; it needs playback/likeness review before any rear scene binding.
+artwork. Its drawing was rejected. Review the [static drawing replacement](../../../docs/rear-drawing.md)
+before rigging, further motion work or any rear scene binding.
 
 Supported: fixed camera, solid or registered-image background, horizontal linear travel, scale,
 cadence, timed clips, and actor-array draw order (last on top).
