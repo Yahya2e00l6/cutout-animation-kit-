@@ -2,13 +2,15 @@
   "version": 1,
   "type": "side-walk",
   "cycle": 1.2,
-  "stance": 0.62,
+  "stance": 0.6,
   "distancePerCycle": 0.68,
-  "stepHeight": 0.075,
-  "hipHeight": 0.972,
-  "hipBob": 0.012,
-  "torsoLean": 2,
-  "armSwing": 18,
-  "elbowBend": -12,
-  "status": "Experimental steady-state side walk; awaiting movement review. Distances are in mean total leg lengths."
+  "stepHeight": 0.05,
+  "hipHeight": 0.999,
+  "hipBob": 0,
+  "supportKnee": 5,
+  "compressionKnee": 12,
+  "torsoLean": -1.5,
+  "armSwing": 14,
+  "elbowBend": -8,
+  "status": "Revised upright side walk with load/extension and continuous shoe calibration; awaiting movement review. Distances are in mean total leg lengths."
 }

@@ -3,15 +3,17 @@ import io
 import json
 import math
 from pathlib import Path
+from types import SimpleNamespace
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from unittest.mock import patch
 
 from PIL import Image
 
 from tools.animate import raster
 from tools.preview import ROOT, SVG
-from tools.side_walk import AstraBody, GenericBody, SideWalk, foot_path, solve_leg
+from tools.side_walk import AstraBody, GenericBody, SideWalk, SoleCurve, foot_path, solve_leg, support_knee
 from tools.svg_rig import build
 
 
@@ -143,7 +145,7 @@ class SideWalkTests(unittest.TestCase):
     def test_pose_and_velocity_are_continuous_at_loop_and_stance_exchange(self):
         walk = self.walks[0]
         h = 1e-7
-        for phase in (0, .5, .62, .12):
+        for phase in (0, .5, walk.config['stance'], walk.config['stance']-.5):
             records = [walk.sample((phase+dt) % 1*walk.config['cycle']) for dt in (-h, 0, h)]
             for channel in records[0]['angles']:
                 a, b, c = [r['angles'][channel] for r in records]
@@ -208,6 +210,68 @@ class SideWalkTests(unittest.TestCase):
                 before = ET.tostring(walk.body.asset.tree.getroot())
                 walk.frame(.45)
                 self.assertEqual(ET.tostring(walk.body.asset.tree.getroot()), before)
+
+    def test_complaint_pose_no_longer_has_two_crouched_knees(self):
+        walk = self.walks[0]
+        record = walk.sample(.7)  # Same .583-cycle pose as the user's screenshot.
+        self.assertLess(record['angles']['knee-right'], 15)
+        self.assertLess(record['angles']['knee-left'], 22)
+        self.assertLessEqual(record['angles']['torso'], 0)
+
+    def test_loading_response_releases_to_extension_smoothly(self):
+        d = .6
+        self.assertAlmostEqual(support_knee(0, d, 5, 12), 5)
+        self.assertAlmostEqual(support_knee(.3*d, d, 5, 12), 12)
+        self.assertLess(support_knee(.9*d, d, 5, 12), 5.1)
+        self.assertEqual(support_knee(d, d, 5, 12), 5)
+
+    def test_sole_curve_is_measured_at_stance_and_c2_at_interior_knots(self):
+        curve = SoleCurve(lambda angle: 20+.1*angle*angle)
+        for knot in range(-7, 0):
+            h = 1e-4
+            a, b, c = curve(knot-h), curve(knot), curve(knot+h)
+            self.assertAlmostEqual((b-a)/h, (c-b)/h, delta=.001)
+            left = (b-2*a+curve(knot-2*h))/h**2
+            right = (curve(knot+2*h)-2*c+b)/h**2
+            self.assertAlmostEqual(left, right, delta=.001)
+        for walk in self.walks:
+            for side in ('right', 'left'):
+                self.assertEqual(walk.soles[side](0), walk.body.shoe_bottom(side, 0))
+        with self.assertRaises(ValueError):
+            curve(1)
+
+    def test_filtered_pelvis_is_conservative_between_preparation_samples(self):
+        for walk in self.walks:
+            for i in range(1024):
+                phase = (i+.37)/1024
+                self.assertGreaterEqual(walk.pelvis(phase)+.002, walk.placement(phase)[1])
+                record = walk.sample(phase*walk.cycle)
+                for side in ('right', 'left'):
+                    self.assertGreater(record['angles'][f'knee-{side}'], 3)
+
+    def test_delivery_placement_keeps_fractional_motion(self):
+        from tools.walk_preview import placed_actor
+        body = SimpleNamespace(joints={'root': [50, 50]}, box=[0, 0, 100, 100], floor=90)
+        svg = b'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="10"/></svg>'
+        centers = []
+        for center in (200, 200.25):
+            image, (x, y) = placed_actor(svg, body, .8, center, 300)
+            alpha = image.getchannel('A')
+            weights = [sum(alpha.getpixel((col, row)) for row in range(image.height)) for col in range(image.width)]
+            centers.append(x+sum((col+.5)*weight for col, weight in enumerate(weights))/sum(weights))
+        self.assertAlmostEqual(centers[1]-centers[0], .25, delta=.04)
+
+    def test_preview_samples_native_60fps_not_repeated_30fps_frames(self):
+        from tools.walk_preview import preview
+        out = Path(self.tmp.name)/'sixty-fps-review'
+        with patch('tools.walk_preview.subprocess.check_output', return_value='{}') as encoder:
+            preview(out, ROOT/'characters/ponytail-hoodie-side/rig.json', duration=1/30, encode=True)
+        report = json.loads((out/'report.json').read_text())
+        self.assertEqual((report['fps'], report['frameCount']), (60, 2))
+        self.assertNotEqual((out/'astra/frame_0000.svg').read_bytes(), (out/'astra/frame_0001.svg').read_bytes())
+        for call in encoder.call_args_list:
+            command = call.args[0]
+            self.assertEqual(command[command.index('--fps')+1], '60')
 
 
 if __name__ == '__main__':
