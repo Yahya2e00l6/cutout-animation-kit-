@@ -31,6 +31,11 @@ limb lengths and rest arm directions. Both use exactly the same playback code
 and motion file. These deliberately simple figures test the rigging pipeline;
 they are not proposed production character designs or visual approval.
 
+The [ponytail hoodie girl](../characters/ponytail-hoodie-side-source/README.md)
+is the first illustrated character reconstruction prepared from a user-supplied
+picture. Only its source SVG and setup JSON differ; the same tool and motion
+profile are used. Its likeness and retargeted run still need visual approval.
+
 Local demonstration exports are under `renders/svg-setup/v04/compact-preview/`
 and `renders/svg-setup/v04/tall-preview/`: each is 2.5 seconds, 75 native 30 fps
 frames, silent H.264. The different 520×600 and 720×800 viewports retain each

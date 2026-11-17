@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "view": "side-right",
+  "parts": {
+    "torso": "hoodie-body-and-hood",
+    "head": "profile-head-with-ponytail",
+    "upper-arm-left": "far-sleeve-upper",
+    "forearm-left": "far-sleeve-lower",
+    "hand-left": "far-relaxed-hand",
+    "thigh-left": "far-trouser-thigh",
+    "shin-left": "far-trouser-shin",
+    "foot-left": "far-sneaker",
+    "upper-arm-right": "near-sleeve-upper",
+    "forearm-right": "near-sleeve-lower",
+    "hand-right": "near-relaxed-hand",
+    "thigh-right": "near-trouser-thigh",
+    "shin-right": "near-trouser-shin",
+    "foot-right": "near-canvas-sneaker"
+  },
+  "joints": {
+    "root": [
+      741,
+      571
+    ],
+    "neck": [
+      760,
+      318
+    ],
+    "shoulder-left": [
+      760,
+      373
+    ],
+    "elbow-left": [
+      769,
+      474
+    ],
+    "wrist-left": [
+      771,
+      578
+    ],
+    "hip-left": [
+      747,
+      570
+    ],
+    "knee-left": [
+      747,
+      726
+    ],
+    "ankle-left": [
+      744,
+      878
+    ],
+    "shoulder-right": [
+      742,
+      372
+    ],
+    "elbow-right": [
+      739,
+      475
+    ],
+    "wrist-right": [
+      741,
+      579
+    ],
+    "hip-right": [
+      737,
+      570
+    ],
+    "knee-right": [
+      737,
+      726
+    ],
+    "ankle-right": [
+      735,
+      879
+    ]
+  },
+  "layers": [
+    "thigh-left",
+    "shin-left",
+    "foot-left",
+    "upper-arm-left",
+    "forearm-left",
+    "hand-left",
+    "thigh-right",
+    "shin-right",
+    "foot-right",
+    "torso",
+    "head",
+    "upper-arm-right",
+    "forearm-right",
+    "hand-right"
+  ],
+  "type": "svg-side-rig",
+  "source": "character.svg",
+  "sha256": "d126a6d21d19a3c6092609e081ec9dfe2d8e0800266d243a2361cb7f496c27e1"
+}

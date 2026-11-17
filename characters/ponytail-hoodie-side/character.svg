@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1100" viewBox="400 0 900 1100" id="ponytail-hoodie-side">
+  <title>Ponytail hoodie girl — editable right-facing cutout reconstruction</title>
+  <desc>Manually reconstructed from the side panel of the supplied three-view picture. Flat vector contours, fourteen independent part groups, and extended hidden joint overlaps. The original picture is not embedded. Concealed far limbs are inferred, not traced from visible reference pixels.</desc>
+  <defs>
+    <style>
+      .ink {stroke:#27241f;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+      .line {fill:none;stroke:#27241f;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+      .cloth {fill:#a3737c}
+      .far-cloth {fill:#956972}
+      .rib {fill:#986b73}
+      .pants {fill:#4c4b48}
+      .far-pants {fill:#42423f}
+      .skin {fill:#f1c18b}
+      .hair {fill:#4b3d2e}
+      .rubber {fill:#eeece2}
+      .canvas {fill:#786369}
+    </style>
+  </defs>
+  <g id="far-trouser-thigh">
+    <circle class="far-pants" cx="747" cy="726" r="31"/>
+    <path class="far-pants" d="M720 554 Q749 548 783 557 C790 606 783 651 780 690 L777 744 Q757 755 728 746 C723 712 720 677 719 643Z"/>
+    <path class="line" d="M784 574 Q786 621 780 690 L777 738 M721 586 L720 663 Q722 704 727 735"/>
+  </g>
+  <g id="far-trouser-shin">
+    <circle class="far-pants" cx="747" cy="726" r="29"/>
+    <path class="far-pants" d="M728 711 Q752 700 777 714 C780 755 778 790 774 826 Q779 855 773 881 Q753 894 727 883 Q719 870 725 846 C728 811 725 774 728 747Z"/>
+    <path class="line" d="M777 732 C778 772 776 801 774 825 Q779 854 773 881 Q751 894 727 883 Q720 870 725 847 L727 757"/>
+  </g>
+  <g id="far-sneaker">
+    <path class="canvas ink" d="M726 878 Q745 883 772 875 Q783 882 796 888 Q818 895 823 912 L821 924 Q766 935 725 924 Q720 908 726 878Z"/>
+    <path class="rubber ink" d="M792 888 Q815 894 822 909 Q806 915 788 911 Q787 897 792 888Z"/>
+    <path class="rubber ink" d="M724 914 Q766 lenta 822 913 L822 924 Q772 939 724 925Z"/>
+    <path class="line" stroke="#eeece2" d="M773 883 L787 889 M781 887 L795 894"/>
+  </g>
+  <g id="far-sleeve-upper">
+    <circle class="far-cloth" cx="760" cy="373" r="30"/>
+    <circle class="far-cloth" cx="769" cy="474" r="27"/>
+    <path class="far-cloth" d="M739 353 Q754 343 772 354 C787 381 791 423 789 462 L790 487 Q776 503 750 490 C744 454 738 416 734 384Z"/>
+    <path class="line" d="M774 358 Q792 408 789 462 L790 480 M736 380 Q740 430 748 476"/>
+  </g>
+  <g id="far-sleeve-lower">
+    <circle class="far-cloth" cx="769" cy="474" r="27"/>
+    <path class="far-cloth" d="M750 454 Q769 442 788 456 C795 487 798 523 793 557 Q790 572 777 574 L752 571 Q743 552 747 526Z"/>
+    <path class="line" d="M789 472 Q799 519 793 555 M748 481 Q745 523 748 552"/>
+    <path class="rib ink" d="M750 552 Q772 558 794 551 L793 574 Q773 584 752 575Z"/>
+  </g>
+  <g id="far-relaxed-hand">
+    <path class="skin ink" d="M754 576 Q773 580 790 574 L791 598 Q799 616 792 626 Q786 630 782 620 L779 608 Q783 631 776 634 Q769 636 768 625 Q769 636 763 635 Q757 633 757 625 Q751 629 748 621 Q744 607 749 594Z"/>
+    <path class="line" d="M779 608 L780 620 M768 611 L768 626 M758 612 L757 625"/>
+  </g>
+  <g id="near-trouser-thigh">
+    <circle class="pants" cx="737" cy="726" r="38"/>
+    <path class="pants" d="M694 554 Q735 548 781 555 Q789 587 781 632 C774 670 775 710 770 742 Q741 754 696 744 C687 709 692 664 692 620Z"/>
+    <path class="line" d="M694 578 Q691 618 693 655 L693 707 Q693 728 696 744 M780 578 Q783 610 779 635 Q774 684 771 733"/>
+    <path class="line" stroke-width="1.5" d="M739 588 Q737 640 736 677"/>
+  </g>
+  <g id="near-trouser-shin">
+    <circle class="pants" cx="737" cy="726" r="37"/>
+    <path class="pants" d="M697 707 Q728 697 772 710 C772 751 768 785 768 815 Q778 845 773 861 L776 876 Q758 893 729 889 Q706 896 696 881 Q689 868 694 848 C696 811 693 776 697 739Z"/>
+    <path class="line" d="M771 731 Q768 780 768 815 Q777 845 773 861 L776 876 Q758 893 729 889 Q706 896 696 881 Q689 869 694 848 L696 739"/>
+    <path class="line" stroke-width="1.7" d="M738 716 Q735 781 732 829 L731 879 M765 842 Q752 850 749 861"/>
+  </g>
+  <g id="near-canvas-sneaker">
+    <path class="canvas ink" d="M697 879 Q725 889 752 881 L769 872 Q781 877 793 885 L814 895 Q833 901 835 915 L832 925 Q783 940 697 929 Q690 918 697 879Z"/>
+    <path class="rubber ink" d="M801 890 Q824 895 832 907 L835 916 Q814 924 790 918 Q787 901 801 890Z"/>
+    <path class="line" stroke-width="1.7" d="M705 886 L704 915 M790 889 Q781 902 783 917"/>
+    <path class="rubber ink" d="M695 915 Q755 928 835 914 L834 926 Q770 941 697 929Z"/>
+    <path fill="none" stroke="#f4f0e5" stroke-width="4.4" stroke-linecap="round" d="M760 883 Q770 880 780 885 M767 887 Q779 885 789 891 M775 892 Q787 891 797 897 M783 897 Q793 897 802 903"/>
+  </g>
+  <g id="hoodie-body-and-hood">
+    <path class="cloth ink" d="M719 337 Q751 328 776 341 C797 366 805 406 805 445 L807 520 Q807 537 795 543 Q755 554 681 540 C666 535 668 515 674 496 L687 434 693 375Z"/>
+    <path class="rib ink" d="M681 538 Q739 551 797 538 L795 561 Q741 575 684 561Z"/>
+    <path class="line" stroke-width="1.9" d="M773 449 Q771 493 776 530 M685 525 Q691 528 697 527"/>
+    <path class="skin ink" d="M749 296 Q762 303 780 297 L777 326 763 344 743 328Z"/>
+    <path class="cloth ink" d="M735 316 Q707 310 686 319 Q672 324 675 345 Q663 360 674 382 Q683 396 700 394 Q718 366 741 355 Q763 343 783 359 Q781 336 767 326 Q754 317 735 316Z"/>
+    <path class="line" d="M685 377 Q702 350 728 346 Q756 338 781 359 M733 317 Q752 324 762 336"/>
+    <path class="rib ink" d="M779 353 Q784 350 787 355 L795 420 Q794 431 788 430 Q784 428 785 419Z M789 357 Q794 354 796 360 L813 423 Q815 433 809 434 Q803 432 804 423Z"/>
+  </g>
+  <g id="profile-head-with-ponytail">
+    <path class="hair ink" d="M707 140 Q694 105 661 116 C627 125 607 154 610 189 L616 232 Q615 268 594 266 Q607 285 624 273 Q606 309 622 323 L635 304 Q626 334 650 344 Q665 349 679 337 Q660 336 670 317 Q697 296 697 268 L692 197Z"/>
+    <path class="line" stroke-width="1.8" d="M649 147 Q626 164 631 210 Q641 252 628 275 M649 286 Q658 271 659 251 M648 324 Q652 309 667 292"/>
+    <path fill="#b77b88" class="ink" d="M677 166 Q676 141 697 132 Q711 128 721 144 L709 164 Q691 155 685 176Z"/>
+    <path class="hair ink" d="M682 176 Q692 137 733 129 Q774 116 806 131 Q835 133 852 157 Q864 173 864 196 Q865 217 849 233 Q820 249 802 270 L760 284 Q721 281 695 259 Q670 236 672 207Z"/>
+    <path class="skin ink" d="M744 194 Q765 169 801 171 Q825 184 828 211 L830 238 Q831 247 840 251 Q849 254 841 262 L833 267 Q834 287 819 300 Q807 310 793 304 Q763 294 752 272 L735 257Z"/>
+    <path class="hair ink" d="M687 170 Q712 136 758 139 Q790 127 820 142 Q849 151 856 176 L855 205 Q844 194 837 176 Q839 198 823 212 L815 197 Q808 182 809 165 Q795 196 773 211 Q749 227 718 228 L704 239 Q688 219 687 196Z"/>
+    <path class="hair ink" d="M812 164 Q800 190 781 204 Q757 221 730 217 Q748 215 760 204 Q735 212 714 199 Q742 201 756 184 Q773 159 798 149"/>
+    <path class="line" stroke-width="1.8" d="M694 167 Q725 135 766 145 M722 157 Q746 152 765 154"/>
+    <path fill="#fff9ee" class="ink" stroke-width="1.8" d="M796 225 Q806 215 820 223 Q824 233 819 247 Q810 254 799 247 Q794 237 796 225Z"/>
+    <ellipse fill="#252922" cx="813" cy="237" rx="7" ry="13"/>
+    <ellipse fill="#fffdf5" cx="815" cy="228" rx="2.7" ry="3.7"/>
+    <path class="line" d="M795 222 Q807 212 821 222 M795 208 Q809 199 822 208 M816 278 Q825 284 833 277"/>
+    <path class="skin ink" d="M745 242 Q736 222 724 231 Q715 240 725 256 Q733 267 744 262Z"/>
+    <path class="line" stroke-width="1.8" d="M737 242 Q726 233 726 244 Q727 251 734 251"/>
+    <path class="hair ink" d="M749 227 Q750 252 746 273 Q741 290 746 304 Q728 296 733 277 L736 255 Q741 245 737 231Z"/>
+  </g>
+  <g id="near-sleeve-upper">
+    <circle class="cloth" cx="742" cy="372" r="34"/>
+    <circle class="cloth" cx="739" cy="475" r="32"/>
+    <path class="cloth" d="M725 350 Q741 342 758 352 Q779 367 779 396 L774 446 772 489 Q746 506 712 491 Q703 459 708 426 L711 383Z"/>
+    <path class="line" d="M727 350 Q743 341 759 353 Q779 368 778 399 L775 482 M715 376 Q704 412 709 451 L712 478"/>
+    <path class="line" stroke-width="1.5" d="M719 393 Q713 420 714 440"/>
+  </g>
+  <g id="near-sleeve-lower">
+    <circle class="cloth" cx="739" cy="475" r="32"/>
+    <path class="cloth" d="M712 451 Q736 439 773 451 L772 498 Q776 528 770 549 Q765 562 746 563 L720 560 Q708 556 705 544 Q703 530 706 511Z"/>
+    <path class="line" d="M774 472 L772 499 Q777 532 770 549 Q765 562 746 563 L720 560 Q707 555 705 544 Q703 530 706 512 L709 476"/>
+    <path class="rib ink" d="M715 551 Q743 560 770 550 L768 576 Q743 585 719 577Z"/>
+  </g>
+  <g id="near-relaxed-hand">
+    <path class="skin ink" d="M721 579 Q744 585 762 577 Q762 591 767 600 Q775 615 768 620 Q761 622 757 608 Q763 628 756 632 Q749 636 747 624 Q750 636 742 637 Q736 636 735 627 Q736 638 729 636 Q723 634 723 626 Q717 630 716 620 Q715 609 719 595Z"/>
+    <path class="line" stroke-width="1.8" d="M756 608 L757 619 M746 613 L747 627 M735 613 L735 630 M725 611 L724 625"/>
+  </g>
+</svg>
