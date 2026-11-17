@@ -122,6 +122,10 @@ loaders and approved live solvers.
 
 ## Checks and next step
 
+A separate [side-walk study](side-walk.md) now reuses the same packaged SVG rig
+with a live foot-target/IK sampler. This does not change the baked run profile or
+the default `svg_setup preview` run. Use `tools.walk_preview` for walk reviews.
+
 ```sh
 TMPDIR=/tmp/opencode python3 -B -m unittest discover -s tests -p test_svg_setup.py -v
 ```

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "type": "side-walk",
+  "cycle": 1.2,
+  "stance": 0.62,
+  "distancePerCycle": 0.68,
+  "stepHeight": 0.075,
+  "hipHeight": 0.972,
+  "hipBob": 0.012,
+  "torsoLean": 2,
+  "armSwing": 18,
+  "elbowBend": -12,
+  "status": "Experimental steady-state side walk; awaiting movement review. Distances are in mean total leg lengths."
+}
