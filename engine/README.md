@@ -171,3 +171,9 @@ guides JSON authoring, validation, export, and inspection without scene-specific
 scripts. Work inside this toolkit for OpenCode to discover it; invoke it with
 `@cutout-scene`. Other agents can read the same file directly. Passing technical
 checks is not natural-motion, horizontal-contact, or likeness approval.
+
+For a new character, [the SVG setup backend](../docs/svg-setup.md) maps separated
+side-view SVG groups and joint pivots into a reusable rig JSON. It previews the
+sampled shared side-run profile without character-specific animation code.
+This is a separate CLI foundation, not a visual editor, automatic segmentation
+or a new scene binding. Existing approved scene loaders stay unchanged.

@@ -1,0 +1,19 @@
+{
+  "version": 1, "view": "side-right",
+  "parts": {
+    "torso": "body", "head": "face",
+    "upper-arm-left": "far-sleeve", "forearm-left": "far-forearm", "hand-left": "far-fist",
+    "thigh-left": "far-thigh", "shin-left": "far-calf", "foot-left": "far-shoe",
+    "upper-arm-right": "near-sleeve", "forearm-right": "near-forearm", "hand-right": "near-fist",
+    "thigh-right": "near-thigh", "shin-right": "near-calf", "foot-right": "near-shoe"
+  },
+  "joints": {
+    "root": [180, 280], "neck": [184, 135],
+    "shoulder-left": [175, 165], "elbow-left": [175, 240], "wrist-left": [175, 310],
+    "hip-left": [165, 280], "knee-left": [165, 385], "ankle-left": [165, 490],
+    "shoulder-right": [190, 165], "elbow-right": [190, 240], "wrist-right": [190, 310],
+    "hip-right": [180, 280], "knee-right": [180, 385], "ankle-right": [180, 490]
+  },
+  "layers": ["thigh-left", "shin-left", "foot-left", "upper-arm-left", "forearm-left", "hand-left",
+             "thigh-right", "shin-right", "foot-right", "torso", "head", "upper-arm-right", "forearm-right", "hand-right"]
+}

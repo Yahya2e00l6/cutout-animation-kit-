@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="600" viewBox="-70 0 520 600" id="compact-test">
+  <title>Compact technical test figure, not production artwork</title>
+  <defs><style>.ink{stroke:#243442;stroke-width:3;stroke-linejoin:round}.shirt{fill:#398eaa}.pants{fill:#384c71}.skin{fill:#e6b27e}</style></defs>
+  <g id="far-thigh"><rect class="pants ink" x="150" y="270" width="30" height="125" rx="14"/></g>
+  <g id="far-calf"><rect class="pants ink" x="152" y="375" width="26" height="125" rx="12"/></g>
+  <g id="far-shoe"><path class="ink" fill="#b8c7d3" d="M150 485H178L208 498Q217 513 205 514H148Z"/></g>
+  <g id="far-sleeve"><rect class="shirt ink" x="159" y="150" width="32" height="100" rx="15"/></g>
+  <g id="far-forearm"><rect class="shirt ink" x="161" y="231" width="28" height="83" rx="13"/></g>
+  <g id="far-fist"><ellipse class="skin ink" cx="175" cy="319" rx="14" ry="18"/></g>
+  <g id="near-thigh"><rect class="pants ink" x="163" y="270" width="34" height="125" rx="16"/></g>
+  <g id="near-calf"><rect class="pants ink" x="165" y="375" width="30" height="125" rx="14"/></g>
+  <g id="near-shoe"><path class="ink" fill="#e0c65e" d="M164 485H194L223 498Q232 513 218 514H163Z"/></g>
+  <g id="body"><path class="shirt ink" d="M155 155Q185 145 207 160L210 278Q181 299 150 278Z"/><path fill="#e0c65e" d="M154 185H208V205H153Z"/></g>
+  <g id="face"><path class="skin ink" d="M175 123H196V163H175Z"/><circle class="skin ink" cx="184" cy="104" r="35"/><path class="ink" fill="#243442" d="M150 98Q142 57 184 65Q219 63 218 97L199 83 178 91Z"/><circle cx="207" cy="105" r="4"/><path d="M209 123H197" class="ink" fill="none"/></g>
+  <g id="near-sleeve"><rect class="shirt ink" x="172" y="150" width="36" height="100" rx="17"/></g>
+  <g id="near-forearm"><rect class="shirt ink" x="175" y="230" width="30" height="84" rx="14"/></g>
+  <g id="near-fist"><ellipse class="skin ink" cx="190" cy="319" rx="16" ry="18"/></g>
+</svg>

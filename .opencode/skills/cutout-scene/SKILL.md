@@ -21,6 +21,10 @@ do not load the research reports or entire motion implementation for routine wor
 
 Only these scene bindings exist:
 
+For preparing a new character, see [one-time SVG setup](../../../docs/svg-setup.md).
+Its CLI packages separated side-view parts and previews a shared motion profile;
+it does not automatically split drawings or register a new scene character.
+
 | Character | View | Action |
 | --- | --- | --- |
 | `hoodie` | `side-right` | `side-run-right` |

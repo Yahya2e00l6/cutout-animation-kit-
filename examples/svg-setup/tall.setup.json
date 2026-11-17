@@ -1,0 +1,19 @@
+{
+  "version": 1, "view": "side-right",
+  "parts": {
+    "torso": "jacket", "head": "helmet",
+    "upper-arm-left": "rear-arm-top", "forearm-left": "rear-arm-bottom", "hand-left": "rear-hand",
+    "thigh-left": "rear-leg-top", "shin-left": "rear-leg-bottom", "foot-left": "rear-boot",
+    "upper-arm-right": "front-arm-top", "forearm-right": "front-arm-bottom", "hand-right": "front-hand",
+    "thigh-right": "front-leg-top", "shin-right": "front-leg-bottom", "foot-right": "front-boot"
+  },
+  "joints": {
+    "root": [220, 380], "neck": [237, 175],
+    "shoulder-left": [222, 200], "elbow-left": [251, 295], "wrist-left": [265, 375],
+    "hip-left": [212, 380], "knee-left": [212, 530], "ankle-left": [212, 690],
+    "shoulder-right": [245, 200], "elbow-right": [270, 295], "wrist-right": [282, 375],
+    "hip-right": [220, 380], "knee-right": [220, 530], "ankle-right": [220, 690]
+  },
+  "layers": ["thigh-left", "shin-left", "foot-left", "upper-arm-left", "forearm-left", "hand-left",
+             "thigh-right", "shin-right", "foot-right", "torso", "head", "upper-arm-right", "forearm-right", "hand-right"]
+}

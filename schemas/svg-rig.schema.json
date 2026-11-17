@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Separated side-view SVG rig v1",
+  "description": "Structural contract only. svg_setup also checks SVG group IDs, pivots, lengths, layers and the artwork hash.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "type", "view", "source", "sha256", "parts", "joints", "layers"],
+  "properties": {
+    "version": {"const": 1},
+    "type": {"const": "svg-side-rig"},
+    "view": {"const": "side-right"},
+    "source": {"const": "character.svg"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "parts": {
+      "type": "object", "minProperties": 14, "maxProperties": 14,
+      "propertyNames": {"$ref": "#/definitions/part"},
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "joints": {
+      "type": "object", "minProperties": 14, "maxProperties": 14,
+      "propertyNames": {"enum": ["root", "neck", "shoulder-left", "elbow-left", "wrist-left", "hip-left", "knee-left", "ankle-left", "shoulder-right", "elbow-right", "wrist-right", "hip-right", "knee-right", "ankle-right"]},
+      "additionalProperties": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}
+    },
+    "layers": {
+      "type": "array", "minItems": 14, "maxItems": 14, "uniqueItems": true,
+      "items": {"$ref": "#/definitions/part"}
+    }
+  },
+  "definitions": {
+    "part": {"enum": ["torso", "head", "upper-arm-left", "forearm-left", "hand-left", "thigh-left", "shin-left", "foot-left", "upper-arm-right", "forearm-right", "hand-right", "thigh-right", "shin-right", "foot-right"]}
+  }
+}

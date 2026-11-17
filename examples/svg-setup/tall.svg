@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="800" viewBox="-100 0 720 800" id="tall-test">
+  <title>Long-limbed technical test figure, not production artwork</title>
+  <defs><style>.ink{stroke:#352d43;stroke-width:4;stroke-linejoin:round}.shirt{fill:#ab6e9d}.pants{fill:#45405d}.skin{fill:#dbad8e}</style></defs>
+  <g id="rear-leg-top"><rect class="pants ink" x="195" y="366" width="34" height="178" rx="16"/></g>
+  <g id="rear-leg-bottom"><rect class="pants ink" x="197" y="515" width="30" height="186" rx="14"/></g>
+  <g id="rear-boot"><path class="ink" fill="#a7b5d7" d="M194 684H228L268 703Q276 718 262 720H191Z"/></g>
+  <g id="rear-arm-top"><path class="shirt ink" d="M207 185Q224 175 238 194L262 286Q262 309 241 309L214 219Z"/></g>
+  <g id="rear-arm-bottom"><path class="shirt ink" d="M238 279Q255 274 265 288L279 371Q270 393 251 380Z"/></g>
+  <g id="rear-hand"><ellipse class="skin ink" cx="265" cy="384" rx="17" ry="23"/></g>
+  <g id="front-leg-top"><rect class="pants ink" x="202" y="366" width="38" height="178" rx="18"/></g>
+  <g id="front-leg-bottom"><rect class="pants ink" x="204" y="515" width="34" height="186" rx="16"/></g>
+  <g id="front-boot"><path class="ink" fill="#e1b76d" d="M201 684H239L281 703Q289 719 274 720H199Z"/></g>
+  <g id="jacket"><path class="shirt ink" d="M200 197Q231 185 260 203L257 378Q220 401 192 377Z"/><path fill="#e1b76d" d="M199 237H259V261H198Z"/></g>
+  <g id="helmet"><path class="skin ink" d="M223 147H251V211H223Z"/><ellipse class="skin ink" cx="235" cy="120" rx="43" ry="51"/><path class="ink" fill="#352d43" d="M193 119Q180 64 224 64Q277 59 280 111L256 89 228 103Z"/><circle cx="265" cy="123" r="5"/><path class="ink" fill="none" d="M252 146H266"/></g>
+  <g id="front-arm-top"><path class="shirt ink" d="M226 190Q245 176 261 197L287 289Q291 310 267 314L238 229Z"/></g>
+  <g id="front-arm-bottom"><path class="shirt ink" d="M253 284Q273 276 287 292L299 372Q290 394 269 381Z"/></g>
+  <g id="front-hand"><ellipse class="skin ink" cx="282" cy="384" rx="19" ry="23"/></g>
+</svg>
