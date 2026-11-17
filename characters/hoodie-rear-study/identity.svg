@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1000" viewBox="0 0 640 1000">
+  <title>Hoodie rear identity — provisional artwork</title>
+  <desc>Rear-only torso, hood, pelvis and head. Local anchors match the CMU study proportions; no face, drawstrings or front pocket. Limbs are drawn from the shared 3D pose.</desc>
+  <defs>
+    <style>
+      .rear-outline {stroke:#292b25;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round}
+      .rear-line {fill:none;stroke:#292b25;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <g transform="translate(320 600)">
+    <g id="rear-pelvis">
+      <path class="rear-outline" fill="#505a5c" d="M-72-21 Q0-32 72-21 L76 31 Q51 44 29 33 L0 17-29 33 Q-54 42-76 31Z"/>
+      <path class="rear-line" d="M-16 21 Q0 27 16 21"/>
+    </g>
+    <g id="rear-torso">
+      <path class="rear-outline" fill="#85886a" d="M-64-275 Q-82-263-85-229 L-78-160-85-62 Q-93-28-76-9 L-75 11 Q0 31 75 11 L76-9 Q93-28 85-62 L78-160 85-229 Q82-263 64-275Z"/>
+      <path class="rear-outline" fill="#74795c" d="M-77-16 Q0-3 77-16 L76 10 Q0 30-76 10Z"/>
+      <path class="rear-line" d="M-67-234 Q-58-202-68-171 M67-234 Q58-202 68-171 M-59-55 Q-17-78 45-65 M-58-96 L-30-120"/>
+    </g>
+    <g transform="translate(0 -307)">
+      <g id="rear-head">
+        <g transform="translate(0 -78)">
+          <g class="rear-outline" fill="#dfbd94">
+            <path d="M-56-5 Q-83-19-80 8 Q-77 31-57 28Z"/>
+            <path d="M57-6 Q79-15 76 10 Q75 29 57 27Z"/>
+          </g>
+          <path class="rear-outline" fill="#403c32" d="M-62 13 Q-74-3-70-31 L-80-18 Q-86-42-67-66 L-84-58 Q-85-79-57-92 L-74-96-47-103-42-124-29-107 Q-7-130 14-131 L4-115 Q31-125 55-119 L49-105 Q73-106 84-116 Q84-99 68-88 L86-84 68-70 Q83-54 85-42 L64-54 Q76-24 60 9 L51 34 Q39 58 16 72 L6 61-5 75-18 61-28 66 Q-52 46-62 13Z"/>
+          <path class="rear-line" stroke="#34372e" d="M-58-35 Q-61-11-51 2 M57-42 Q65-27 59-11"/>
+        </g>
+      </g>
+    </g>
+    <g id="rear-hood">
+      <path class="rear-outline" fill="#85886a" d="M-70-299 Q-76-326-44-335 Q0-347 44-335 Q76-326 70-299 Q85-282 67-267 L30-238 Q5-220-19-235 L-66-267 Q-85-283-70-299Z"/>
+      <path class="rear-line" d="M-54-304 Q0-287 54-304 M3-332 Q-6-303 1-282 L4-239"/>
+    </g>
+  </g>
+</svg>
