@@ -1,8 +1,8 @@
 """Compare one unrigged rear drawing with the original front and saved side art.
 
-This tool only arranges existing images. It does not sample motion, edit source
-art, trace vectors, segment parts or create a rig. Equal-height comparison uses
-uniform resizing, not independent width fitting.
+This tool arranges existing images and renders the saved upright side standing
+pose. It does not edit source art, motion, vectors or rigs. Equal-height
+comparison uses uniform resizing, not independent width fitting.
 """
 import argparse
 import io
@@ -12,6 +12,14 @@ from PIL import Image, ImageDraw, ImageFont
 
 from tools.animate import raster
 from tools.preview import ROOT
+
+
+def standing_side_svg():
+    """Use the accepted upright pose, not the side rig's unposed rest artwork."""
+    from tools.side_actions import load_side_action
+    from tools.side_transition import TransitionPose
+    action = load_side_action('side-run-right', duration=1, speed=1)
+    return TransitionPose(action, 0, {'mode': 'stand', 'weight': 0}).frame(0, 0, clean=True)[0]
 
 
 def artwork_crop(image):
@@ -38,7 +46,7 @@ def review(back, out):
     with Image.open(ROOT/'lastpic.jpeg') as source:
         front = artwork_crop(source)
     buffer = io.BytesIO()
-    raster((ROOT/'characters/hoodie-side/character.svg').read_bytes(), 640, 1000).write_to_png(buffer)
+    raster(standing_side_svg(), 2560, 1440).write_to_png(buffer)
     side = artwork_crop(Image.open(buffer))
     out.mkdir(parents=True)
     canvas = Image.new('RGB', (1800, 1200), 'white')
@@ -51,7 +59,7 @@ def review(back, out):
         title_font = small_font = ImageFont.load_default(size=20)
     baseline, height = 1100, 970
     entries = [('FRONT | original identity', front),
-               ('SIDE | saved artwork', side),
+               ('SIDE | saved upright standing pose', side),
                ('BACK | unrigged drawing candidate', rear)]
     for column, (label, image) in enumerate(entries):
         scale = height/image.height

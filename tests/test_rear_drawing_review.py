@@ -1,14 +1,28 @@
 from pathlib import Path
+import re
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from unittest.mock import patch
 
 from PIL import Image, ImageDraw
 
-from tools.rear_drawing_review import artwork_crop, review
+from tools.rear_drawing_review import artwork_crop, review, standing_side_svg
+from tools.preview import ROOT
 
 
 class RearDrawingReviewTests(unittest.TestCase):
+    def test_side_reference_uses_saved_upright_pose_without_modifying_sources(self):
+        paths = [ROOT/'characters/hoodie-side/character.svg', ROOT/'poses/side-stand.json',
+                 ROOT/'motions/side-run.json']
+        before = [p.read_bytes() for p in paths]
+        svg = ET.fromstring(standing_side_svg())
+        nodes = {e.get('id'): e for e in svg.iter() if e.get('id')}
+        for name, angle in [('torso', -9), ('head', 9)]:
+            rotations = re.findall(r'rotate\(([-.\d]+)\)', nodes[name].get('transform'))
+            self.assertEqual(float(rotations[-1]), angle)
+        self.assertEqual(before, [p.read_bytes() for p in paths])
+
     def test_white_and_transparent_margins_are_cropped_without_distortion(self):
         for background in ('white', (0, 0, 0, 0)):
             image = Image.new('RGBA', (100, 200), background)

@@ -14,8 +14,10 @@ are part of this drawing pass. A drawing candidate is not visual approval.
 References:
 
 - [Original front identity](../lastpic.jpeg): character, outfit and proportion.
-- [Saved side SVG](../characters/hoodie-side/character.svg): ink, palette,
-  garment volume, curled hands and sneaker design.
+- [Saved side SVG](../characters/hoodie-side/character.svg), rendered with the
+  [upright standing pose](../poses/side-stand.json): ink, palette, garment volume,
+  curled hands and sneaker design. Do not use the unposed rest SVG as a standing
+  reference: it omits the accepted torso/head posture compensation.
 - The existing local rear reference sheet supplies hood/nape construction,
   not a new timing or pose baseline.
 
@@ -24,7 +26,7 @@ rig or engine asset**. It is saved locally under `renders/rear-drawing/v01/`.
 There is no automatic tracing or claim that a generated drawing can be animated
 as-is. Obtain likeness/contour approval before drawing editable parts or rigging.
 Generated review images are excluded from Git.
-Latest comparison: `renders/rear-drawing/v01/review-v02/front-side-back.png`.
+Latest comparison: `renders/rear-drawing/v01/review-v04/front-side-back.png`.
 
 ## Drawing brief
 
@@ -44,12 +46,13 @@ front pocket, drawstrings or face on the back of the figure.
 
 ## Compare without changing proportions
 
-The [review tool](../tools/rear_drawing_review.py) arranges existing pictures;
-it does not draw, animate or change source assets. From the toolkit root, choose
+The [review tool](../tools/rear_drawing_review.py) arranges existing pictures and
+renders the saved upright side standing pose. It does not redraw or change source
+assets or movement rules. From the toolkit root, choose
 a fresh output directory:
 
 ```sh
-TMPDIR=/tmp/opencode python3 -B -m tools.rear_drawing_review --drawing renders/rear-drawing/v01/back-drawing.png --out renders/rear-drawing/v01/review-v03
+TMPDIR=/tmp/opencode python3 -B -m tools.rear_drawing_review --drawing renders/rear-drawing/v01/back-drawing.png --out renders/rear-drawing/v01/review-v05
 ```
 
 `front-side-back.png` uses a common displayed head-to-heel height, aligned
